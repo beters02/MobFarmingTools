@@ -37,12 +37,7 @@
         "GatherType": "Soils"
       }
     },
-    "PlacementSettings": {
-      "RotationMode": "FacingPlayer",
-      "FloorPlacementOverrideBlockId": "Mob_Fan_Floor",
-      "CeilingPlacementOverrideBlockId": "Mob_Fan_Ceiling"
-    },
-    "VariantRotation": "NESW",
+    "PlacementSettings": { "RotationMode": "FacingPlayer" },
     "BlockEntity": {
       "Components": {
         "Mob_Farming_Tools:Mob_Fan_Component": {}
@@ -56,9 +51,7 @@
       "Stone",
       "Gravel",
       "Dirt"
-    ],
-    "FlipType": "Orthogonal",
-    "RotationYawPlacementOffset": "None"
+    ]
   },
   "Tags": {
     "Type": [

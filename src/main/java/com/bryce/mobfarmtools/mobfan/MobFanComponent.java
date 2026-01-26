@@ -37,6 +37,7 @@ public class MobFanComponent implements Component<ChunkStore> {
 
     private World _world;
     private Vector3i _worldPos;
+    private Vector3d baseForward = new Vector3d(0, 0, -1);
 
     public void setFanLength(int amount) {
         if (amount > MobFanConstants.FAN_LENGTH_MAX) {
@@ -104,6 +105,7 @@ public class MobFanComponent implements Component<ChunkStore> {
 
     public void setStoredWorld(World world) { this._world = world; }
     public void setStoredWorldPos(Vector3i pos) { this._worldPos = pos; }
+    public void setBaseForward(Vector3d forward) { this.baseForward = forward; }
 
     public void incrementFanLength(int amount) {
         setFanLength(fanLength + amount);
@@ -121,6 +123,7 @@ public class MobFanComponent implements Component<ChunkStore> {
     public final boolean isEnabled() { return this.enabled; }
     public final World getStoredWorld() { return this._world; }
     public final Vector3i getStoredWorldPos() { return this._worldPos; }
+    public final Vector3d getBaseForward() { return this.baseForward; }
 
     public void tickAction(float dt, int globalX, int globalY, int globalZ, int rotationIndex, World world) {
         Store<EntityStore> store = world.getEntityStore().getStore();
@@ -152,7 +155,7 @@ public class MobFanComponent implements Component<ChunkStore> {
 
     private Vector3d getForwardDirection(int rotationIndex) {
         RotationTuple rot = RotationTuple.get(rotationIndex);
-        return Rotation.rotate(new Vector3d(0, 0, -1), rot.yaw(), rot.pitch(), rot.roll()).normalize();
+        return Rotation.rotate(this.baseForward, rot.yaw(), rot.pitch(), rot.roll()).normalize();
     }
 
     private List<Ref<EntityStore>> getEntitiesInFanBox(int x, int y, int z, int rotationIndex, Store<EntityStore> entityStore) {
