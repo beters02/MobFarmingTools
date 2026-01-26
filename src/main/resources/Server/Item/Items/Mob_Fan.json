@@ -1,0 +1,78 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.Mob_Fan.name"
+  },
+  "ItemLevel": 600,
+  "Categories": [
+    "Blocks.Soils"
+  ],
+  "PlayerAnimationsId": "Block",
+  "Set": "Soil",
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "CustomModel": "Blocks/Mob_Fan/Mob_Fan.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "BlockTextures/Mob_Fan_Atlas.png",
+        "Weight": 1
+      }
+    ],
+    "State": {
+      "Definitions": {
+        "On": {
+          "CustomModelAnimation": "Blocks/Mob_Fan/Mob_Fan_Flip.blockyanim",
+          "Looping": true
+        },
+        "Off": {
+          "CustomModelAnimation": null,
+          "Looping": false
+        }
+      }
+    },
+    "Group": "Dirt",
+    "Flags": {},
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Soils"
+      }
+    },
+    "VariantRotation": "NESW",
+    "PlacementSettings": {
+      "RotationMode": "FacingPlayer"
+    },
+    "BlockEntity": {
+      "Components": {
+        "Mob_Farming_Tools:Mob_Fan_Component": {}
+      }
+    },
+    "BlockParticleSetId": "Sand",
+    "ParticleColor": "#3d3e3e",
+    "BlockSoundSetId": "Gravel",
+    "TransitionTexture": "BlockTextures/Transition_Ashes.png",
+    "TransitionToGroups": [
+      "Stone",
+      "Lava",
+      "Dirt"
+    ]
+  },
+  "Tags": {
+    "Type": [
+      "Soil"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Blocks_Soft",
+  "IconProperties": {
+    "Scale": 0.58823,
+    "Rotation": [
+      22.5,
+      45,
+      22.5
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  },
+  "Icon": "Icons/ItemsGenerated/Mob_Fan.png"
+}

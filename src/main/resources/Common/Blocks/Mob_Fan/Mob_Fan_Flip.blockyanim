@@ -1,0 +1,49 @@
+{
+  "formatVersion": 1,
+  "duration": 8,
+  "holdLastKeyframe": false,
+  "nodeAnimations": {
+    "Frame0": {
+      "position": [],
+      "orientation": [],
+      "shapeStretch": [],
+      "shapeVisible": [
+        { "time": 0, "delta": true },
+        { "time": 2, "delta": false }
+      ],
+      "shapeUvOffset": []
+    },
+    "Frame1": {
+      "position": [],
+      "orientation": [],
+      "shapeStretch": [],
+      "shapeVisible": [
+        { "time": 0, "delta": false },
+        { "time": 2, "delta": true },
+        { "time": 4, "delta": false }
+      ],
+      "shapeUvOffset": []
+    },
+    "Frame2": {
+      "position": [],
+      "orientation": [],
+      "shapeStretch": [],
+      "shapeVisible": [
+        { "time": 0, "delta": false },
+        { "time": 4, "delta": true },
+        { "time": 6, "delta": false }
+      ],
+      "shapeUvOffset": []
+    },
+    "Frame3": {
+      "position": [],
+      "orientation": [],
+      "shapeStretch": [],
+      "shapeVisible": [
+        { "time": 0, "delta": false },
+        { "time": 6, "delta": true }
+      ],
+      "shapeUvOffset": []
+    }
+  }
+}
