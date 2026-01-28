@@ -35,7 +35,6 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     }
 
     private void registerCommands(CommandRegistry registry) {
-        registry.registerCommand(new ExampleCommand(this.getName(), this.getManifest().getVersion().toString()));
     }
 
     private void registerComponents(ComponentRegistryProxy<ChunkStore> registry) {

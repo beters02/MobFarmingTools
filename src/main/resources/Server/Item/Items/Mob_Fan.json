@@ -4,10 +4,33 @@
   },
   "ItemLevel": 600,
   "Categories": [
-    "Blocks.Soils"
+    "Furniture.Furniture"
   ],
   "PlayerAnimationsId": "Block",
-  "Set": "Soil",
+  "Set": "Machine",
+  "Recipe": {
+    "TimeSeconds": 3.5,
+    "Input": [
+      {
+        "ItemId": "Ingredient_Bar_Iron",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Bar_Silver",
+        "Quantity": 10
+      }
+    ],
+    "BenchRequirement": [
+      {
+        "Id": "Workbench",
+        "Type": "Crafting",
+        "Categories": [
+          "Workbench_Survival"
+        ],
+        "RequiredTierLevel": 2
+      }
+    ]
+  },
   "BlockType": {
     "Material": "Solid",
     "DrawType": "Model",
@@ -30,11 +53,11 @@
         }
       }
     },
-    "Group": "Dirt",
+    "Group": "@Tech",
     "Flags": {},
     "Gathering": {
       "Breaking": {
-        "GatherType": "Soils"
+        "GatherType": "Rocks"
       }
     },
     "PlacementSettings": {
@@ -58,11 +81,11 @@
       "Dirt"
     ],
     "FlipType": "Orthogonal",
-    "RotationYawPlacementOffset": "None"
+    "RotationYawPlacementOffset": "OneEighty"
   },
   "Tags": {
     "Type": [
-      "Soil"
+      "Machine"
     ]
   },
   "ItemSoundSetId": "ISS_Items_Metal",
@@ -78,5 +101,6 @@
       -13.5
     ]
   },
-  "Icon": "Icons/ItemsGenerated/Mob_Fan.png"
+  "Icon": "Icons/ItemsGenerated/Mob_Fan.png",
+  "MaxStack": 1
 }

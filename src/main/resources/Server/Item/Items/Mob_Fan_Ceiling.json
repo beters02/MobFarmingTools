@@ -34,10 +34,14 @@
     "Flags": {},
     "Gathering": {
       "Breaking": {
-        "GatherType": "Soils"
+        "GatherType": "Rocks",
+        "ItemId": "Mob_Fan",
+        "Quantity": 1
       }
     },
-    "PlacementSettings": { "RotationMode": "FacingPlayer" },
+    "PlacementSettings": {
+      "RotationMode": "FacingPlayer"
+    },
     "BlockEntity": {
       "Components": {
         "Mob_Farming_Tools:Mob_Fan_Component": {}
