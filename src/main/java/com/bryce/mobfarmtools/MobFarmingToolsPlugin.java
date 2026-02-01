@@ -2,13 +2,17 @@ package com.bryce.mobfarmtools;
 
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanInitializer;
+import com.bryce.mobfarmtools.mobfan.MobFanOpenInteraction;
 import com.bryce.mobfarmtools.mobfan.MobFanSystem;
+import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.component.ComponentRegistryProxy;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.command.system.CommandRegistry;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.plugin.registry.CodecMapRegistry;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 
 public class MobFarmingToolsPlugin extends JavaPlugin {
@@ -30,6 +34,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         instance = this;
 
         registerCommands(this.getCommandRegistry());
+        registerInteractions(this.getCodecRegistry(Interaction.CODEC));
         registerComponents(this.getChunkStoreRegistry());
         registerSystems(this.getChunkStoreRegistry());
     }
@@ -45,6 +50,15 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     private void registerSystems(ComponentRegistryProxy<ChunkStore> registry) {
         registry.registerSystem(new MobFanSystem(this.mobFanComponentType));
         registry.registerSystem(new MobFanInitializer());
+    }
+
+    void registerInteractions(
+            CodecMapRegistry.Assets<
+                    Interaction,
+                    ? extends Codec<? extends Interaction>
+                    > registry
+    ) {
+        registry.register("Open_Mob_Fan_Interaction", MobFanOpenInteraction.class, MobFanOpenInteraction.CODEC);
     }
 
     public ComponentType<ChunkStore, MobFanComponent> getMobFanComponentType() {

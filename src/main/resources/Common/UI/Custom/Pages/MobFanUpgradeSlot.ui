@@ -1,0 +1,50 @@
+// Mob Fan upgrade slot (label + item)
+
+$C = "../Common.ui";
+
+Button {
+  Anchor: (Width: 120, Height: 120, Right: 12, Bottom: 12);
+  LayoutMode: Top;
+  Style: (
+    Default: (Background: (Color: #000000(0.0))),
+    Hovered: (Background: (Color: #1a2330(0.6))),
+    Pressed: (Background: (Color: #0f1722(0.7)))
+  );
+  TooltipText: "";
+  TextTooltipStyle: $C.@DefaultTextTooltipStyle;
+  
+  Label #UpgradeLabel {
+    Text: "Upgrade";
+    Style: (
+      FontSize: 14,
+      TextColor: #e0e8f0,
+      RenderBold: true,
+      HorizontalAlignment: Center,
+      VerticalAlignment: Center
+    );
+    Anchor: (Height: 24, Bottom: 4);
+  }
+  
+  Group #SlotBox {
+    Anchor: (Width: 74, Height: 74);
+    Background: (TexturePath: "Slot.png");
+    LayoutMode: Middle;
+    
+    ItemSlot #SlotItem {
+      Anchor: (Width: 64, Height: 64);
+      ShowQualityBackground: true;
+    }
+    
+    Label #QuantityLabel {
+      Text: "0";
+      Style: (
+        FontSize: 14,
+        TextColor: #ffffff,
+        HorizontalAlignment: End,
+        VerticalAlignment: End,
+        RenderBold: true
+      );
+      Anchor: (Right: 6, Bottom: 4);
+    }
+  }
+}

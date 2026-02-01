@@ -1,24 +1,32 @@
 package com.bryce.mobfarmtools.mobfan;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.RefSystem;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockMaterial;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.accessor.BlockAccessor;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MobFanInitializer extends RefSystem<ChunkStore> {
 
@@ -86,7 +94,63 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+        MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFarmingToolsPlugin.get().getMobFanComponentType());
+        World world = store.getExternalData().getWorld();
+        if (mobFan != null && mobFan.getStoredWorld() != null) {
+            world = mobFan.getStoredWorld();
+        }
 
+        MobFanUpgradePage.clearAllPreviews(world);
+
+        if (removeReason == RemoveReason.UNLOAD || mobFan == null) {
+            return;
+        }
+
+        Vector3i pos = mobFan.getStoredWorldPos();
+        if (pos == null) {
+            BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
+            if (info == null || info.getChunkRef() == null) {
+                return;
+            }
+
+            Store<ChunkStore> chunkStore = info.getChunkRef().getStore();
+            WorldChunk worldChunk = chunkStore.getComponent(info.getChunkRef(), WorldChunk.getComponentType());
+            if (worldChunk == null) {
+                return;
+            }
+
+            int localX = ChunkUtil.xFromBlockInColumn(info.getIndex());
+            int worldY = ChunkUtil.yFromBlockInColumn(info.getIndex());
+            int localZ = ChunkUtil.zFromBlockInColumn(info.getIndex());
+            int worldX = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getX(), localX);
+            int worldZ = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getZ(), localZ);
+            pos = new Vector3i(worldX, worldY, worldZ);
+        }
+
+        int length = mobFan.getLengthUpgrades();
+        int width = mobFan.getWidthUpgrades();
+        int height = mobFan.getHeightUpgrades();
+        if (length <= 0 && width <= 0 && height <= 0) {
+            return;
+        }
+
+        List<ItemStack> drops = new ArrayList<>();
+        if (length > 0) {
+            drops.add(new ItemStack(MobFanConstants.UPGRADE_LENGTH_ITEM_ID, length));
+        }
+        if (width > 0) {
+            drops.add(new ItemStack(MobFanConstants.UPGRADE_WIDTH_ITEM_ID, width));
+        }
+        if (height > 0) {
+            drops.add(new ItemStack(MobFanConstants.UPGRADE_HEIGHT_ITEM_ID, height));
+        }
+
+        Store<EntityStore> entityStore = world.getEntityStore().getStore();
+        Vector3d dropPosition = pos.toVector3d().add(0.5, 0.0, 0.5);
+        Holder<EntityStore>[] holders = ItemComponent.generateItemDrops(entityStore, drops, dropPosition, Vector3f.ZERO);
+        if (holders.length > 0) {
+            world.execute(() -> entityStore.addEntities(holders, AddReason.SPAWN));
+        }
     }
 
     @Override

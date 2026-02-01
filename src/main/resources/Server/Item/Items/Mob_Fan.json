@@ -18,6 +18,10 @@
       {
         "ItemId": "Ingredient_Bar_Silver",
         "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Bar_Gold",
+        "Quantity": 5
       }
     ],
     "BenchRequirement": [
@@ -54,7 +58,9 @@
       }
     },
     "Group": "@Tech",
-    "Flags": {},
+    "Flags": {
+      "IsUsable": true
+    },
     "Gathering": {
       "Breaking": {
         "GatherType": "Rocks"
@@ -70,6 +76,10 @@
       "Components": {
         "Mob_Farming_Tools:Mob_Fan_Component": {}
       }
+    },
+    "Interactions": {
+      "Use": "Open_Mob_Fan",
+      "Primary": "Break_Container"
     },
     "BlockParticleSetId": "Metal",
     "ParticleColor": "#3e3e3e",

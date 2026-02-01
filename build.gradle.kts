@@ -17,6 +17,7 @@ repositories {
 dependencies {
     compileOnly(libs.jetbrains.annotations)
     compileOnly(libs.jspecify)
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 }
 
 hytale {

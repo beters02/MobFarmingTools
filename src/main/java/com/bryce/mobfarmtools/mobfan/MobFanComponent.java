@@ -1,6 +1,8 @@
 package com.bryce.mobfarmtools.mobfan;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.hypixel.hytale.codec.Codec;
+import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.Ref;
@@ -16,6 +18,7 @@ import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer;
 import com.hypixel.hytale.server.core.util.TargetUtil;
 import org.jspecify.annotations.Nullable;
 
@@ -26,14 +29,36 @@ public class MobFanComponent implements Component<ChunkStore> {
             BuilderCodec.builder(
                     MobFanComponent.class,
                     MobFanComponent::new
-            ).build();
+            )
+            .append(new KeyedCodec<>("LengthUpgrades", Codec.INTEGER),
+                    (component, value) -> component.lengthUpgrades = value,
+                    component -> component.lengthUpgrades)
+            .add()
+            .append(new KeyedCodec<>("WidthUpgrades", Codec.INTEGER),
+                    (component, value) -> component.widthUpgrades = value,
+                    component -> component.widthUpgrades)
+            .add()
+            .append(new KeyedCodec<>("HeightUpgrades", Codec.INTEGER),
+                    (component, value) -> component.heightUpgrades = value,
+                    component -> component.heightUpgrades)
+            .add()
+            .append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
+                    (component, value) -> component.enabled = value,
+                    component -> component.enabled)
+            .add()
+            .afterDecode(MobFanComponent::applyUpgradeCounts)
+            .build();
 
     private final float FAN_SPEED = 100f;
 
     private int fanLength = 3;
     private int fanWidth = 3;
     private int fanHeight = 3;
+    private int lengthUpgrades = 0;
+    private int widthUpgrades = 0;
+    private int heightUpgrades = 0;
     private boolean enabled = false;
+    private transient SimpleItemContainer upgradeContainer;
 
     private World _world;
     private Vector3i _worldPos;
@@ -117,13 +142,38 @@ public class MobFanComponent implements Component<ChunkStore> {
         setFanHeight(fanHeight + amount);
     }
 
+    public void setLengthUpgrades(int amount) {
+        lengthUpgrades = clampUpgrade(amount);
+        applyUpgradeCounts();
+    }
+
+    public void setWidthUpgrades(int amount) {
+        widthUpgrades = clampUpgrade(amount);
+        applyUpgradeCounts();
+    }
+
+    public void setHeightUpgrades(int amount) {
+        heightUpgrades = clampUpgrade(amount);
+        applyUpgradeCounts();
+    }
+
     public final int getFanLength() { return fanLength; }
     public final int getFanWidth() { return fanWidth; }
     public final int getFanHeight() { return fanHeight; }
+    public final int getLengthUpgrades() { return lengthUpgrades; }
+    public final int getWidthUpgrades() { return widthUpgrades; }
+    public final int getHeightUpgrades() { return heightUpgrades; }
     public final boolean isEnabled() { return this.enabled; }
     public final World getStoredWorld() { return this._world; }
     public final Vector3i getStoredWorldPos() { return this._worldPos; }
     public final Vector3d getBaseForward() { return this.baseForward; }
+
+    public SimpleItemContainer getOrCreateUpgradeContainer() {
+        if (upgradeContainer == null) {
+            upgradeContainer = new SimpleItemContainer((short) 3);
+        }
+        return upgradeContainer;
+    }
 
     public void tickAction(float dt, int globalX, int globalY, int globalZ, int rotationIndex, World world) {
         Store<EntityStore> store = world.getEntityStore().getStore();
@@ -159,7 +209,10 @@ public class MobFanComponent implements Component<ChunkStore> {
     }
 
     private List<Ref<EntityStore>> getEntitiesInFanBox(int x, int y, int z, int rotationIndex, Store<EntityStore> entityStore) {
+        RotationTuple rot = RotationTuple.get(rotationIndex);
         Vector3d forward = getForwardDirection(rotationIndex);
+        Vector3d right = Rotation.rotate(new Vector3d(1, 0, 0), rot.yaw(), rot.pitch(), rot.roll()).normalize();
+        Vector3d up = Rotation.rotate(new Vector3d(0, 1, 0), rot.yaw(), rot.pitch(), rot.roll()).normalize();
         Vector3d blockCenter = new Vector3d(x + 0.5, y + 0.5, z + 0.5);
 
         double length = this.fanLength;
@@ -168,23 +221,60 @@ public class MobFanComponent implements Component<ChunkStore> {
         double start = 0.5;
 
         Vector3d boxCenter = blockCenter.clone().add(forward.clone().scale(start + length * 0.5));
+        Vector3d halfForward = forward.clone().scale(length * 0.5);
+        Vector3d halfRight = right.clone().scale(width * 0.5);
+        Vector3d halfUp = up.clone().scale(height * 0.5);
 
-        Vector3d min = new Vector3d(
-                boxCenter.x - width * 0.5,
-                boxCenter.y - height * 0.5,
-                boxCenter.z - length * 0.5
-        );
-        Vector3d max = new Vector3d(
-                boxCenter.x + width * 0.5,
-                boxCenter.y + height * 0.5,
-                boxCenter.z + length * 0.5
-        );
+        Vector3d min = new Vector3d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+        Vector3d max = new Vector3d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
+        int[] signs = new int[] { -1, 1 };
+        for (int sx : signs) {
+            for (int sy : signs) {
+                for (int sz : signs) {
+                    Vector3d corner = boxCenter.clone()
+                            .add(halfRight.clone().scale(sx))
+                            .add(halfUp.clone().scale(sy))
+                            .add(halfForward.clone().scale(sz));
+                    min.x = Math.min(min.x, corner.x);
+                    min.y = Math.min(min.y, corner.y);
+                    min.z = Math.min(min.z, corner.z);
+                    max.x = Math.max(max.x, corner.x);
+                    max.y = Math.max(max.y, corner.y);
+                    max.z = Math.max(max.z, corner.z);
+                }
+            }
+        }
 
         return TargetUtil.getAllEntitiesInBox(min, max, entityStore);
     }
 
+    private void applyUpgradeCounts() {
+        lengthUpgrades = clampUpgrade(lengthUpgrades);
+        widthUpgrades = clampUpgrade(widthUpgrades);
+        heightUpgrades = clampUpgrade(heightUpgrades);
+        setFanLength(MobFanConstants.FAN_LENGTH_MIN + lengthUpgrades);
+        setFanWidth(MobFanConstants.FAN_WIDTH_MIN + (widthUpgrades * 2));
+        setFanHeight(MobFanConstants.FAN_HEIGHT_MIN + (heightUpgrades * 2));
+    }
+
+    private static int clampUpgrade(int amount) {
+        if (amount < 0) {
+            return 0;
+        }
+        return Math.min(amount, MobFanConstants.FAN_UPGRADE_MAX);
+    }
+
     @Override
     public @Nullable Component<ChunkStore> clone() {
-        return new MobFanComponent();
+        MobFanComponent copy = new MobFanComponent();
+        copy.fanLength = this.fanLength;
+        copy.fanWidth = this.fanWidth;
+        copy.fanHeight = this.fanHeight;
+        copy.lengthUpgrades = this.lengthUpgrades;
+        copy.widthUpgrades = this.widthUpgrades;
+        copy.heightUpgrades = this.heightUpgrades;
+        copy.enabled = this.enabled;
+        copy.baseForward = this.baseForward;
+        return copy;
     }
 }

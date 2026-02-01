@@ -1,0 +1,50 @@
+// Mob Fan inventory slot
+
+$C = "../Common.ui";
+
+Button {
+  Anchor: (Width: 74, Height: 74, Right: 2, Bottom: 2);
+  Style: (
+    Default: (Background: (TexturePath: "Slot.png")),
+    Hovered: (Background: (TexturePath: "SlotHighlight.png")),
+    Pressed: (Background: (TexturePath: "SlotSelected.png"))
+  );
+  TooltipText: "";
+  TextTooltipStyle: $C.@DefaultTextTooltipStyle;
+  
+  ItemSlot #SlotItem {
+    Anchor: (Full: 0);
+    ShowQualityBackground: true;
+  }
+  
+  Label #QuantityLabel {
+    Text: "0";
+    Style: (
+      FontSize: 14,
+      TextColor: #ffffff,
+      HorizontalAlignment: End,
+      VerticalAlignment: End,
+      RenderBold: true
+    );
+    Anchor: (Right: 6, Bottom: 4);
+  }
+  
+  Group #HotbarNumberBg {
+    Visible: false;
+    Anchor: (Left: 2, Top: 2, Width: 16, Height: 16);
+    Background: (Color: #171717);
+    LayoutMode: Middle;
+    
+    Label #HotbarNumber {
+      Text: "";
+      Style: (
+        FontSize: 11,
+        TextColor: #96a9be,
+        HorizontalAlignment: Center,
+        VerticalAlignment: Center,
+        RenderBold: true
+      );
+      Anchor: (Full: 0);
+    }
+  }
+}
