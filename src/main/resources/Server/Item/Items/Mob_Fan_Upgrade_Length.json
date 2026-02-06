@@ -37,5 +37,18 @@
       }
     ]
   },
-  "Model": "Blocks/Mob_Fan/Mob_Fan_Upgrade_Length.blockymodel"
+  "Model": "Blocks/Mob_Fan/Mob_Fan_Upgrade_Length.blockymodel",
+  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Length.png",
+  "IconProperties": {
+    "Scale": 1.7,
+    "Rotation": [
+      0,
+      0,
+      0
+    ],
+    "Translation": [
+      1,
+      -8
+    ]
+  }
 }

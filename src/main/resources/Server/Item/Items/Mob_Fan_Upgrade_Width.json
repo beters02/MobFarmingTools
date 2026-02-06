@@ -4,8 +4,7 @@
     "Description": "Upgrade the width of a fan by 1 block. Max 4"
   },
   "Id": "Mob_Fan_Upgrade_Width",
-  "Icon": "Icons/ItemsGenerated/Example_Block.png",
-  "Texture": "Items/Mob_Fan_Upgrade/Width_Texture.png",
+  "Texture": "Items/Mob_Fan_Upgrade_Width.png",
   "Quality": "Common",
   "MaxStack": 10,
   "Categories": [
@@ -36,6 +35,20 @@
         ],
         "RequiredTierLevel": 2
       }
+    ]
+  },
+  "Model": "Blocks/Mob_Fan/Mob_Fan_Upgrade_Width.blockymodel",
+  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Width.png",
+  "IconProperties": {
+    "Scale": 1.7,
+    "Rotation": [
+      0,
+      0,
+      0
+    ],
+    "Translation": [
+      1,
+      -8
     ]
   }
 }
