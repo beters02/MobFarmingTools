@@ -4,6 +4,7 @@ import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanInitializer;
 import com.bryce.mobfarmtools.mobfan.MobFanOpenInteraction;
 import com.bryce.mobfarmtools.mobfan.MobFanSystem;
+import com.bryce.mobfarmtools.mobswab.MobSwabInteraction;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.component.ComponentRegistryProxy;
 import com.hypixel.hytale.component.ComponentType;
@@ -59,6 +60,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
                     > registry
     ) {
         registry.register("Open_Mob_Fan_Interaction", MobFanOpenInteraction.class, MobFanOpenInteraction.CODEC);
+        registry.register("Mob_Swab_Interaction", MobSwabInteraction.class, MobSwabInteraction.CODEC);
     }
 
     public ComponentType<ChunkStore, MobFanComponent> getMobFanComponentType() {
