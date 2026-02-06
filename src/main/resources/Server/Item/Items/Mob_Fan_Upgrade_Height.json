@@ -4,7 +4,7 @@
     "Description": "Upgrade the height of a fan by 1 block. Max 4"
   },
   "Id": "Mob_Fan_Upgrade_Height",
-  "Texture": "ItemTextures/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Height.png",
+  "Texture": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Height.png",
   "Quality": "Common",
   "MaxStack": 10,
   "Categories": [
