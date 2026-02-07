@@ -1,11 +1,16 @@
 package com.bryce.mobfarmtools.mobswab;
 
+import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.math.util.ChunkUtil;
+import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.asset.type.item.config.Item;
 import com.hypixel.hytale.server.core.entity.Entity;
 import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
@@ -16,6 +21,9 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.EntityModule;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.SimpleInstantInteraction;
+import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import org.jspecify.annotations.NonNull;
@@ -50,8 +58,14 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
 
         MobSwabMetadata meta = item.getFromMetadataOrDefault(MobSwabMetadata.KEY, MobSwabMetadata.CODEC);
 
-        Ref<EntityStore> targetRef = context.getTargetEntity();
-        if (targetRef == null) {
+        BlockPosition targetBlock = context.getTargetBlock();
+        if (targetBlock != null) {
+            onTargetBlock(context, targetBlock, meta, player, userRef);
+            return;
+        }
+
+        Ref<EntityStore> targetEntity = context.getTargetEntity();
+        if (targetEntity == null) {
             player.sendMessage(Message.raw("Stored mob: " + meta.getMobId()));
             return;
         }
@@ -60,14 +74,7 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
             player.sendMessage(Message.raw(
                     "This swab is already holding "
                     + meta.getMobId()
-                    + " . Hold shift while right clicking to clear stored mob."
             ));
-            return;
-        }
-
-        Ref<EntityStore> targetEntity = context.getTargetEntity();
-        if (targetEntity == null) {
-            context.getState().state = InteractionState.Failed;
             return;
         }
 
@@ -77,11 +84,7 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
             return;
         }
 
-        String entityId = EntityModule.get().getIdentifier(npc.getClass());
-        if (entityId == null) {
-            context.getState().state = InteractionState.Failed;
-            return;
-        }
+        String entityId = npc.getNPCTypeId();
 
         Inventory inventory = player.getInventory();
         byte slot = inventory.getActiveHotbarSlot();
@@ -92,5 +95,44 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
         inventory.getHotbar().replaceItemStackInSlot(slot, item, updated);
 
         player.sendMessage(Message.raw("Swabbed " + entityId));
+    }
+
+    private void onTargetBlock(
+            InteractionContext context,
+            BlockPosition targetBlock,
+            MobSwabMetadata meta,
+            Player player,
+            Ref<EntityStore> playerRef
+    ) {
+
+        World world = playerRef.getStore().getExternalData().getWorld();
+        WorldChunk chunk = world.getChunk(ChunkUtil.indexChunkFromBlock(targetBlock.x, targetBlock.z));
+
+        if (chunk == null) {
+            return;
+        }
+
+        Ref<ChunkStore> blockRef = chunk.getBlockComponentEntity(targetBlock.x, targetBlock.y, targetBlock.z);
+        if (blockRef == null) {
+            return;
+        }
+
+        Store<ChunkStore> chunkStore = blockRef.getStore();
+        MobSpawnerComponent spawnerComponent = chunkStore.getComponent(blockRef, MobSpawnerComponent.getComponentType());
+        if (spawnerComponent == null) {
+            return;
+        }
+
+        String entityId = meta.getMobId();
+        if (Objects.equals(entityId, "None")) {
+            return;
+        }
+
+        spawnerComponent.setEntityId(entityId);
+        Inventory inventory = player.getInventory();
+        byte slot = inventory.getActiveHotbarSlot();
+        inventory.getHotbar().removeItemStackFromSlot(slot);
+
+        player.sendMessage(Message.raw("Changed spawner entity to " + entityId));
     }
 }

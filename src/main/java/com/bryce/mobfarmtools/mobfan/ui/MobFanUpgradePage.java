@@ -377,7 +377,7 @@ public final class MobFanUpgradePage extends InteractiveCustomUIPage<MobFanUpgra
             return;
         }
 
-        store.putComponent(mobFanRef, MobFarmingToolsPlugin.get().getMobFanComponentType(), mobFan);
+        store.putComponent(mobFanRef, MobFanComponent.getComponentType(), mobFan);
     }
 
     @Nullable
@@ -391,7 +391,7 @@ public final class MobFanUpgradePage extends InteractiveCustomUIPage<MobFanUpgra
             return null;
         }
 
-        return chunkStore.getComponent(mobFanRef, MobFarmingToolsPlugin.get().getMobFanComponentType());
+        return chunkStore.getComponent(mobFanRef, MobFanComponent.getComponentType());
     }
 
     private int parseSlot(String action) {

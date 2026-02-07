@@ -36,7 +36,7 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
         
         if (info == null) return;
 
-        MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFarmingToolsPlugin.get().getMobFanComponentType());
+        MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFanComponent.getComponentType());
 
         if (mobFan != null) {
             int localX = ChunkUtil.xFromBlockInColumn(info.getIndex());
@@ -94,7 +94,7 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
-        MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFarmingToolsPlugin.get().getMobFanComponentType());
+        MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFanComponent.getComponentType());
         World world = store.getExternalData().getWorld();
         if (mobFan != null && mobFan.getStoredWorld() != null) {
             world = mobFan.getStoredWorld();
@@ -157,7 +157,7 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
     public @Nullable Query<ChunkStore> getQuery() {
         return Query.and(
             BlockModule.BlockStateInfo.getComponentType(),
-            MobFarmingToolsPlugin.get().getMobFanComponentType()
+            MobFanComponent.getComponentType()
         );
     }
 

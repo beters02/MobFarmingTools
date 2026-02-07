@@ -5,6 +5,7 @@ import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
+import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.vector.Vector3d;
@@ -20,6 +21,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer;
 import com.hypixel.hytale.server.core.util.TargetUtil;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -63,6 +65,11 @@ public class MobFanComponent implements Component<ChunkStore> {
     private World _world;
     private Vector3i _worldPos;
     private Vector3d baseForward = new Vector3d(0, 0, -1);
+
+    @NonNull
+    public static ComponentType<ChunkStore, MobFanComponent> getComponentType() {
+        return MobFarmingToolsPlugin.get().getMobFanComponentType();
+    }
 
     public void setFanLength(int amount) {
         if (amount > MobFanConstants.FAN_LENGTH_MAX) {

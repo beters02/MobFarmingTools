@@ -4,6 +4,8 @@ import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanInitializer;
 import com.bryce.mobfarmtools.mobfan.MobFanOpenInteraction;
 import com.bryce.mobfarmtools.mobfan.MobFanSystem;
+import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
+import com.bryce.mobfarmtools.mobspawner.MobSpawnerSystem;
 import com.bryce.mobfarmtools.mobswab.MobSwabInteraction;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.component.ComponentRegistryProxy;
@@ -19,7 +21,10 @@ import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 public class MobFarmingToolsPlugin extends JavaPlugin {
     protected static MobFarmingToolsPlugin instance;
     public static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
+    private final String modScopeId = "Mob_Farming_Tools";
+
     private ComponentType<ChunkStore, MobFanComponent> mobFanComponentType;
+    private ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType;
 
     public static MobFarmingToolsPlugin get() {
         return instance;
@@ -45,12 +50,17 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
 
     private void registerComponents(ComponentRegistryProxy<ChunkStore> registry) {
         this.mobFanComponentType = registry.registerComponent(
-                MobFanComponent.class, "Mob_Farming_Tools:Mob_Fan_Component", MobFanComponent.CODEC);
+                MobFanComponent.class, modScopeId+":Mob_Fan_Component", MobFanComponent.CODEC
+        );
+        this.mobSpawnerComponentType = registry.registerComponent(
+                MobSpawnerComponent.class, modScopeId+":Mob_Spawner_Component", MobSpawnerComponent.CODEC
+        );
     }
 
     private void registerSystems(ComponentRegistryProxy<ChunkStore> registry) {
         registry.registerSystem(new MobFanSystem(this.mobFanComponentType));
         registry.registerSystem(new MobFanInitializer());
+        registry.registerSystem(new MobSpawnerSystem(this.mobSpawnerComponentType));
     }
 
     void registerInteractions(
@@ -59,11 +69,15 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
                     ? extends Codec<? extends Interaction>
                     > registry
     ) {
-        registry.register("Open_Mob_Fan_Interaction", MobFanOpenInteraction.class, MobFanOpenInteraction.CODEC);
-        registry.register("Mob_Swab_Interaction", MobSwabInteraction.class, MobSwabInteraction.CODEC);
+        registry.register(modScopeId+":Open_Mob_Fan_Interaction", MobFanOpenInteraction.class, MobFanOpenInteraction.CODEC);
+        registry.register(modScopeId+":Mob_Swab_Interaction", MobSwabInteraction.class, MobSwabInteraction.CODEC);
     }
 
     public ComponentType<ChunkStore, MobFanComponent> getMobFanComponentType() {
         return this.mobFanComponentType;
+    }
+
+    public ComponentType<ChunkStore, MobSpawnerComponent> getMobSpawnerComponentType() {
+        return this.mobSpawnerComponentType;
     }
 }

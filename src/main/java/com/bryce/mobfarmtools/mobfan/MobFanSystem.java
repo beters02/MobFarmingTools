@@ -2,10 +2,13 @@ package com.bryce.mobfarmtools.mobfan;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
+import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.util.ChunkUtil;
+import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
@@ -38,37 +41,23 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
             return;
         }
 
-        BlockModule.BlockStateInfo info = archetypeChunk.getComponent(index, BlockModule.BlockStateInfo.getComponentType());
+        BlockModule.BlockStateInfo info = MFTBlockUtil.GetBlockStateInfoFromArchetype(archetypeChunk, index);
         if (info == null) {
             MobFarmingToolsPlugin.LOGGER.atWarning().log("BLOCK STATE INFO NOT FOUND!");
             return;
         }
 
-        int blockIndex = info.getIndex();
-
-        int localX = ChunkUtil.xFromBlockInColumn(blockIndex);
-        int worldY = ChunkUtil.yFromBlockInColumn(blockIndex);
-        int localZ = ChunkUtil.zFromBlockInColumn(blockIndex);
-
-        //int localY = worldY & 31;
+        Vector3d worldPos = MFTBlockUtil.GetWorldPosFromBlockStateInfo(info);
+        if (worldPos == null) {
+            MobFarmingToolsPlugin.LOGGER.atWarning().log("WORLD POS NOT FOUND!");
+            return;
+        }
+        Vector3i worldPosI = worldPos.toVector3i();
 
         Store<ChunkStore> chunkStore = info.getChunkRef().getStore();
         World world = chunkStore.getExternalData().getWorld();
-        WorldChunk worldChunk = chunkStore.getComponent(info.getChunkRef(), WorldChunk.getComponentType());
+        int rotationIndex = world.getBlockRotationIndex(worldPosI.x, worldPosI.y, worldPosI.z);
 
-        if (worldChunk == null) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log("WORLD CHUNK NOT FOUND!");
-            return;
-        }
-
-        int chunkX = worldChunk.getX();
-        int chunkZ = worldChunk.getZ();
-
-        int worldX = ChunkUtil.worldCoordFromLocalCoord(chunkX, localX);
-        int worldZ = ChunkUtil.worldCoordFromLocalCoord(chunkZ, localZ);
-
-        int rotationIndex = world.getBlockRotationIndex(worldX, worldY, worldZ);
-
-        fan.tickAction(dt, worldX, worldY, worldZ, rotationIndex, world);
+        fan.tickAction(dt, worldPosI.x, worldPosI.y, worldPosI.z, rotationIndex, world);
     }
 }
