@@ -1,0 +1,86 @@
+{
+  "TranslationProperties": {
+    "Name": "Mob Spawner Debug"
+  },
+  "ItemLevel": 600,
+  "Categories": [
+    "Furniture.Furniture"
+  ],
+  "PlayerAnimationsId": "Block",
+  "Set": "Machine",
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "CustomModel": "Blocks/Mob_Fan/Mob_Fan.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "BlockTextures/Mob_Fan/Mob_Fan_Atlas.png",
+        "Weight": 1
+      }
+    ],
+    "State": {
+      "Definitions": {
+        "On": {
+          "CustomModelAnimation": "Blocks/Mob_Fan/Mob_Fan_Flip.blockyanim",
+          "Looping": true
+        },
+        "Off": {
+          "CustomModelAnimation": null,
+          "Looping": false
+        }
+      }
+    },
+    "Group": "@Tech",
+    "Flags": {
+      "IsUsable": true
+    },
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Rocks"
+      }
+    },
+    "BlockEntity": {
+      "Components": {
+        "Mob_Farming_Tools:Mob_Spawner_Component": {
+          "SpawnRateMin": 3,
+          "SpawnRateMax": 5
+        }
+      }
+    },
+    "Interactions": {
+      "Use": "Open_Mob_Fan",
+      "Primary": "Break_Container"
+    },
+    "BlockParticleSetId": "Metal",
+    "ParticleColor": "#3e3e3e",
+    "BlockSoundSetId": "Metal",
+    "TransitionTexture": "BlockTextures/Transition_Ashes.png",
+    "TransitionToGroups": [
+      "Stone",
+      "Gravel",
+      "Dirt"
+    ],
+    "FlipType": "Orthogonal",
+    "RotationYawPlacementOffset": "OneEighty"
+  },
+  "Tags": {
+    "Type": [
+      "Machine"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Items_Metal",
+  "IconProperties": {
+    "Scale": 0.58823,
+    "Rotation": [
+      22.5,
+      45,
+      22.5
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  },
+  "Icon": "Icons/ItemsGenerated/Mob_Fan.png",
+  "MaxStack": 1
+}

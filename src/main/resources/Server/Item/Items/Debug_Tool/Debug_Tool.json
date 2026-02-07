@@ -1,0 +1,36 @@
+{
+  "TranslationProperties": {
+    "Name": "MFT Debugging Tool",
+    "Description": "Right click on machines to print information about them."
+  },
+  "Id": "Debug_Tool",
+  "Texture": "Items/Debug_Tool/Debug_Tool.png",
+  "Quality": "Common",
+  "MaxStack": 1,
+  "Categories": [
+    "Items.Example"
+  ],
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "Mob_Farming_Tools:Debug_Tool_Interaction"
+        }
+      ]
+    }
+  },
+  "Model": "Items/Debug_Tool/Debug_Tool.blockymodel",
+  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Height.png",
+  "IconProperties": {
+    "Scale": 1.7,
+    "Rotation": [
+      0,
+      0,
+      0
+    ],
+    "Translation": [
+      1,
+      -8
+    ]
+  }
+}

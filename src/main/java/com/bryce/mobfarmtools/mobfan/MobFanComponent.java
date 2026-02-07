@@ -271,6 +271,10 @@ public class MobFanComponent implements Component<ChunkStore> {
         return Math.min(amount, MobFanConstants.FAN_UPGRADE_MAX);
     }
 
+    public void printDebug() {
+        MobFarmingToolsPlugin.LOGGER.atInfo().log("[MobFan] Enabled: " + enabled);
+    }
+
     @Override
     public @Nullable Component<ChunkStore> clone() {
         MobFanComponent copy = new MobFanComponent();

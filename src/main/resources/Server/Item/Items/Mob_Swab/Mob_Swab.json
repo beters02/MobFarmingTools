@@ -6,7 +6,7 @@
   "Id": "Mob_Fan_Upgrade_Width",
   "Texture": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Width.png",
   "Quality": "Common",
-  "MaxStack": 10,
+  "MaxStack": 1,
   "Categories": [
     "Items.Example"
   ],

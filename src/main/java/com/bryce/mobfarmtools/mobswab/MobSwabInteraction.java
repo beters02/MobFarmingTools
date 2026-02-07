@@ -1,11 +1,15 @@
 package com.bryce.mobfarmtools.mobswab;
 
+import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
+import com.bryce.mobfarmtools.util.MFTSpawnerUtil;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.util.ChunkUtil;
+import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.InteractionState;
 import com.hypixel.hytale.protocol.InteractionType;
@@ -86,6 +90,14 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
 
         String entityId = npc.getNPCTypeId();
 
+        Vector3d size = MFTSpawnerUtil.GetNPCEntitySize(npc);
+        if (size == null) {
+            MobFarmingToolsPlugin.LOGGER.atWarning().log("Could not get entity size on mob swab. Setting to 1");
+            size = new Vector3d(1,1,1);
+        }
+
+        meta.setEntitySize(size);
+
         Inventory inventory = player.getInventory();
         byte slot = inventory.getActiveHotbarSlot();
 
@@ -128,7 +140,11 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
             return;
         }
 
+        Vector3i entitySize = meta.getFixedEntitySize();
+
         spawnerComponent.setEntityId(entityId);
+        spawnerComponent.setEntitySize(entitySize);
+
         Inventory inventory = player.getInventory();
         byte slot = inventory.getActiveHotbarSlot();
         inventory.getHotbar().removeItemStackFromSlot(slot);
