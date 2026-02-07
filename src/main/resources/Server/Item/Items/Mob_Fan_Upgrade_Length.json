@@ -4,7 +4,7 @@
     "Description": "Upgrade the length of a fan by 1 block. Max 4"
   },
   "Id": "Mob_Fan_Upgrade_Length",
-  "Texture": "Items/Mob_Fan_Upgrade_Length.png",
+  "Texture": "ItemTextures/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Length.png",
   "Quality": "Common",
   "MaxStack": 10,
   "Categories": [
@@ -37,7 +37,7 @@
       }
     ]
   },
-  "Model": "Blocks/Mob_Fan/Mob_Fan_Upgrade_Length.blockymodel",
+  "Model": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Length.blockymodel",
   "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Length.png",
   "IconProperties": {
     "Scale": 1.7,

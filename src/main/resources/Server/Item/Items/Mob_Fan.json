@@ -41,7 +41,7 @@
     "CustomModel": "Blocks/Mob_Fan/Mob_Fan.blockymodel",
     "CustomModelTexture": [
       {
-        "Texture": "BlockTextures/Mob_Fan_Atlas.png",
+        "Texture": "BlockTextures/Mob_Fan/Mob_Fan_Atlas.png",
         "Weight": 1
       }
     ],
