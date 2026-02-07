@@ -7,6 +7,7 @@ import com.bryce.mobfarmtools.mobfan.MobFanOpenInteraction;
 import com.bryce.mobfarmtools.mobfan.MobFanSystem;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerInitializer;
+import com.bryce.mobfarmtools.mobspawner.MobSpawnerInteraction;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerSystem;
 import com.bryce.mobfarmtools.mobswab.MobSwabInteraction;
 import com.hypixel.hytale.codec.Codec;
@@ -75,6 +76,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.register(modScopeId+":Open_Mob_Fan_Interaction", MobFanOpenInteraction.class, MobFanOpenInteraction.CODEC);
         registry.register(modScopeId+":Mob_Swab_Interaction", MobSwabInteraction.class, MobSwabInteraction.CODEC);
         registry.register(modScopeId+":Debug_Tool_Interaction", DebugToolInteraction.class, DebugToolInteraction.CODEC);
+        registry.register(modScopeId+":Mob_Spawner_Interaction", MobSpawnerInteraction.class, MobSpawnerInteraction.CODEC);
     }
 
     public ComponentType<ChunkStore, MobFanComponent> getMobFanComponentType() {

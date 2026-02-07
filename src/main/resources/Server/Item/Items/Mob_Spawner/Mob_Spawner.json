@@ -38,25 +38,13 @@
   "BlockType": {
     "Material": "Solid",
     "DrawType": "Model",
-    "CustomModel": "Blocks/Mob_Fan/Mob_Fan.blockymodel",
+    "CustomModel": "Blocks/Mob_Spawner/Mob_Spawner.blockymodel",
     "CustomModelTexture": [
       {
-        "Texture": "BlockTextures/Mob_Fan/Mob_Fan_Atlas.png",
+        "Texture": "BlockTextures/Mob_Spawner/Mob_Spawner.png",
         "Weight": 1
       }
     ],
-    "State": {
-      "Definitions": {
-        "On": {
-          "CustomModelAnimation": "Blocks/Mob_Fan/Mob_Fan_Flip.blockyanim",
-          "Looping": true
-        },
-        "Off": {
-          "CustomModelAnimation": null,
-          "Looping": false
-        }
-      }
-    },
     "Group": "@Tech",
     "Flags": {
       "IsUsable": true
@@ -72,8 +60,7 @@
       }
     },
     "Interactions": {
-      "Use": "Open_Mob_Fan",
-      "Primary": "Break_Container"
+      "Use": "Mob_Spawner_Interaction"
     },
     "BlockParticleSetId": "Metal",
     "ParticleColor": "#3e3e3e",
@@ -105,6 +92,6 @@
       -13.5
     ]
   },
-  "Icon": "Icons/ItemsGenerated/Mob_Fan.png",
-  "MaxStack": 1
+  "MaxStack": 1,
+  "Icon": "Icons/ItemsGenerated/Mob_Spawner.png"
 }

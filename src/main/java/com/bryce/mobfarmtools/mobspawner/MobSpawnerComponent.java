@@ -165,6 +165,13 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         player.sendMessage(Message.raw("[MobSpawner] CanTick: " + canTick()));
     }
 
+    public void sendInfoMessage(Player player) {
+        player.sendMessage(Message.raw("Enabled: " + enabled));
+        player.sendMessage(Message.raw("Current stored entity: " + entityId));
+        player.sendMessage(Message.raw("Spawn rate min: " + spawnRateMin));
+        player.sendMessage(Message.raw("Spawn rate max: " + spawnRateMax));
+    }
+
     @Override
     public @Nullable Component<ChunkStore> clone() {
         MobSpawnerComponent copy = new MobSpawnerComponent();

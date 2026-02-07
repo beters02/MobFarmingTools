@@ -70,21 +70,21 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
 
         Ref<EntityStore> targetEntity = context.getTargetEntity();
         if (targetEntity == null) {
-            player.sendMessage(Message.raw("Stored mob: " + meta.getMobId()));
+            sendInfoMessage(player, meta);
             return;
         }
 
         if (!Objects.equals(meta.getMobId(), "None")) {
             player.sendMessage(Message.raw(
                     "This swab is already holding "
-                    + meta.getMobId()
+                            + meta.getMobId()
             ));
             return;
         }
 
         NPCEntity npc = targetEntity.getStore().getComponent(targetEntity, Objects.requireNonNull(NPCEntity.getComponentType()));
         if (npc == null) {
-            context.getState().state = InteractionState.Failed;
+            sendInfoMessage(player, meta);
             return;
         }
 
@@ -121,22 +121,26 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
         WorldChunk chunk = world.getChunk(ChunkUtil.indexChunkFromBlock(targetBlock.x, targetBlock.z));
 
         if (chunk == null) {
+            sendInfoMessage(player, meta);
             return;
         }
 
         Ref<ChunkStore> blockRef = chunk.getBlockComponentEntity(targetBlock.x, targetBlock.y, targetBlock.z);
         if (blockRef == null) {
+            sendInfoMessage(player, meta);
             return;
         }
 
         Store<ChunkStore> chunkStore = blockRef.getStore();
         MobSpawnerComponent spawnerComponent = chunkStore.getComponent(blockRef, MobSpawnerComponent.getComponentType());
         if (spawnerComponent == null) {
+            sendInfoMessage(player, meta);
             return;
         }
 
         String entityId = meta.getMobId();
         if (Objects.equals(entityId, "None")) {
+            sendInfoMessage(player, meta);
             return;
         }
 
@@ -150,5 +154,9 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
         inventory.getHotbar().removeItemStackFromSlot(slot);
 
         player.sendMessage(Message.raw("Changed spawner entity to " + entityId));
+    }
+
+    private void sendInfoMessage(Player player, MobSwabMetadata meta) {
+        player.sendMessage(Message.raw("Stored mob: " + meta.getMobId()));
     }
 }
