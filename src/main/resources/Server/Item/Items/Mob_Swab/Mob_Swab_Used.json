@@ -1,0 +1,38 @@
+{
+  "TranslationProperties": {
+    "Name": "Used Mob Swab",
+    "Description": "A mob swab that is holding a mob's DNA."
+  },
+  "Id": "Mob_Swab_Used",
+  "Texture": "Items/Mob_Swab/Mob_Swab_Used.png",
+  "PlayerAnimationsId": "Sword",
+  "Quality": "Common",
+  "MaxStack": 1,
+  "Categories": [
+    "Items.Example"
+  ],
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "Mob_Farming_Tools:Mob_Swab_Interaction"
+        }
+      ]
+    }
+  },
+  "Model": "Items/Mob_Swab/Mob_Swab_Used.blockymodel",
+  "IconProperties": {
+    "Scale": 1.1,
+    "Rotation": [
+      0,
+      19,
+      346
+    ],
+    "Translation": [
+      -4,
+      -11
+    ]
+  },
+  "UsePlayerAnimations": true,
+  "Icon": "Icons/ItemsGenerated/Mob_Swab_Used.png"
+}

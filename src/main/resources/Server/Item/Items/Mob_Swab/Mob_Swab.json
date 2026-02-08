@@ -1,10 +1,11 @@
 {
   "TranslationProperties": {
-    "Name": "Fan Width Upgrade",
-    "Description": "Upgrade the width of a fan by 1 block. Max 4"
+    "Name": "Mob Swab",
+    "Description": "Get a mobs DNA and attach it to a spawner."
   },
-  "Id": "Mob_Fan_Upgrade_Width",
-  "Texture": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Width.png",
+  "Id": "Mob_Swab",
+  "Texture": "Items/Mob_Swab/Mob_Swab.png",
+  "PlayerAnimationsId": "Sword",
   "Quality": "Common",
   "MaxStack": 1,
   "Categories": [
@@ -38,18 +39,19 @@
       ]
     }
   },
-  "Model": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Width.blockymodel",
-  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Width.png",
+  "Model": "Items/Mob_Swab/Mob_Swab.blockymodel",
   "IconProperties": {
-    "Scale": 1.7,
+    "Scale": 1.1,
     "Rotation": [
       0,
-      0,
-      0
+      19,
+      346
     ],
     "Translation": [
-      1,
-      -8
+      -4,
+      -11
     ]
-  }
+  },
+  "UsePlayerAnimations": true,
+  "Icon": "Icons/ItemsGenerated/Mob_Swab.png"
 }
