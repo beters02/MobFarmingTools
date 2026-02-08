@@ -2,7 +2,7 @@ package com.bryce.mobfarmtools.mobspawner;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
-import com.bryce.mobfarmtools.util.MFTSpawnerUtil;
+import com.bryce.mobfarmtools.util.MFTEntityUtil;
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.ComponentType;
@@ -19,6 +19,10 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
     private final ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType;
@@ -57,7 +61,7 @@ public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
         }
     }
 
-    private SpawnResult trySpawn(
+    private @NonNull SpawnResult trySpawn(
             int index,
             Store<ChunkStore> store,
             ArchetypeChunk<ChunkStore> archetypeChunk,
@@ -75,11 +79,39 @@ public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
         String entityId = spawnerComponent.getEntityId();
         Vector3i entitySize = spawnerComponent.getEntitySize();
 
-        Vector3d spawnPos = MFTSpawnerUtil.FindEntitySpawnLocation(world, worldPos, entitySize.toVector3d());
+        Vector3d spawnPos = findEntitySpawnLocation(world, worldPos, entitySize.toVector3d());
         if (spawnPos == null) { return new SpawnResult(false, "EntitySpawnLocation not found"); }
 
         NPCPlugin.get().spawnNPC(entityStore, entityId, null, spawnPos, new Vector3f());
         return new SpawnResult(true, "All goodie");
+    }
+
+    private @Nullable Vector3d findEntitySpawnLocation(World world, Vector3d blockWorldPos, Vector3d entitySize) {
+        int baseX = (int) blockWorldPos.x;
+        int baseY = (int) blockWorldPos.y + 1; // spawn one above spawner
+        int baseZ = (int) blockWorldPos.z;
+
+        List<Vector3d> availableLocs = new ArrayList<>();
+
+        int radius = 3; // 7x7 around spawner
+        for (int dy = 0; dy <= entitySize.y+1; dy++) { // try same height and +entitySize.y
+            for (int dz = -radius; dz <= radius+1; dz++) {
+                for (int dx = -radius; dx <= radius+1; dx++) {
+                    Vector3i vec = new Vector3i(baseX + dx, baseY + dy, baseZ + dz);
+
+                    if (MFTEntityUtil.WillEntityFit(world, vec, entitySize.toVector3i())) {
+                        availableLocs.add(vec.toVector3d());
+                    }
+                }
+            }
+        }
+
+        if (availableLocs.isEmpty()) {
+            return null;
+        }
+
+        int locIndex = ThreadLocalRandom.current().nextInt(0, availableLocs.size()-1);
+        return availableLocs.get(locIndex);
     }
 
     private void resetSpawnerVars(MobSpawnerComponent spawnerComponent) {

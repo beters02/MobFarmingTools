@@ -33,8 +33,6 @@ public class MobSpawnerInteraction extends SimpleBlockInteraction {
 
     @Override
     protected void interactWithBlock(@NonNull World world, @NonNull CommandBuffer<EntityStore> commandBuffer, @NonNull InteractionType interactionType, @NonNull InteractionContext interactionContext, @Nullable ItemStack itemStack, @NonNull Vector3i vector3i, @NonNull CooldownHandler cooldownHandler) {
-        MobFarmingToolsPlugin.LOGGER.atInfo().log("PLAYER INTERACTED WITH BLOCK");
-
         BlockPosition targetBlock = interactionContext.getTargetBlock();
         if (targetBlock == null) { return; }
 
