@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.mobspawner;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.util.MFTMathUtil;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -26,6 +27,7 @@ import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -87,7 +89,8 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
 
     // local mutable vars
     private float lifetime = 0f;
-    private float currentSpawnRate = 15f;
+    private int currentSpawnRate = MobSpawnerConstants.DEF_SPAWN_RATE_MAX;
+    private int currentSpawnAmount = MobSpawnerConstants.DEF_SPAWN_AMOUNT_MIN;
     private int failedTries = 0;
 
     @NonNull
@@ -98,15 +101,19 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     public String getEntityId() {
         return entityId;
     }
+    public float getLifetime() { return lifetime; }
     public int getSpawnRateMin() { return spawnRateMin; }
     public int getSpawnRateMax() { return spawnRateMax; }
-
+    public int getFailedTries() {
+        return failedTries;
+    }
+    public int getMaxEntities() { return maxEntities; }
     public Vector3i getEntitySize() {
         if (entitySize == null || entitySize.length < 2) {
+            MobFarmingToolsPlugin.LOGGER.atWarning().log("MobSpawner Entity Size unsuccessful");
             return new Vector3i(1,1,1);
         }
 
-        MobFarmingToolsPlugin.LOGGER.atInfo().log("SUCCESS ON ENTITY SIZE");
         return new Vector3i(entitySize[0], entitySize[1], entitySize[2]);
     }
 
@@ -119,57 +126,41 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     public void setFailedTries(int val) {
         failedTries = val;
     }
-
     public void setEntitySize(Vector3i size) {
         entitySize = new int[]{size.x, size.y, size.z};
     }
-
-    public void incrementFailedTries(int val) {
-        failedTries += val;
-    }
-
-    public int getFailedTries() {
-        return failedTries;
-    }
-
     public void setLifetime(float val) {
         lifetime = val;
     }
+    public void setRandomSpawnRate() { currentSpawnRate = MFTMathUtil.RandomRange(spawnRateMin, spawnRateMax); }
+    public void setRandomSpawnAmount() { currentSpawnAmount = MFTMathUtil.RandomRange(spawnAmountMin, spawnAmountMax); }
 
-    public void setRandomCurrentSpawnRate() {
-        currentSpawnRate = ThreadLocalRandom.current().nextInt(spawnRateMin, spawnRateMax+1);
-    }
+    public void incrementFailedTries(int val) { failedTries += val; }
+    public void incrementLifetime(float amount) { lifetime += amount; }
 
-    public boolean canTick() {
-        if (!enabled) return false;
-        return !Objects.equals(entityId, "None");
-    }
+    public boolean canTick() { return enabled && !Objects.equals(entityId, "None"); }
+    public boolean canSpawn() { return lifetime >= currentSpawnRate; }
 
-    public boolean canSpawn() {
-        return lifetime >= currentSpawnRate;
-    }
+    public void spawnAction(Store<EntityStore> entityStore, Vector3d worldPos) {
+        for (int i = 0; i < currentSpawnAmount; i++) {
+            NPCPlugin.get().spawnNPC(entityStore, entityId, null, worldPos, new Vector3f());
+        }
 
-    public void incrementLifetime(float amount) {
-        lifetime += amount;
-    }
-
-    public void spawnEntity(Store<EntityStore> entityStore, Vector3d worldPos, Vector3f rot) {
-        NPCPlugin.get().spawnNPC(entityStore, entityId, null, worldPos, rot);
-    }
-
-    public void printDebug(Player player) {
-        player.sendMessage(Message.raw("[MobSpawner] Enabled: " + enabled));
-        player.sendMessage(Message.raw("[MobSpawner] EntityId: " + entityId));
-        player.sendMessage(Message.raw("[MobSpawner] RateMin: " + spawnRateMin));
-        player.sendMessage(Message.raw("[MobSpawner] RateMax: " + spawnRateMax));
-        player.sendMessage(Message.raw("[MobSpawner] CanTick: " + canTick()));
+        MobFarmingToolsPlugin.LOGGER.atInfo().log("Spawned "+currentSpawnAmount+" "+entityId+"s");
     }
 
     public void sendInfoMessage(Player player) {
         player.sendMessage(Message.raw("Enabled: " + enabled));
-        player.sendMessage(Message.raw("Current stored entity: " + entityId));
-        player.sendMessage(Message.raw("Spawn rate min: " + spawnRateMin));
-        player.sendMessage(Message.raw("Spawn rate max: " + spawnRateMax));
+        player.sendMessage(Message.raw("Chunk Loaded: " + chunkLoaded));
+        player.sendMessage(Message.raw("Spawner Entity: " + entityId));
+        player.sendMessage(Message.raw("Spawn Rate: " + spawnRateMin + "-" + spawnRateMax));
+        player.sendMessage(Message.raw("Spawn Amount: " + spawnAmountMin + "-" + spawnAmountMax));
+    }
+
+    public void printDebug(Player player) {
+        player.sendMessage(Message.raw("[MobSpawner] CanTick: " + canTick()));
+        player.sendMessage(Message.raw("[MobSpawner] Current Spawn Amnt: " + currentSpawnAmount));
+        player.sendMessage(Message.raw("[MobSpawner] Current Spawn Rate: " + currentSpawnRate));
     }
 
     @Override

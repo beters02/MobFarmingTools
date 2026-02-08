@@ -4,6 +4,7 @@ import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.block.BlockUtil;
+import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
@@ -54,4 +55,6 @@ public class MFTBlockUtil {
                 || blockType == BlockType.EMPTY
                 || blockType.getMaterial() == BlockMaterial.Empty;
     }
+
+
 }

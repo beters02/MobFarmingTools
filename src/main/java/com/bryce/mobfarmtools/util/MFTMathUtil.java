@@ -1,13 +1,27 @@
 package com.bryce.mobfarmtools.util;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.hypixel.hytale.math.shape.Box;
+import com.hypixel.hytale.math.vector.Vector3d;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MFTMathUtil {
 
     public static void PrintList(List<?> list) {
         list.forEach(v -> MobFarmingToolsPlugin.LOGGER.atWarning().log(String.valueOf(v)));
+    }
+
+    public static int RandomRange(int min, int max) {
+        return ThreadLocalRandom.current().nextInt(min, max+1);
+    }
+
+    public static Box GetBoxFromPosition(Vector3d pos, double radius) {
+        return new Box(
+                new Vector3d(pos.x - radius, pos.y-12, pos.z - radius),
+                new Vector3d(pos.x + radius, pos.y+12, pos.z + radius)
+        );
     }
 
 }
