@@ -11,4 +11,6 @@ public class MobSpawnerConstants {
     public static final int DEF_SPAWN_AMOUNT_MAX = 1;
     public static final int DEF_MAX_ENTITIES = 3;
     public static final boolean DEF_CHUNK_LOADED = false;
+
+    public static final String DEF_SPAWN_PARTICLE_EFFECT = "Fire_AoE";
 }

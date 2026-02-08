@@ -1,0 +1,36 @@
+{
+  "TranslationProperties": {
+    "Name": "Entity Destroyer",
+    "Description": "Right click to destroy all NPC entities in a 9x9 radius."
+  },
+  "Id": "Entity_Destroyer",
+  "Texture": "Items/Debug_Tool/Debug_Tool.png",
+  "Quality": "Common",
+  "MaxStack": 1,
+  "Categories": [
+    "Items.Example"
+  ],
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "Mob_Farming_Tools:Entity_Destroyer_Interaction"
+        }
+      ]
+    }
+  },
+  "Model": "Items/Debug_Tool/Debug_Tool.blockymodel",
+  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Height.png",
+  "IconProperties": {
+    "Scale": 1.7,
+    "Rotation": [
+      0,
+      0,
+      0
+    ],
+    "Translation": [
+      1,
+      -8
+    ]
+  }
+}

@@ -19,6 +19,7 @@ import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.entity.EntityUtils;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
+import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -141,9 +142,18 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     public boolean canTick() { return enabled && !Objects.equals(entityId, "None"); }
     public boolean canSpawn() { return lifetime >= currentSpawnRate; }
 
-    public void spawnAction(Store<EntityStore> entityStore, Vector3d worldPos) {
+    public void spawnAction(Store<EntityStore> entityStore, Vector3d spawnPos, Vector3d blockPos) {
+        blockPos.y += 1;
+        blockPos.x += 0.5;
+        blockPos.z += 0.5;
+
         for (int i = 0; i < currentSpawnAmount; i++) {
-            NPCPlugin.get().spawnNPC(entityStore, entityId, null, worldPos, new Vector3f());
+            NPCPlugin.get().spawnNPC(entityStore, entityId, null, spawnPos, new Vector3f());
+            ParticleUtil.spawnParticleEffect(
+                "MFT_Spawner_Fire",
+                blockPos,
+                entityStore
+            );
         }
 
         MobFarmingToolsPlugin.LOGGER.atInfo().log("Spawned "+currentSpawnAmount+" "+entityId+"s");

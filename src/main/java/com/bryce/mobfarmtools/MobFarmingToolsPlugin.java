@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools;
 
 import com.bryce.mobfarmtools.debugtool.DebugToolInteraction;
+import com.bryce.mobfarmtools.entitydestroyer.EntityDestroyerInteraction;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanInitializer;
 import com.bryce.mobfarmtools.mobfan.MobFanOpenInteraction;
@@ -77,6 +78,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.register(modScopeId+":Mob_Swab_Interaction", MobSwabInteraction.class, MobSwabInteraction.CODEC);
         registry.register(modScopeId+":Debug_Tool_Interaction", DebugToolInteraction.class, DebugToolInteraction.CODEC);
         registry.register(modScopeId+":Mob_Spawner_Interaction", MobSpawnerInteraction.class, MobSpawnerInteraction.CODEC);
+        registry.register(modScopeId+":Entity_Destroyer_Interaction", EntityDestroyerInteraction.class, EntityDestroyerInteraction.CODEC);
     }
 
     public ComponentType<ChunkStore, MobFanComponent> getMobFanComponentType() {

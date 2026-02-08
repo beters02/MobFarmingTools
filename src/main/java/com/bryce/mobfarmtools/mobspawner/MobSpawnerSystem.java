@@ -85,7 +85,7 @@ public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
         Vector3d spawnPos = findEntitySpawnLocation(world, worldPos, spawnerComponent.getEntitySize().toVector3d());
         if (spawnPos == null) return new SpawnResult(false, "EntitySpawnLocation not found");
 
-        spawnerComponent.spawnAction(entityStore, spawnPos);
+        spawnerComponent.spawnAction(entityStore, spawnPos, worldPos);
         return new SpawnResult(true, "Spawn action fired.");
     }
 
@@ -122,7 +122,10 @@ public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
             availableGroundLocs.addAll(availableAirLocs);
         }
 
-        return availableGroundLocs.get(MFTMathUtil.RandomRange(0, availableGroundLocs.size()-1));
+        Vector3d loc = availableGroundLocs.get(MFTMathUtil.RandomRange(0, availableGroundLocs.size()-1));
+        loc.x += 0.5;
+        loc.z += 0.5;
+        return loc;
     }
 
     private void resetSpawnerVars(MobSpawnerComponent spawnerComponent) {
