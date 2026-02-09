@@ -1,6 +1,6 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.Mob_Spawner.name"
+    "Name": "server.items.Vacuum_Hopper.name"
   },
   "ItemLevel": 600,
   "Categories": [
@@ -13,19 +13,23 @@
     "Input": [
       {
         "ItemId": "Ingredient_Bar_Iron",
-        "Quantity": 20
+        "Quantity": 10
       },
       {
-        "ItemId": "Ingredient_Bar_Cobalt",
-        "Quantity": 20
+        "ItemId": "Ingredient_Bar_Thorium",
+        "Quantity": 8
       },
       {
         "ItemId": "Ingredient_Bar_Silver",
         "Quantity": 10
       },
       {
+        "ItemId": "Ingredient_Leather_Medium",
+        "Quantity": 5
+      },
+      {
         "ItemId": "Ingredient_Life_Essence",
-        "Quantity": 50
+        "Quantity": 25
       }
     ],
     "BenchRequirement": [
@@ -42,13 +46,33 @@
   "BlockType": {
     "Material": "Solid",
     "DrawType": "Model",
-    "CustomModel": "Blocks/Mob_Spawner/Mob_Spawner.blockymodel",
+    "CustomModel": "Blocks/Vacuum_Hopper/Vacuum_Hopper.blockymodel",
     "CustomModelTexture": [
       {
-        "Texture": "BlockTextures/Mob_Spawner/Mob_Spawner.png",
+        "Texture": "BlockTextures/Vacuum_Hopper/Vacuum_Hopper.png",
         "Weight": 1
       }
     ],
+    "State": {
+      "Definitions": {
+        "On": {
+          "CustomModelTexture": [
+            {
+              "Texture": "BlockTextures/Vacuum_Hopper/Vacuum_Hopper_On.png",
+              "Weight": 1
+            }
+          ]
+        },
+        "Off": {
+          "CustomModelTexture": [
+            {
+              "Texture": "BlockTextures/Vacuum_Hopper/Vacuum_Hopper.png",
+              "Weight": 1
+            }
+          ]
+        }
+      }
+    },
     "Group": "@Tech",
     "Flags": {
       "IsUsable": true
@@ -58,13 +82,16 @@
         "GatherType": "Rocks"
       }
     },
+    "PlacementSettings": {
+      "RotationMode": "FacingPlayer"
+    },
     "BlockEntity": {
       "Components": {
-        "Mob_Farming_Tools:Mob_Spawner_Component": {}
+        "Mob_Farming_Tools:Vacuum_Hopper_Component": {}
       }
     },
     "Interactions": {
-      "Use": "Mob_Spawner_Interaction"
+      "Use": "Vacuum_Hopper_Interaction"
     },
     "BlockParticleSetId": "Metal",
     "ParticleColor": "#3e3e3e",
@@ -75,8 +102,8 @@
       "Gravel",
       "Dirt"
     ],
-    "FlipType": "Orthogonal",
-    "RotationYawPlacementOffset": "OneEighty"
+    "FlipType": "Symmetric",
+    "VariantRotation": "NESW"
   },
   "Tags": {
     "Type": [
@@ -97,5 +124,5 @@
     ]
   },
   "MaxStack": 1,
-  "Icon": "Icons/ItemsGenerated/Mob_Spawner.png"
+  "Icon": "Icons/ItemsGenerated/VacuumHopper.png"
 }

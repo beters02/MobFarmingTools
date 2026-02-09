@@ -15,8 +15,20 @@
     "TimeSeconds": 3.5,
     "Input": [
       {
-        "ItemId": "Plant_Moss_Green",
+        "ItemId": "Ingredient_Fabric_Scrap_Linen",
         "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Stick",
+        "Quantity": 4
+      },
+      {
+        "ItemId": "Ingredient_Fibre",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Life_Essence",
+        "Quantity": 25
       }
     ],
     "BenchRequirement": [

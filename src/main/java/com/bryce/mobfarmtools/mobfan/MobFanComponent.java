@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.mobfan;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.util.MFTVectorUtil;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -200,11 +201,7 @@ public class MobFanComponent implements Component<ChunkStore> {
             }
 
             Vector3d push = getForwardDirection(rotationIndex);
-            push = new Vector3d(
-                    push.x * (FAN_SPEED * dt),
-                    push.y * (FAN_SPEED * dt),
-                    push.z * (FAN_SPEED * dt)
-            );
+            MFTVectorUtil.multiply(push, FAN_SPEED * dt);
 
             velocityComponent.addInstruction(push, new VelocityConfig(), ChangeVelocityType.Add);
         });

@@ -20,7 +20,7 @@ public class MFTEntityUtil {
             for (int dz = -entitySize.z; dz <= entitySize.z+1; dz++) {
                 for (int dx = -entitySize.x; dx <= entitySize.x+1; dx++) {
                     Vector3i checkPos = new Vector3i(pos.x + dx, pos.y + dy, pos.z + dz);
-                    if (!MFTBlockUtil.PositionIsBlock(world, checkPos)) {
+                    if (!MFTBlockUtil.PositionIsEmpty(world, checkPos)) {
                         return false;
                     }
                 }

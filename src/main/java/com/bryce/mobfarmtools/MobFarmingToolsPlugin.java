@@ -11,6 +11,10 @@ import com.bryce.mobfarmtools.mobspawner.MobSpawnerInitializer;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerInteraction;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerSystem;
 import com.bryce.mobfarmtools.mobswab.MobSwabInteraction;
+import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperComponent;
+import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperInitializer;
+import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperInteraction;
+import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperSystem;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.component.ComponentRegistryProxy;
 import com.hypixel.hytale.component.ComponentType;
@@ -29,6 +33,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
 
     private ComponentType<ChunkStore, MobFanComponent> mobFanComponentType;
     private ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType;
+    private ComponentType<ChunkStore, VacuumHopperComponent> vacuumHopperComponentType;
 
     public static MobFarmingToolsPlugin get() {
         return instance;
@@ -59,6 +64,9 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         this.mobSpawnerComponentType = registry.registerComponent(
                 MobSpawnerComponent.class, modScopeId+":Mob_Spawner_Component", MobSpawnerComponent.CODEC
         );
+        this.vacuumHopperComponentType = registry.registerComponent(
+                VacuumHopperComponent.class, modScopeId+":Vacuum_Hopper_Component", VacuumHopperComponent.CODEC
+        );
     }
 
     private void registerSystems(ComponentRegistryProxy<ChunkStore> registry) {
@@ -66,6 +74,8 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.registerSystem(new MobFanInitializer());
         registry.registerSystem(new MobSpawnerSystem(this.mobSpawnerComponentType));
         registry.registerSystem(new MobSpawnerInitializer());
+        registry.registerSystem(new VacuumHopperSystem(this.vacuumHopperComponentType));
+        registry.registerSystem(new VacuumHopperInitializer());
     }
 
     void registerInteractions(
@@ -79,6 +89,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.register(modScopeId+":Debug_Tool_Interaction", DebugToolInteraction.class, DebugToolInteraction.CODEC);
         registry.register(modScopeId+":Mob_Spawner_Interaction", MobSpawnerInteraction.class, MobSpawnerInteraction.CODEC);
         registry.register(modScopeId+":Entity_Destroyer_Interaction", EntityDestroyerInteraction.class, EntityDestroyerInteraction.CODEC);
+        registry.register(modScopeId+":Vacuum_Hopper_Interaction", VacuumHopperInteraction.class, VacuumHopperInteraction.CODEC);
     }
 
     public ComponentType<ChunkStore, MobFanComponent> getMobFanComponentType() {
@@ -87,5 +98,9 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
 
     public ComponentType<ChunkStore, MobSpawnerComponent> getMobSpawnerComponentType() {
         return this.mobSpawnerComponentType;
+    }
+
+    public ComponentType<ChunkStore, VacuumHopperComponent> getVacuumHopperComponentType() {
+        return this.vacuumHopperComponentType;
     }
 }
