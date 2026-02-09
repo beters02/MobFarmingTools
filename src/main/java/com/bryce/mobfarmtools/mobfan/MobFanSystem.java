@@ -3,6 +3,7 @@ package com.bryce.mobfarmtools.mobfan;
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
@@ -19,9 +20,11 @@ import org.jspecify.annotations.Nullable;
 
 public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
     private final ComponentType<ChunkStore, MobFanComponent> mobFanComponentType;
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobFanSystem]");
 
     public MobFanSystem(ComponentType<ChunkStore, MobFanComponent> mobFanComponentType) {
         this.mobFanComponentType = mobFanComponentType;
+        debugger.setEnabled(false);
     }
 
     @Override
@@ -37,19 +40,19 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
 
         MobFanComponent fan = archetypeChunk.getComponent(index, this.mobFanComponentType);
         if (fan == null) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log("MOB FAN COMPONENT NOT FOUND!");
+            debugger.atWarning("MOB FAN COMPONENT NOT FOUND!");
             return;
         }
 
         BlockModule.BlockStateInfo info = MFTBlockUtil.GetBlockStateInfoFromArchetype(archetypeChunk, index);
         if (info == null) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log("BLOCK STATE INFO NOT FOUND!");
+            debugger.atWarning("BLOCK STATE INFO NOT FOUND!");
             return;
         }
 
         Vector3d worldPos = MFTBlockUtil.GetWorldPosFromBlockStateInfo(info);
         if (worldPos == null) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log("WORLD POS NOT FOUND!");
+            debugger.atWarning("WORLD POS NOT FOUND!");
             return;
         }
         Vector3i worldPosI = worldPos.toVector3i();

@@ -48,7 +48,7 @@ public class MFTDebugUtil {
     }
 
     public static void PrintList(List<?> list) {
-        list.forEach(v -> MobFarmingToolsPlugin.LOGGER.atWarning().log(String.valueOf(v)));
+        list.forEach(v -> MobFarmingToolsPlugin.LOGGER.atInfo().log(String.valueOf(v)));
     }
 
 }

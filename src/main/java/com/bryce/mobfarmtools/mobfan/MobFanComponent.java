@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.mobfan;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTVectorUtil;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -67,17 +68,23 @@ public class MobFanComponent implements Component<ChunkStore> {
     private Vector3i _worldPos;
     private Vector3d baseForward = new Vector3d(0, 0, -1);
 
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobFanComponent]");
+
     @NonNull
     public static ComponentType<ChunkStore, MobFanComponent> getComponentType() {
         return MobFarmingToolsPlugin.get().getMobFanComponentType();
     }
 
+    public MobFanComponent() {
+        debugger.setEnabled(false);
+    }
+
     public void setFanLength(int amount) {
         if (amount > MobFanConstants.FAN_LENGTH_MAX) {
-            MobFarmingToolsPlugin.LOGGER.atSevere().log("FAN LENGTH CAN NOT BE GREATER THAN "+MobFanConstants.FAN_LENGTH_MAX);
+            debugger.atSevere("FAN LENGTH CAN NOT BE GREATER THAN "+MobFanConstants.FAN_LENGTH_MAX);
             return;
         } else if (amount < MobFanConstants.FAN_LENGTH_MIN) {
-            MobFarmingToolsPlugin.LOGGER.atSevere().log("FAN LENGTH CAN NOT BE LESS THAN "+ MobFanConstants.FAN_LENGTH_MIN);
+            debugger.atSevere("FAN LENGTH CAN NOT BE LESS THAN "+ MobFanConstants.FAN_LENGTH_MIN);
             return;
         }
 
@@ -86,10 +93,10 @@ public class MobFanComponent implements Component<ChunkStore> {
 
     public void setFanWidth(int amount) {
         if (amount > MobFanConstants.FAN_WIDTH_MAX) {
-            MobFarmingToolsPlugin.LOGGER.atSevere().log("FAN WIDTH CAN NOT BE GREATER THAN "+MobFanConstants.FAN_WIDTH_MAX);
+            debugger.atSevere("FAN WIDTH CAN NOT BE GREATER THAN "+MobFanConstants.FAN_WIDTH_MAX);
             return;
         } else if (amount < MobFanConstants.FAN_WIDTH_MIN) {
-            MobFarmingToolsPlugin.LOGGER.atSevere().log("FAN WIDTH CAN NOT BE LESS THAN "+MobFanConstants.FAN_WIDTH_MIN);
+            debugger.atSevere("FAN WIDTH CAN NOT BE LESS THAN "+MobFanConstants.FAN_WIDTH_MIN);
             return;
         }
 
@@ -98,10 +105,10 @@ public class MobFanComponent implements Component<ChunkStore> {
 
     public void setFanHeight(int amount) {
         if (amount > MobFanConstants.FAN_HEIGHT_MAX) {
-            MobFarmingToolsPlugin.LOGGER.atSevere().log("FAN HEIGHT CAN NOT BE GREATER THAN "+MobFanConstants.FAN_HEIGHT_MAX);
+            debugger.atSevere("FAN HEIGHT CAN NOT BE GREATER THAN "+MobFanConstants.FAN_HEIGHT_MAX);
             return;
         } else if (amount < MobFanConstants.FAN_HEIGHT_MIN) {
-            MobFarmingToolsPlugin.LOGGER.atSevere().log("FAN HEIGHT CAN NOT BE LESS THAN "+MobFanConstants.FAN_HEIGHT_MIN);
+            debugger.atSevere("FAN HEIGHT CAN NOT BE LESS THAN "+MobFanConstants.FAN_HEIGHT_MIN);
             return;
         }
 
@@ -110,13 +117,13 @@ public class MobFanComponent implements Component<ChunkStore> {
 
     public void setEnabled(boolean enabled) {
         if (this._worldPos == null) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log(
+            debugger.atWarning(
                     "MobFanComponent Stored WorldPos is null. Block interaction state cannot be changed.");
             return;
         }
 
         if (this._world == null) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log(
+            debugger.atWarning(
                     "MobFanComponent Stored World is null. Block interaction state cannot be changed.");
             return;
         }
@@ -124,7 +131,7 @@ public class MobFanComponent implements Component<ChunkStore> {
         BlockType blockType = this._world.getBlockType(this._worldPos);
 
         if (blockType == null) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log(
+            debugger.atWarning(
                     "MobFanComponent BlockType returned null. Block interaction state cannot be changed.");
             return;
         }
@@ -132,7 +139,7 @@ public class MobFanComponent implements Component<ChunkStore> {
         this.enabled = enabled;
         this._world.setBlockInteractionState(this._worldPos, blockType, enabled ? "On" : "Off");
 
-        MobFarmingToolsPlugin.LOGGER.atInfo().log(
+        debugger.atWarning(
                 "MobFanComponent Interaction state successfully set to " + (enabled ? "On" : "Off"));
     }
 
@@ -189,14 +196,14 @@ public class MobFanComponent implements Component<ChunkStore> {
 
         hits.forEach(ref -> {
             if (ref == null || !ref.isValid()) {
-                MobFarmingToolsPlugin.LOGGER.atWarning().log("Attempted to tick action but Ref<EntityStore> is null or invalid.");
+                debugger.atWarning("Attempted to tick action but Ref<EntityStore> is null or invalid.");
                 return;
             }
 
             Velocity velocityComponent = store.getComponent(ref, Velocity.getComponentType());
 
             if (velocityComponent == null) {
-                MobFarmingToolsPlugin.LOGGER.atWarning().log("Velocity component is null.");
+                debugger.atWarning("Velocity component is null.");
                 return;
             }
 
@@ -269,7 +276,7 @@ public class MobFanComponent implements Component<ChunkStore> {
     }
 
     public void printDebug() {
-        MobFarmingToolsPlugin.LOGGER.atInfo().log("[MobFan] Enabled: " + enabled);
+        debugger.atInfo("[MobFan] Enabled: " + enabled);
     }
 
     @Override

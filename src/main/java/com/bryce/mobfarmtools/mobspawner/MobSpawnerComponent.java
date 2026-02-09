@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.mobspawner;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTMathUtil;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -94,6 +95,12 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     private int currentSpawnAmount = MobSpawnerConstants.DEF_SPAWN_AMOUNT_MIN;
     private int failedTries = 0;
 
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerComponent]");
+
+    public MobSpawnerComponent() {
+        debugger.setEnabled(false);
+    }
+
     @NonNull
     public static ComponentType<ChunkStore, MobSpawnerComponent> getComponentType() {
         return MobFarmingToolsPlugin.get().getMobSpawnerComponentType();
@@ -111,7 +118,7 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     public int getMaxEntities() { return maxEntities; }
     public Vector3i getEntitySize() {
         if (entitySize == null || entitySize.length < 2) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log("MobSpawner Entity Size unsuccessful");
+            debugger.atWarning("MobSpawner Entity Size unsuccessful");
             return new Vector3i(1,1,1);
         }
 
@@ -156,7 +163,7 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
             );
         }
 
-        MobFarmingToolsPlugin.LOGGER.atInfo().log("Spawned "+currentSpawnAmount+" "+entityId+"s");
+        debugger.atInfo("Spawned "+currentSpawnAmount+" "+entityId+"s");
     }
 
     public void sendInfoMessage(Player player) {

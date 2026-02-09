@@ -1,7 +1,9 @@
 package com.bryce.mobfarmtools.mobswab;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.config.MobFarmingToolsConfig;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTEntityUtil;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
@@ -11,10 +13,7 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.protocol.BlockPosition;
-import com.hypixel.hytale.protocol.GameMode;
-import com.hypixel.hytale.protocol.InteractionState;
-import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
@@ -30,12 +29,20 @@ import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class MobSwabInteraction extends SimpleInstantInteraction {
     public static final BuilderCodec<MobSwabInteraction> CODEC = BuilderCodec.builder(
             MobSwabInteraction.class, MobSwabInteraction::new, SimpleInstantInteraction.CODEC
     ).build();
+
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSwabInteraction]");
+
+    public MobSwabInteraction() {
+        debugger.setEnabled(false);
+    }
 
     @Nullable
     private static <T> T requireOrFail(@Nullable T value, InteractionContext context) {
@@ -101,6 +108,11 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
     }
 
     private void swabSpawnerAction(MobSpawnerComponent spawnerComponent, Player player, MobSwabMetadata meta, String entityId) {
+        if (!isEntityIdValid(entityId)) {
+            player.sendMessage(Message.raw("Applying " + entityId + " to spawner has been disabled."));
+            return;
+        }
+
         spawnerComponent.setEntityId(entityId);
         spawnerComponent.setEntitySize(meta.getFixedEntitySize());
 
@@ -142,8 +154,14 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
     }
 
     private void swabEntityAction(ItemStack heldItem, Player player, MobSwabMetadata meta, NPCEntity npc) {
-        // append new values to metadata
         String entityId = npc.getNPCTypeId();
+
+        if (!isEntityIdValid(entityId)) {
+            player.sendMessage(Message.raw("Swabbing " + entityId + " has been disabled."));
+            return;
+        }
+
+        // append new values to metadata
         meta.setMobId(entityId);
         meta.setEntitySize(getEntitySize(npc));
 
@@ -161,8 +179,8 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
     private @NonNull Vector3d getEntitySize(NPCEntity npc) {
         Vector3d size = MFTEntityUtil.GetNPCEntitySize(npc);
         if (size == null) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log("Could not get entity size on mob swab. Setting to 1");
-            size = new Vector3d(1,1,1);
+            debugger.atWarning("Could not get entity size on mob swab. Setting to 1");
+            size = new Vector3d(1, 1, 1);
         }
         return size;
     }
@@ -176,5 +194,10 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
         byte slot = inventory.getActiveHotbarSlot();
         ItemStack updatedItem = itemToAdd.withMetadata(MobSwabMetadata.KEYED_CODEC, meta);
         inventory.getHotbar().replaceItemStackInSlot(slot, itemToRemove, updatedItem);
+    }
+
+    private boolean isEntityIdValid(String entityId) {
+        MobFarmingToolsConfig config = MobFarmingToolsPlugin.get().getMobFarmingToolsConfig().get();
+        return !config.isEntityBlacklisted(entityId);
     }
 }

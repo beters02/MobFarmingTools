@@ -2,6 +2,7 @@ package com.bryce.mobfarmtools.mobspawner;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTEntityUtil;
 import com.bryce.mobfarmtools.util.MFTMathUtil;
 import com.hypixel.hytale.component.*;
@@ -26,9 +27,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
     private final ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType;
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerSystem]");
 
     public MobSpawnerSystem(ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType) {
         this.mobSpawnerComponentType = mobSpawnerComponentType;
+        debugger.setEnabled(false);
     }
 
     private record SpawnResult(boolean ok, String msg) {}
@@ -43,7 +46,7 @@ public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
 
         if(spawnerComponent.canSpawn()) {
             if (spawnerComponent.getFailedTries() >= MobSpawnerConstants.MAX_FAILED_SPAWN_TRIES) {
-                MobFarmingToolsPlugin.LOGGER.atWarning().log(
+                debugger.atWarning(
                         MobSpawnerConstants.MAX_FAILED_SPAWN_TRIES
                         + " failed spawn attempts on spawner <id>."
                 );
@@ -54,9 +57,9 @@ public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
             SpawnResult spawnResult = trySpawn(index, store, archetypeChunk, spawnerComponent);
             if (spawnResult.ok) {
                 resetSpawnerVars(spawnerComponent);
-                MobFarmingToolsPlugin.LOGGER.atInfo().log(spawnResult.msg());
+                debugger.atInfo(spawnResult.msg());
             } else {
-                MobFarmingToolsPlugin.LOGGER.atWarning().log("TrySpawn failed: " + spawnResult.msg());
+                debugger.atWarning("TrySpawn failed: " + spawnResult.msg());
                 spawnerComponent.incrementFailedTries(1);
             }
         }

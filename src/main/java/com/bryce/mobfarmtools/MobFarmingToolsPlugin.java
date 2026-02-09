@@ -1,5 +1,6 @@
 package com.bryce.mobfarmtools;
 
+import com.bryce.mobfarmtools.config.MobFarmingToolsConfig;
 import com.bryce.mobfarmtools.debugtool.DebugToolInteraction;
 import com.bryce.mobfarmtools.entitydestroyer.EntityDestroyerInteraction;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
@@ -25,6 +26,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.plugin.registry.CodecMapRegistry;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
+import com.hypixel.hytale.server.core.util.Config;
 
 public class MobFarmingToolsPlugin extends JavaPlugin {
     protected static MobFarmingToolsPlugin instance;
@@ -34,6 +36,8 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     private ComponentType<ChunkStore, MobFanComponent> mobFanComponentType;
     private ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType;
     private ComponentType<ChunkStore, VacuumHopperComponent> vacuumHopperComponentType;
+
+    private final Config<MobFarmingToolsConfig> mftConfig = this.withConfig("MobFarmingToolsConfig", MobFarmingToolsConfig.CODEC);
 
     public static MobFarmingToolsPlugin get() {
         return instance;
@@ -52,6 +56,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registerInteractions(this.getCodecRegistry(Interaction.CODEC));
         registerComponents(this.getChunkStoreRegistry());
         registerSystems(this.getChunkStoreRegistry());
+        registerConfigs();
     }
 
     private void registerCommands(CommandRegistry registry) {
@@ -78,7 +83,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.registerSystem(new VacuumHopperInitializer());
     }
 
-    void registerInteractions(
+    private void registerInteractions(
             CodecMapRegistry.Assets<
                     Interaction,
                     ? extends Codec<? extends Interaction>
@@ -92,6 +97,10 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.register(modScopeId+":Vacuum_Hopper_Interaction", VacuumHopperInteraction.class, VacuumHopperInteraction.CODEC);
     }
 
+    private void registerConfigs() {
+        mftConfig.save();
+    }
+
     public ComponentType<ChunkStore, MobFanComponent> getMobFanComponentType() {
         return this.mobFanComponentType;
     }
@@ -102,5 +111,9 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
 
     public ComponentType<ChunkStore, VacuumHopperComponent> getVacuumHopperComponentType() {
         return this.vacuumHopperComponentType;
+    }
+
+    public Config<MobFarmingToolsConfig> getMobFarmingToolsConfig() {
+        return mftConfig;
     }
 }

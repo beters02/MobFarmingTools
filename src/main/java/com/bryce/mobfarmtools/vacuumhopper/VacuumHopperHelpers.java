@@ -61,7 +61,7 @@ public class VacuumHopperHelpers {
         return containers;
     }
 
-    public static @NonNull boolean HasAvailableItemContainer(World world, Vector3i blockPos) {
+    public static boolean HasAvailableItemContainer(World world, Vector3i blockPos) {
         AtomicBoolean hasAvailable = new AtomicBoolean(false);
         MFTBlockUtil.WithTouchingBlockPositions(blockPos, checkPos -> {
             Ref<ChunkStore> blockEntityRef = BlockModule.getBlockEntity(world, checkPos.x, checkPos.y, checkPos.z);

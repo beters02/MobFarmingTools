@@ -2,6 +2,7 @@ package com.bryce.mobfarmtools.vacuumhopper;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.RefSystem;
@@ -11,6 +12,12 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[VacuumHopperInitializer]");
+
+    public VacuumHopperInitializer() {
+        debugger.setEnabled(false);
+    }
+
     @Override
     public @Nullable Query<ChunkStore> getQuery() {
         return Query.and(
@@ -23,7 +30,7 @@ public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
     public void onEntityAdded(@NonNull Ref<ChunkStore> ref, @NonNull AddReason addReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
         VacuumHopperComponent vacuumHopperComponent = store.getComponent(ref, VacuumHopperComponent.getComponentType());
         if (vacuumHopperComponent != null) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log("Vacuum Hopper component found on init.");
+            debugger.atWarning("Vacuum Hopper component found on init.");
         }
     }
 

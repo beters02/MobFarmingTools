@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.entitydestroyer;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTMathUtil;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
@@ -28,8 +29,12 @@ public class EntityDestroyerInteraction extends SimpleInstantInteraction {
             EntityDestroyerInteraction.class, EntityDestroyerInteraction::new, SimpleInstantInteraction.CODEC
     ).build();
 
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[EntityDestroyerInteraction]");
+
     @Override
     protected void firstRun(@NonNull InteractionType interactionType, @NonNull InteractionContext context, @NonNull CooldownHandler cooldownHandler) {
+        debugger.setEnabled(false);
+
         Ref<EntityStore> userRef = context.getEntity();
         Store<EntityStore> store = userRef.getStore();
         CommandBuffer<EntityStore> commandBuffer = context.getCommandBuffer();
@@ -47,7 +52,7 @@ public class EntityDestroyerInteraction extends SimpleInstantInteraction {
 
         int causeIndex = DamageCause.getAssetMap().getIndex("Fire");
         if (causeIndex == Integer.MIN_VALUE) {
-            MobFarmingToolsPlugin.LOGGER.atWarning().log("CANNOT DAMAGE ENTITY; MIN VALUE MET");
+            debugger.atWarning("CANNOT DAMAGE ENTITY; MIN VALUE MET");
             return;
         }
 

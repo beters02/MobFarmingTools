@@ -2,6 +2,7 @@ package com.bryce.mobfarmtools.mobfan;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.RefSystem;
@@ -29,9 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MobFanInitializer extends RefSystem<ChunkStore> {
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobFanInitializer]");
 
     @Override
     public void onEntityAdded(@NonNull Ref<ChunkStore> ref, @NonNull AddReason addReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+        debugger.setEnabled(false);
+
         BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
         
         if (info == null) return;
@@ -48,7 +52,7 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
             WorldChunk worldChunk = chunkStore.getComponent(info.getChunkRef(), WorldChunk.getComponentType());
 
             if (worldChunk == null) {
-                MobFarmingToolsPlugin.LOGGER.atWarning().log("WORLD CHUNK NOT FOUND!");
+                debugger.atWarning("WORLD CHUNK NOT FOUND!");
                 return;
             }
 
@@ -83,12 +87,12 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
             mobFan.setStoredWorld(world);
             mobFan.setStoredWorldPos(new Vector3i(worldX, worldY, worldZ));
             mobFan.setBaseForward(new Vector3d(0, 0, -1));
-            
-            MobFarmingToolsPlugin.LOGGER.atInfo().log("MobFanComponent successfully initialized.");
+
+            debugger.atInfo("MobFanComponent successfully initialized.");
 
             mobFan.setEnabled(true);
 
-            MobFarmingToolsPlugin.LOGGER.atInfo().log("Rotation index of added mob fan: " + rotationIndex);
+            debugger.atInfo("Rotation index of added mob fan: " + rotationIndex);
         }
     }
 
