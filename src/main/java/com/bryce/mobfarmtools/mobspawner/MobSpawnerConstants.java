@@ -5,11 +5,11 @@ public class MobSpawnerConstants {
     public static final int MAX_FAILED_SPAWN_TRIES = 5;
     public static final double SPAWN_RADIUS = 3; // 7x7
 
-    public static final int DEF_SPAWN_RATE_MIN = 5;
-    public static final int DEF_SPAWN_RATE_MAX = 10;
+    public static final int DEF_SPAWN_RATE_MIN = 30;
+    public static final int DEF_SPAWN_RATE_MAX = 60;
     public static final int DEF_SPAWN_AMOUNT_MIN = 1;
     public static final int DEF_SPAWN_AMOUNT_MAX = 1;
-    public static final int DEF_MAX_ENTITIES = 3;
+    public static final int DEF_MAX_ENTITIES = 5;
     public static final boolean DEF_CHUNK_LOADED = false;
 
     public static final String DEF_SPAWN_PARTICLE_EFFECT = "Fire_AoE";
