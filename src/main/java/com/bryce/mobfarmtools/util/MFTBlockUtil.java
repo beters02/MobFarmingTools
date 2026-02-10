@@ -16,7 +16,9 @@ import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.chunk.BlockChunk;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
+import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.jetbrains.annotations.Contract;
@@ -58,9 +60,29 @@ public class MFTBlockUtil {
         return archetypeChunk.getComponent(blockIndex, BlockModule.BlockStateInfo.getComponentType());
     }
 
-    public static boolean PositionIsEmpty(World world, Vector3i pos) {
-        return BlockTypeIsEmpty(world.getBlockType(pos));
+    public static boolean PositionIsEmpty(Store<ChunkStore> chunkStore, Vector3i pos) {
+        World world = chunkStore.getExternalData().getWorld();
+
+        int chunkX = ChunkUtil.chunkCoordinate(pos.x);
+        int chunkY = ChunkUtil.chunkCoordinate(pos.y);
+        int chunkZ = ChunkUtil.chunkCoordinate(pos.z);
+
+        Ref<ChunkStore> sectionRef = world.getChunkStore().getChunkSectionReference(chunkX, chunkY, chunkZ);
+        if (sectionRef == null || !sectionRef.isValid()) {
+            // section not loaded => treat as blocked (or empty, depending on your logic)
+            return false;
+        }
+
+        BlockSection section = chunkStore.getComponent(sectionRef, BlockSection.getComponentType());
+        if (section == null) {
+            return true; // no block section => air
+        }
+
+        int blockId = section.get(pos.x, pos.y, pos.z);
+        BlockType type = BlockType.getAssetMap().getAsset(blockId);
+        return BlockTypeIsEmpty(type);
     }
+
 
     @Contract("null -> true")
     public static boolean BlockTypeIsEmpty(BlockType blockType) {

@@ -7,6 +7,7 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import org.jspecify.annotations.Nullable;
@@ -16,11 +17,14 @@ public class MFTEntityUtil {
     public static boolean WillEntityFit(World world, Vector3i pos, Vector3i entitySize) {
         // create a box size of the entity
         // check if the box is empty
+
+        Store<ChunkStore> chunkStore = world.getChunkStore().getStore();
+
         for (int dy = 0; dy <= entitySize.y+1; dy++) {
             for (int dz = -entitySize.z; dz <= entitySize.z+1; dz++) {
                 for (int dx = -entitySize.x; dx <= entitySize.x+1; dx++) {
                     Vector3i checkPos = new Vector3i(pos.x + dx, pos.y + dy, pos.z + dz);
-                    if (!MFTBlockUtil.PositionIsEmpty(world, checkPos)) {
+                    if (!MFTBlockUtil.PositionIsEmpty(chunkStore, checkPos)) {
                         return false;
                     }
                 }
