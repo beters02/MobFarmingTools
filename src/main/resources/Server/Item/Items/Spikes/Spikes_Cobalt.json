@@ -1,6 +1,6 @@
 {
   "TranslationProperties": {
-    "Name": "server.items.Mob_Spawner.name"
+    "Name": "server.items.Spikes_Cobalt.name"
   },
   "ItemLevel": 600,
   "Categories": [
@@ -12,7 +12,7 @@
     "TimeSeconds": 3.5,
     "Input": [
       {
-        "ItemId": "Ingredient_Bar_Iron",
+        "ItemId": "Ingredient_Bar_Cobalt",
         "Quantity": 20
       },
       {
@@ -27,17 +27,17 @@
         "Categories": [
           "Workbench_Survival"
         ],
-        "RequiredTierLevel": 1
+        "RequiredTierLevel": 2
       }
     ]
   },
   "BlockType": {
     "Material": "Solid",
     "DrawType": "Model",
-    "CustomModel": "Blocks/Mob_Spawner/Mob_Spawner.blockymodel",
+    "CustomModel": "Blocks/Spikes/Spikes.blockymodel",
     "CustomModelTexture": [
       {
-        "Texture": "BlockTextures/Mob_Spawner/Mob_Spawner.png",
+        "Texture": "BlockTextures/Spikes/Spikes_Cobalt.png",
         "Weight": 1
       }
     ],
@@ -52,7 +52,9 @@
     },
     "BlockEntity": {
       "Components": {
-        "Mob_Farming_Tools:Mob_Spawner_Component": {}
+        "Mob_Farming_Tools:Spikes_Component": {
+          "DamagePerSecond": 20
+        }
       }
     },
     "BlockParticleSetId": "Metal",
@@ -63,9 +65,7 @@
       "Stone",
       "Gravel",
       "Dirt"
-    ],
-    "FlipType": "Orthogonal",
-    "RotationYawPlacementOffset": "OneEighty"
+    ]
   },
   "Tags": {
     "Type": [

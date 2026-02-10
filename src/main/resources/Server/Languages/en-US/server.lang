@@ -2,4 +2,6 @@ items.Example_Block.name=Example Block
 items.Mob_Fan.name=Mob Fan
 items.Mob_Spawner.name=Mob Spawner
 items.Vacuum_Hopper.name=Vacuum Hopper
-items.Iron_Spikes.name=Iron Spikes
+items.Spikes_Iron_Alloy.name=Iron Alloy Spikes
+items.Spikes_Cobalt.name=Cobalt Spikes
+items.Spikes_Thorium.name=Thorium Spikes

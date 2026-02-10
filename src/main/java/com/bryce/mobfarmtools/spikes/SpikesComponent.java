@@ -19,12 +19,36 @@ public class SpikesComponent implements Component<ChunkStore> {
                             (component, value) -> component.damagePerSecond = value,
                             component -> component.damagePerSecond)
                     .add()
+                    .append(new KeyedCodec<>("IsCustomSpikes", Codec.BOOLEAN),
+                            (component, value) -> component.customSpikes = value,
+                            component -> component.customSpikes)
+                    .add()
+                    .append(new KeyedCodec<>("DamagePlayersEnabled", Codec.BOOLEAN),
+                            (component, value) -> component.damagePlayersEnabled = value,
+                            component -> component.damagePlayersEnabled)
+                    .add()
+                    .append(new KeyedCodec<>("DamageNpcsEnabled", Codec.BOOLEAN),
+                            (component, value) -> component.damageNPCsEnabled = value,
+                            component -> component.damageNPCsEnabled)
+                    .add()
                     .build();
 
     private double damagePerSecond = 30.0;
+    private int ticksLifetime = 0;
+    private boolean customSpikes = false;
+    private boolean damagePlayersEnabled = false;
+    private boolean damageNPCsEnabled = true;
 
     public double getDamagePerSecond() { return damagePerSecond; }
+    public int getTicksLifetime() { return ticksLifetime; }
+    public boolean isDamagePlayersEnabled() { return damagePlayersEnabled; }
+    public boolean isDamageNPCsEnabled() { return damageNPCsEnabled; }
+    public boolean isCustomSpikes() { return customSpikes; }
+
     public void setDamagePerSecond(double value) { damagePerSecond = value; }
+    public void setTicksLifetime(int value) { ticksLifetime = value; }
+
+    public void incrementTicksLifetime(int value) { ticksLifetime += value; }
 
     public static ComponentType<ChunkStore, SpikesComponent> getComponentType() {
         return MobFarmingToolsPlugin.get().getSpikesComponentType();
@@ -34,6 +58,10 @@ public class SpikesComponent implements Component<ChunkStore> {
     public @Nullable Component<ChunkStore> clone() {
         SpikesComponent copy = new SpikesComponent();
         copy.damagePerSecond = damagePerSecond;
+        copy.customSpikes = customSpikes;
+        copy.damagePlayersEnabled = damagePlayersEnabled;
+        copy.damageNPCsEnabled = damageNPCsEnabled;
+        copy.ticksLifetime = ticksLifetime;
         return copy;
     }
 }
