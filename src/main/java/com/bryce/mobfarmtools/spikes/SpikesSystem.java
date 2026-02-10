@@ -5,6 +5,7 @@ import com.bryce.mobfarmtools.config.MobFarmingToolsConfig;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
+import com.bryce.mobfarmtools.util.MFTEntityUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.spatial.SpatialResource;
@@ -127,6 +128,11 @@ public class SpikesSystem extends EntityTickingSystem<ChunkStore> {
                 String entityId = npc.getNPCTypeId();
                 if (config.isEntityBlacklistedSpikes(entityId)) {
                     debugger.atWarning("Damaging " + entityId + " disabled by configuration.");
+                    continue;
+                }
+
+                if(!spikes.isDamageBossesEnabled() && MFTEntityUtil.IsEntityIdBoss(entityId)) {
+                    debugger.atWarning("Damaging boss " + entityId + " disabled by component (from configuration)");
                     continue;
                 }
 

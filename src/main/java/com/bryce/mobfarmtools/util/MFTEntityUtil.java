@@ -45,4 +45,8 @@ public class MFTEntityUtil {
         return new Vector3d(box.width(), box.height(), box.depth());
     }
 
+    public static boolean IsEntityIdBoss(String entityId) {
+        return entityId.contains("Golem") || entityId.equals("Dungeon_Scarak_Broodmother") || entityId.equals("Rex_Cave");
+    }
+
 }

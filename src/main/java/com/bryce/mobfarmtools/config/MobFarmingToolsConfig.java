@@ -36,6 +36,10 @@ public class MobFarmingToolsConfig {
                     (config, value) -> config.spikesDamageNpcsEnabled = value,
                     (config) -> config.spikesDamageNpcsEnabled)
             .add()
+            .append(new KeyedCodec<>("AdamantiteSpikesDamageBosses", Codec.BOOLEAN),
+                    (config, value) -> config.adamantiteSpikesDamageBosses = value,
+                    (config) -> config.adamantiteSpikesDamageBosses)
+            .add()
             .build();
 
     private String[] spawnerMobsBlacklist = {
@@ -53,8 +57,11 @@ public class MobFarmingToolsConfig {
     private boolean spikesDamagePlayersEnabled = false;
     private boolean spikesDamageNpcsEnabled = true;
 
+    private boolean adamantiteSpikesDamageBosses = true;
+
     public boolean isSpikesDamagePlayersEnabled() { return spikesDamagePlayersEnabled; }
     public boolean isSpikesDamageNpcsEnabled() { return spikesDamageNpcsEnabled; }
+    public boolean isAdamantiteSpikesDamageBossesEnabled() { return adamantiteSpikesDamageBosses; }
 
     public boolean isEntityBlacklistedSpawner(String entityId) {
         List<String> list = Arrays.asList(this.spawnerMobsBlacklist);
