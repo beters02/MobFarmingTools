@@ -153,18 +153,25 @@ public class SpikesSystem extends EntityTickingSystem<ChunkStore> {
         int by = blockY + blockCfg.getBoundingBoxOffsetY();
         int bz = blockZ + blockCfg.getBoundingBoxOffsetZ();
 
+        double margin = SpikesConstants.HITBOX_MARGIN; // tweak
+
+        // Build expanded boxes
         Box[] blockBoxes;
         int detailCount = blockCfg.getDetailCount();
         if (detailCount <= 1) {
-            blockBoxes = new Box[] { blockCfg.getBoundingBox() };
+            Box b = new Box().assign(blockCfg.getBoundingBox());
+            b.expand(margin);
+            blockBoxes = new Box[] { b };
         } else {
             blockBoxes = new Box[detailCount];
             for (int i = 0; i < detailCount; i++) {
-                blockBoxes[i] = blockCfg.getBoundingBox(i);
+                Box b = new Box().assign(blockCfg.getBoundingBox(i));
+                b.expand(margin);
+                blockBoxes[i] = b;
             }
         }
 
-        // compute overall bounds for spatial query
+        // Compute bounds using expanded boxes
         Vector3d min = new Vector3d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
         Vector3d max = new Vector3d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
         for (Box b : blockBoxes) {
