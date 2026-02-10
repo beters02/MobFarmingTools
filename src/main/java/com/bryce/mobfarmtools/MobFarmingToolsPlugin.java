@@ -13,6 +13,7 @@ import com.bryce.mobfarmtools.mobspawner.MobSpawnerInteraction;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerSystem;
 import com.bryce.mobfarmtools.mobswab.MobSwabInteraction;
 import com.bryce.mobfarmtools.spikes.SpikesComponent;
+import com.bryce.mobfarmtools.spikes.SpikesSystem;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperComponent;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperInitializer;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperInteraction;
@@ -72,6 +73,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         this.mobFanComponentType = registerComponent(registry, MobFanComponent.class, "Mob_Fan_Component", MobFanComponent.CODEC);
         this.mobSpawnerComponentType = registerComponent(registry, MobSpawnerComponent.class, "Mob_Spawner_Component", MobSpawnerComponent.CODEC);
         this.vacuumHopperComponentType = registerComponent(registry, VacuumHopperComponent.class, "Vacuum_Hopper_Component", VacuumHopperComponent.CODEC);
+        this.spikesComponentType = registerComponent(registry, SpikesComponent.class, "Spikes_Component", SpikesComponent.CODEC);
     }
 
     private void registerSystems(ComponentRegistryProxy<ChunkStore> registry) {
@@ -81,6 +83,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.registerSystem(new MobSpawnerInitializer());
         registry.registerSystem(new VacuumHopperSystem(this.vacuumHopperComponentType));
         registry.registerSystem(new VacuumHopperInitializer());
+        registry.registerSystem(new SpikesSystem(this.spikesComponentType));
     }
 
     private void registerInteractions(
@@ -132,6 +135,10 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
 
     public ComponentType<ChunkStore, VacuumHopperComponent> getVacuumHopperComponentType() {
         return this.vacuumHopperComponentType;
+    }
+
+    public ComponentType<ChunkStore, SpikesComponent> getSpikesComponentType() {
+        return this.spikesComponentType;
     }
 
     public Config<MobFarmingToolsConfig> getMobFarmingToolsConfig() {

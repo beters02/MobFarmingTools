@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.spikes;
 
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
+import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
@@ -30,7 +31,10 @@ public class SpikesSystem extends EntityTickingSystem<ChunkStore> {
     }
 
     @Override
-    public void tick(float v, int i, @NonNull ArchetypeChunk<ChunkStore> archetypeChunk, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+    public void tick(float dt, int index, @NonNull ArchetypeChunk<ChunkStore> archetypeChunk, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+        SpikesComponent spikes = archetypeChunk.getComponent(index, SpikesComponent.getComponentType());
+        if (spikes == null) return;
+
 
     }
 }
