@@ -12,11 +12,14 @@ import com.bryce.mobfarmtools.mobspawner.MobSpawnerInitializer;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerInteraction;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerSystem;
 import com.bryce.mobfarmtools.mobswab.MobSwabInteraction;
+import com.bryce.mobfarmtools.spikes.SpikesComponent;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperComponent;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperInitializer;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperInteraction;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperSystem;
 import com.hypixel.hytale.codec.Codec;
+import com.hypixel.hytale.codec.builder.BuilderCodec;
+import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentRegistryProxy;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.logger.HytaleLogger;
@@ -28,6 +31,8 @@ import com.hypixel.hytale.server.core.plugin.registry.CodecMapRegistry;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.util.Config;
 
+import javax.annotation.Nonnull;
+
 public class MobFarmingToolsPlugin extends JavaPlugin {
     protected static MobFarmingToolsPlugin instance;
     public static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
@@ -36,6 +41,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     private ComponentType<ChunkStore, MobFanComponent> mobFanComponentType;
     private ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType;
     private ComponentType<ChunkStore, VacuumHopperComponent> vacuumHopperComponentType;
+    private ComponentType<ChunkStore, SpikesComponent> spikesComponentType;
 
     private final Config<MobFarmingToolsConfig> mftConfig = this.withConfig("MobFarmingToolsConfig", MobFarmingToolsConfig.CODEC);
 
@@ -63,15 +69,9 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     }
 
     private void registerComponents(ComponentRegistryProxy<ChunkStore> registry) {
-        this.mobFanComponentType = registry.registerComponent(
-                MobFanComponent.class, modScopeId+":Mob_Fan_Component", MobFanComponent.CODEC
-        );
-        this.mobSpawnerComponentType = registry.registerComponent(
-                MobSpawnerComponent.class, modScopeId+":Mob_Spawner_Component", MobSpawnerComponent.CODEC
-        );
-        this.vacuumHopperComponentType = registry.registerComponent(
-                VacuumHopperComponent.class, modScopeId+":Vacuum_Hopper_Component", VacuumHopperComponent.CODEC
-        );
+        this.mobFanComponentType = registerComponent(registry, MobFanComponent.class, "Mob_Fan_Component", MobFanComponent.CODEC);
+        this.mobSpawnerComponentType = registerComponent(registry, MobSpawnerComponent.class, "Mob_Spawner_Component", MobSpawnerComponent.CODEC);
+        this.vacuumHopperComponentType = registerComponent(registry, VacuumHopperComponent.class, "Vacuum_Hopper_Component", VacuumHopperComponent.CODEC);
     }
 
     private void registerSystems(ComponentRegistryProxy<ChunkStore> registry) {
@@ -89,16 +89,37 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
                     ? extends Codec<? extends Interaction>
                     > registry
     ) {
-        registry.register(modScopeId+":Open_Mob_Fan_Interaction", MobFanOpenInteraction.class, MobFanOpenInteraction.CODEC);
-        registry.register(modScopeId+":Mob_Swab_Interaction", MobSwabInteraction.class, MobSwabInteraction.CODEC);
-        registry.register(modScopeId+":Debug_Tool_Interaction", DebugToolInteraction.class, DebugToolInteraction.CODEC);
-        registry.register(modScopeId+":Mob_Spawner_Interaction", MobSpawnerInteraction.class, MobSpawnerInteraction.CODEC);
-        registry.register(modScopeId+":Entity_Destroyer_Interaction", EntityDestroyerInteraction.class, EntityDestroyerInteraction.CODEC);
-        registry.register(modScopeId+":Vacuum_Hopper_Interaction", VacuumHopperInteraction.class, VacuumHopperInteraction.CODEC);
+        registerInteraction(registry, "Open_Mob_Fan_Interaction", MobFanOpenInteraction.class, MobFanOpenInteraction.CODEC);
+        registerInteraction(registry, "Mob_Swab_Interaction", MobSwabInteraction.class, MobSwabInteraction.CODEC);
+        registerInteraction(registry, "Debug_Tool_Interaction", DebugToolInteraction.class, DebugToolInteraction.CODEC);
+        registerInteraction(registry, "Mob_Spawner_Interaction", MobSpawnerInteraction.class, MobSpawnerInteraction.CODEC);
+        registerInteraction(registry, "Entity_Destroyer_Interaction", EntityDestroyerInteraction.class, EntityDestroyerInteraction.CODEC);
+        registerInteraction(registry, "Vacuum_Hopper_Interaction", VacuumHopperInteraction.class, VacuumHopperInteraction.CODEC);
     }
 
     private void registerConfigs() {
         mftConfig.save();
+    }
+
+    private void registerInteraction(
+            CodecMapRegistry.Assets<
+                    Interaction,
+                    ? extends Codec<? extends Interaction>
+                    > registry,
+            String id,
+            Class<? extends Interaction> interactionClass,
+            BuilderCodec<? extends Interaction> codec
+    ) {
+        registry.register(modScopeId + ":" + id, interactionClass, codec);
+    }
+
+    private <T extends Component<ChunkStore>> ComponentType<ChunkStore, T> registerComponent(
+            ComponentRegistryProxy<ChunkStore> registry,
+            @Nonnull Class<? super T> componentClass,
+            @Nonnull String id,
+            @Nonnull BuilderCodec<T> codec
+    ) {
+        return registry.registerComponent(componentClass,modScopeId + ":" + id, codec);
     }
 
     public ComponentType<ChunkStore, MobFanComponent> getMobFanComponentType() {
