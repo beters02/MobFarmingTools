@@ -35,7 +35,6 @@ import java.util.List;
 public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
     private final ComponentType<ChunkStore, VacuumHopperComponent> vacuumHopperComponentType;
     private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[VacuumHopper]");
-    private int lifetimeTicks = 0;
 
     public VacuumHopperSystem(ComponentType<ChunkStore, VacuumHopperComponent> vacuumHopperComponentType) {
         this.vacuumHopperComponentType = vacuumHopperComponentType;
@@ -62,12 +61,6 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
 
     @Override
     public void tick(float dt, int index, @NonNull ArchetypeChunk<ChunkStore> archetypeChunk, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
-        lifetimeTicks += 1;
-        if (lifetimeTicks < VacuumHopperConstants.TICKS_PER_ACTION) {
-            return;
-        }
-        lifetimeTicks = 0;
-
         VacuumHopperComponent vacuum = archetypeChunk.getComponent(index, this.vacuumHopperComponentType);
         if (vacuum == null) {
             debugger.atWarning("VACUUM HOPPER COMPONENT NOT FOUND!");
@@ -75,6 +68,13 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         }
 
         if (!vacuum.isEnabled()) return;
+
+        vacuum.incrementTicksLifetime(1);
+        if (vacuum.getTicksLifetime() < VacuumHopperConstants.TICKS_PER_ACTION) {
+            return;
+        }
+
+        vacuum.setTicksLifetime(0);
 
         BlockModule.BlockStateInfo info = MFTBlockUtil.GetBlockStateInfoFromArchetype(archetypeChunk, index);
         if (info == null) return;
