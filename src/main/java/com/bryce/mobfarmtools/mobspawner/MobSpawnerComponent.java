@@ -116,6 +116,10 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         return failedTries;
     }
     public int getMaxEntities() { return maxEntities; }
+    public float getTimeUntilNextSpawn() {
+        if (!canTick()) return -1;
+        return currentSpawnRate - lifetime;
+    }
     public Vector3i getEntitySize() {
         if (entitySize == null || entitySize.length < 2) {
             debugger.atWarning("MobSpawner Entity Size unsuccessful");
@@ -172,6 +176,7 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         player.sendMessage(Message.raw("Spawner Entity: " + entityId));
         player.sendMessage(Message.raw("Spawn Rate: " + spawnRateMin + "-" + spawnRateMax));
         player.sendMessage(Message.raw("Spawn Amount: " + spawnAmountMin + "-" + spawnAmountMax));
+        player.sendMessage(Message.raw("Time Until Next Spawn: " + getTimeUntilNextSpawn()));
     }
 
     public void printDebug(Player player) {

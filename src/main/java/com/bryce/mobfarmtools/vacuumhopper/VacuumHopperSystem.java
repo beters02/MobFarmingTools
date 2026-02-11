@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.vacuumhopper;
 
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
+import com.bryce.mobfarmtools.util.MFTChunkUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTVectorUtil;
 import com.hypixel.hytale.component.*;
@@ -8,6 +9,7 @@ import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.spatial.SpatialResource;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
@@ -22,6 +24,7 @@ import com.hypixel.hytale.server.core.modules.entity.item.PickupItemComponent;
 import com.hypixel.hytale.server.core.modules.entity.item.PreventPickup;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.meta.state.ItemContainerState;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -83,6 +86,10 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         if (pos == null) return;
 
         World world = store.getExternalData().getWorld();
+
+        WorldChunk worldChunk = disableIfNull(MFTChunkUtil.IsChunkLoaded(world, (int) pos.x, (int) pos.z), world, pos);
+        if (worldChunk == null) return;
+
         List<ItemContainer> containers = VacuumHopperHelpers.GetTouchingItemContainers(world, pos.toVector3i());
         //if (!debugger.requireBool(!containers.isEmpty(), "No valid containers.")) return;
         if (disableIfTrue(containers.isEmpty(), world, pos)) return;
@@ -126,6 +133,22 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         setOnBlockState(world, pos, setEnabled);
     }
 
+    public void vacuumHopperTester(World world, Vector3d pos) {
+        Store<EntityStore> entityStore = world.getEntityStore().getStore();
+        ItemStack droppedStack = new ItemStack("Ingredient_Fibre", 1);
+        Vector3d dropPos = new Vector3d(pos.x + 2, pos.y + 1, pos.z);
+
+        Holder<EntityStore> holder = ItemComponent.generateItemDrop(
+                entityStore,               // ComponentAccessor<EntityStore>
+                droppedStack,
+                dropPos,
+                new Vector3f(),
+                0f, 0f, 0f          // velocity
+        );
+
+        world.execute(() -> entityStore.addEntity(holder, AddReason.SPAWN));
+    }
+
     public @NonNull List<Ref<EntityStore>> getDroppedItemEntitiesInRadius(Vector3d pos, float radius, Store<EntityStore> entityStore) {
         SpatialResource<Ref<EntityStore>, EntityStore> itemSpatial =
                 entityStore.getResource(EntityModule.get().getItemSpatialResourceType());
@@ -143,8 +166,6 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
 
         return droppedItemEntities;
     }
-
-
 
     public boolean addItemStackToAnyValidContainerRecursive(List<ItemContainer> containers, ItemComponent itemComponent, ItemStack itemStack, Ref<EntityStore> ref) {
         Integer index = VacuumHopperHelpers.GetValidContainerIndex(containers, itemStack);

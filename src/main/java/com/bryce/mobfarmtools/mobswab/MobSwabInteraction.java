@@ -12,7 +12,6 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
-import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.*;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
@@ -29,8 +28,6 @@ import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public class MobSwabInteraction extends SimpleInstantInteraction {
@@ -108,7 +105,7 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
     }
 
     private void swabSpawnerAction(MobSpawnerComponent spawnerComponent, Player player, MobSwabMetadata meta, String entityId) {
-        if (!isEntityIdValid(entityId)) {
+        if (isEntityIdBlacklisted(entityId)) {
             player.sendMessage(Message.raw("Applying " + entityId + " to spawner has been disabled."));
             return;
         }
@@ -156,7 +153,7 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
     private void swabEntityAction(ItemStack heldItem, Player player, MobSwabMetadata meta, NPCEntity npc) {
         String entityId = npc.getNPCTypeId();
 
-        if (!isEntityIdValid(entityId)) {
+        if (isEntityIdBlacklisted(entityId)) {
             player.sendMessage(Message.raw("Swabbing " + entityId + " has been disabled."));
             return;
         }
@@ -196,8 +193,8 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
         inventory.getHotbar().replaceItemStackInSlot(slot, itemToRemove, updatedItem);
     }
 
-    private boolean isEntityIdValid(String entityId) {
+    private boolean isEntityIdBlacklisted(String entityId) {
         MobFarmingToolsConfig config = MobFarmingToolsPlugin.get().getMobFarmingToolsConfig().get();
-        return !config.isEntityBlacklisted(entityId);
+        return config.isEntityBlacklistedSpawner(entityId);
     }
 }

@@ -17,9 +17,7 @@ public class MFTEntityUtil {
     public static boolean WillEntityFit(World world, Vector3i pos, Vector3i entitySize) {
         // create a box size of the entity
         // check if the box is empty
-
         Store<ChunkStore> chunkStore = world.getChunkStore().getStore();
-
         for (int dy = 0; dy <= entitySize.y+1; dy++) {
             for (int dz = -entitySize.z; dz <= entitySize.z+1; dz++) {
                 for (int dx = -entitySize.x; dx <= entitySize.x+1; dx++) {
@@ -45,6 +43,10 @@ public class MFTEntityUtil {
 
         Box box = boundingBox.getBoundingBox();
         return new Vector3d(box.width(), box.height(), box.depth());
+    }
+
+    public static boolean IsEntityIdBoss(String entityId) {
+        return entityId.contains("Golem") || entityId.equals("Dungeon_Scarak_Broodmother") || entityId.equals("Rex_Cave");
     }
 
 }
