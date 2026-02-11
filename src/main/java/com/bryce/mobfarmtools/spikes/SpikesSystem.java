@@ -46,6 +46,7 @@ public class SpikesSystem extends EntityTickingSystem<ChunkStore> {
     public SpikesSystem(ComponentType<ChunkStore, SpikesComponent> spikesComponentType) {
         this.spikesComponentType = spikesComponentType;
         mftConfig = MobFarmingToolsPlugin.get().getMobFarmingToolsConfig();
+        debugger.setEnabled(false);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.bryce.mobfarmtools.mobfan;
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
+import com.bryce.mobfarmtools.util.MFTChunkUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
@@ -56,6 +57,11 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
             return;
         }
         Vector3i worldPosI = worldPos.toVector3i();
+
+        if (MFTChunkUtil.IsChunkLoaded(info.getChunkRef().getStore().getExternalData().getWorld(), worldPosI.x, worldPosI.z) == null) {
+            debugger.atWarning("Chunk is not loaded");
+            return;
+        }
 
         Store<ChunkStore> chunkStore = info.getChunkRef().getStore();
         World world = chunkStore.getExternalData().getWorld();

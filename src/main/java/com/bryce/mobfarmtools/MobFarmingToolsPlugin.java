@@ -2,6 +2,8 @@ package com.bryce.mobfarmtools;
 
 import com.bryce.mobfarmtools.config.MobFarmingToolsConfig;
 import com.bryce.mobfarmtools.debugtool.DebugToolInteraction;
+import com.bryce.mobfarmtools.dropper.DropperComponent;
+import com.bryce.mobfarmtools.dropper.DropperSystem;
 import com.bryce.mobfarmtools.entitydestroyer.EntityDestroyerInteraction;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanInitializer;
@@ -43,6 +45,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     private ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType;
     private ComponentType<ChunkStore, VacuumHopperComponent> vacuumHopperComponentType;
     private ComponentType<ChunkStore, SpikesComponent> spikesComponentType;
+    private ComponentType<ChunkStore, DropperComponent> dropperComponentType;
 
     private final Config<MobFarmingToolsConfig> mftConfig = this.withConfig("MobFarmingToolsConfig", MobFarmingToolsConfig.CODEC);
 
@@ -74,6 +77,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         this.mobSpawnerComponentType = registerComponent(registry, MobSpawnerComponent.class, "Mob_Spawner_Component", MobSpawnerComponent.CODEC);
         this.vacuumHopperComponentType = registerComponent(registry, VacuumHopperComponent.class, "Vacuum_Hopper_Component", VacuumHopperComponent.CODEC);
         this.spikesComponentType = registerComponent(registry, SpikesComponent.class, "Spikes_Component", SpikesComponent.CODEC);
+        this.dropperComponentType = registerComponent(registry, DropperComponent.class, "Dropper_Component", DropperComponent.CODEC);
     }
 
     private void registerSystems(ComponentRegistryProxy<ChunkStore> registry) {
@@ -84,6 +88,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.registerSystem(new VacuumHopperSystem(this.vacuumHopperComponentType));
         registry.registerSystem(new VacuumHopperInitializer());
         registry.registerSystem(new SpikesSystem(this.spikesComponentType));
+        registry.registerSystem(new DropperSystem(this.dropperComponentType));
     }
 
     private void registerInteractions(
@@ -139,6 +144,10 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
 
     public ComponentType<ChunkStore, SpikesComponent> getSpikesComponentType() {
         return this.spikesComponentType;
+    }
+
+    public ComponentType<ChunkStore, DropperComponent> getDropperComponentType() {
+        return this.dropperComponentType;
     }
 
     public Config<MobFarmingToolsConfig> getMobFarmingToolsConfig() {
