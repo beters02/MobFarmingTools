@@ -1,0 +1,97 @@
+// Generic machine upgrade page
+
+$C = "../Common.ui";
+
+@SlotSize = 74;
+@SlotSpacing = 2;
+@SlotsPerRow = 9;
+@GridPadding = 2;
+@GridWidth = (@SlotSize * @SlotsPerRow) + (@SlotSpacing * (@SlotsPerRow - 1)) + (@GridPadding * 2);
+@ContainerWidth = 717;
+@PanelSpacing = 8;
+
+$C.@PageOverlay {}
+
+Group #PageLayout {
+  Anchor: (Width: @ContainerWidth, Top: 178, Bottom: 20);
+  LayoutMode: Top;
+
+  $C.@Container #UpgradeContainer {
+    Anchor: (Width: @ContainerWidth, Bottom: @PanelSpacing);
+
+    #Title {
+      LayoutMode: Left;
+
+      $C.@Title #UpgradeTitle {
+        @Text = "Machine Upgrades";
+      }
+
+      Group {
+        FlexWeight: 1;
+      }
+
+      Button #PreviewButton {
+        Anchor: (Width: 140, Height: 32);
+        Style: (
+          Default: (Background: (Color: #223047)),
+          Hovered: (Background: (Color: #2b3d57)),
+          Pressed: (Background: (Color: #1a2436))
+        );
+
+        Label #PreviewButtonLabel {
+          Text: "Preview: Off";
+          Style: (
+            FontSize: 14,
+            TextColor: #e0e8f0,
+            RenderBold: true,
+            HorizontalAlignment: Center,
+            VerticalAlignment: Center
+          );
+          Anchor: (Full: 0);
+        }
+      }
+    }
+
+    #Content {
+      LayoutMode: Top;
+
+      Group #UpgradeSlotsContainer {
+        LayoutMode: LeftCenterWrap;
+        Anchor: (Height: 280, Width: @ContainerWidth);
+      }
+    }
+  }
+
+  $C.@Container #InventoryContainer {
+    Anchor: (Width: @ContainerWidth);
+
+    #Title {
+      $C.@Title {
+        @Text = "Inventory";
+      }
+    }
+
+    #Content {
+      LayoutMode: Top;
+
+      Group #PlayerInventoryWrapper {
+        Anchor: (Height: 380);
+
+        Group #PlayerInventoryContainer {
+          Anchor: (Height: 380, Width: @GridWidth);
+          LayoutMode: Top;
+          Background: #202c3b(0);
+          Padding: (Full: 0);
+
+          Group #PlayerInventory {
+            Anchor: (Width: @GridWidth);
+            LayoutMode: LeftCenterWrap;
+          }
+        }
+      }
+    }
+  }
+}
+
+$C.@BackButton #BackButton {}
+

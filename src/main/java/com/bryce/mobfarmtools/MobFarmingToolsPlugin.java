@@ -5,6 +5,7 @@ import com.bryce.mobfarmtools.debugtool.DebugToolInteraction;
 import com.bryce.mobfarmtools.dropper.DropperComponent;
 import com.bryce.mobfarmtools.dropper.DropperSystem;
 import com.bryce.mobfarmtools.entitydestroyer.EntityDestroyerInteraction;
+import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanInitializer;
 import com.bryce.mobfarmtools.mobfan.MobFanOpenInteraction;
@@ -44,6 +45,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     private ComponentType<ChunkStore, MobFanComponent> mobFanComponentType;
     private ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType;
     private ComponentType<ChunkStore, VacuumHopperComponent> vacuumHopperComponentType;
+    private ComponentType<ChunkStore, MachineUpgradeComponent> machineUpgradeComponentType;
     private ComponentType<ChunkStore, SpikesComponent> spikesComponentType;
     private ComponentType<ChunkStore, DropperComponent> dropperComponentType;
 
@@ -76,6 +78,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         this.mobFanComponentType = registerComponent(registry, MobFanComponent.class, "Mob_Fan_Component", MobFanComponent.CODEC);
         this.mobSpawnerComponentType = registerComponent(registry, MobSpawnerComponent.class, "Mob_Spawner_Component", MobSpawnerComponent.CODEC);
         this.vacuumHopperComponentType = registerComponent(registry, VacuumHopperComponent.class, "Vacuum_Hopper_Component", VacuumHopperComponent.CODEC);
+        this.machineUpgradeComponentType = registerComponent(registry, MachineUpgradeComponent.class, "Machine_Upgrade_Component", MachineUpgradeComponent.CODEC);
         this.spikesComponentType = registerComponent(registry, SpikesComponent.class, "Spikes_Component", SpikesComponent.CODEC);
         this.dropperComponentType = registerComponent(registry, DropperComponent.class, "Dropper_Component", DropperComponent.CODEC);
     }
@@ -140,6 +143,10 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
 
     public ComponentType<ChunkStore, VacuumHopperComponent> getVacuumHopperComponentType() {
         return this.vacuumHopperComponentType;
+    }
+
+    public ComponentType<ChunkStore, MachineUpgradeComponent> getMachineUpgradeComponentType() {
+        return this.machineUpgradeComponentType;
     }
 
     public ComponentType<ChunkStore, SpikesComponent> getSpikesComponentType() {

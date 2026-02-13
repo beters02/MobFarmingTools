@@ -1,33 +1,27 @@
 package com.bryce.mobfarmtools.vacuumhopper;
 
-import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
-import com.bryce.mobfarmtools.entitydestroyer.EntityDestroyerInteraction;
+import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
+import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
-import com.bryce.mobfarmtools.util.MFTMathUtil;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import com.hypixel.hytale.component.*;
-import com.hypixel.hytale.component.spatial.SpatialResource;
-import com.hypixel.hytale.math.shape.Box;
+import com.hypixel.hytale.component.CommandBuffer;
+import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.InteractionType;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.modules.entity.EntityModule;
-import com.hypixel.hytale.server.core.modules.entity.item.PickupItemComponent;
-import com.hypixel.hytale.server.core.modules.entity.item.PreventPickup;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.List;
+import java.util.EnumMap;
 
 public class VacuumHopperInteraction extends SimpleBlockInteraction {
     public static final BuilderCodec<VacuumHopperInteraction> CODEC = BuilderCodec.builder(
@@ -52,11 +46,28 @@ public class VacuumHopperInteraction extends SimpleBlockInteraction {
         if (vacuum == null) return;
 
         Ref<EntityStore> userRef = context.getEntity();
-        Player player = userRef.getStore().getComponent(userRef, Player.getComponentType());
+        Player player = commandBuffer.getComponent(userRef, Player.getComponentType());
         if (player == null) return;
 
-        vacuum.setHasAvailableContainer(VacuumHopperHelpers.HasAvailableItemContainer(world, vector3i));
-        player.sendMessage(Message.raw("Has available container: "+vacuum.hasAvailableContainer()));
+        PlayerRef playerRef = commandBuffer.getComponent(userRef, PlayerRef.getComponentType());
+        if (playerRef == null) return;
+
+        BlockPosition targetBlock = context.getTargetBlock();
+        if (targetBlock == null) return;
+
+        int rotationIndex = world.getBlockRotationIndex(targetBlock.x, targetBlock.y, targetBlock.z);
+        EnumMap<MachineUpgradeType, Integer> limits = new EnumMap<>(MachineUpgradeType.class);
+        limits.put(MachineUpgradeType.NOISE_SUPPRESSION, 1);
+        limits.put(MachineUpgradeType.CHUNK_LOADING, 1);
+
+        MachineUpgradePage page = new MachineUpgradePage(
+                playerRef,
+                blockEntityRef,
+                MachineUpgradePage.MachineUpgradePageConfig.builder("Vacuum Hopper Upgrades", targetBlock, rotationIndex)
+                        .enableUpgrades(limits)
+                        .build()
+        );
+        player.getPageManager().openCustomPage(userRef, userRef.getStore(), page);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.mobfan;
 
-import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
+import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
@@ -18,7 +19,6 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.accessor.BlockAccessor;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
@@ -87,6 +87,7 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
             mobFan.setStoredWorld(world);
             mobFan.setStoredWorldPos(new Vector3i(worldX, worldY, worldZ));
             mobFan.setBaseForward(new Vector3d(0, 0, -1));
+            migrateLegacyFanUpgrades(ref, chunkStore, mobFan, commandBuffer);
 
             debugger.atInfo("MobFanComponent successfully initialized.");
 
@@ -131,22 +132,22 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
             pos = new Vector3i(worldX, worldY, worldZ);
         }
 
-        int length = mobFan.getLengthUpgrades();
-        int width = mobFan.getWidthUpgrades();
-        int height = mobFan.getHeightUpgrades();
-        if (length <= 0 && width <= 0 && height <= 0) {
+        MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
+        if (upgrades == null) {
             return;
         }
 
         List<ItemStack> drops = new ArrayList<>();
-        if (length > 0) {
-            drops.add(new ItemStack(MobFanConstants.UPGRADE_LENGTH_ITEM_ID, length));
+        for (MachineUpgradeType type : MachineUpgradeType.values()) {
+            int count = upgrades.getCount(type);
+            if (count <= 0) {
+                continue;
+            }
+            drops.add(new ItemStack(type.getItemId(), count));
         }
-        if (width > 0) {
-            drops.add(new ItemStack(MobFanConstants.UPGRADE_WIDTH_ITEM_ID, width));
-        }
-        if (height > 0) {
-            drops.add(new ItemStack(MobFanConstants.UPGRADE_HEIGHT_ITEM_ID, height));
+
+        if (drops.isEmpty()) {
+            return;
         }
 
         Store<EntityStore> entityStore = world.getEntityStore().getStore();
@@ -218,5 +219,28 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
 
     private static boolean isSolid(@Nullable BlockType blockType) {
         return blockType != null && blockType != BlockType.EMPTY && blockType.getMaterial() != BlockMaterial.Empty;
+    }
+
+    private static void migrateLegacyFanUpgrades(Ref<ChunkStore> ref, Store<ChunkStore> store, MobFanComponent mobFan, CommandBuffer<ChunkStore> commandBuffer) {
+        MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
+        if (upgrades == null) {
+            upgrades = new MachineUpgradeComponent();
+        }
+
+        int width = upgrades.getCount(MachineUpgradeType.WIDTH);
+        int height = upgrades.getCount(MachineUpgradeType.HEIGHT);
+        int length = upgrades.getCount(MachineUpgradeType.LENGTH);
+        if (width == 0 && height == 0 && length == 0) {
+            upgrades.setCount(MachineUpgradeType.WIDTH, mobFan.getWidthUpgrades());
+            upgrades.setCount(MachineUpgradeType.HEIGHT, mobFan.getHeightUpgrades());
+            upgrades.setCount(MachineUpgradeType.LENGTH, mobFan.getLengthUpgrades());
+        } else {
+            mobFan.setWidthUpgrades(width);
+            mobFan.setHeightUpgrades(height);
+            mobFan.setLengthUpgrades(length);
+            //store.putComponent(ref, MobFanComponent.getComponentType(), mobFan);
+        }
+
+        //store.putComponent(ref, MachineUpgradeComponent.getComponentType(), upgrades);
     }
 }

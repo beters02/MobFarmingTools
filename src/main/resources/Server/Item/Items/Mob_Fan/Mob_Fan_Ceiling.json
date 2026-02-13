@@ -46,7 +46,8 @@
     },
     "BlockEntity": {
       "Components": {
-        "Mob_Farming_Tools:Mob_Fan_Component": {}
+        "Mob_Farming_Tools:Mob_Fan_Component": {},
+        "Mob_Farming_Tools:Machine_Upgrade_Component": {}
       }
     },
     "Interactions": {

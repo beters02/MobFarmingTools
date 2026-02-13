@@ -87,7 +87,8 @@
     },
     "BlockEntity": {
       "Components": {
-        "Mob_Farming_Tools:Vacuum_Hopper_Component": {}
+        "Mob_Farming_Tools:Vacuum_Hopper_Component": {},
+        "Mob_Farming_Tools:Machine_Upgrade_Component": {}
       }
     },
     "Interactions": {
