@@ -238,9 +238,9 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
             mobFan.setWidthUpgrades(width);
             mobFan.setHeightUpgrades(height);
             mobFan.setLengthUpgrades(length);
-            //store.putComponent(ref, MobFanComponent.getComponentType(), mobFan);
+            commandBuffer.putComponent(ref, MachineUpgradeComponent.getComponentType(), upgrades);
         }
 
-        //store.putComponent(ref, MachineUpgradeComponent.getComponentType(), upgrades);
+        commandBuffer.putComponent(ref, MachineUpgradeComponent.getComponentType(), upgrades);
     }
 }
