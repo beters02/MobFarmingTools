@@ -13,7 +13,7 @@ $C = "../Common.ui";
 $C.@PageOverlay {}
 
 Group #PageLayout {
-  Anchor: (Width: @ContainerWidth, Top: 178, Bottom: 20);
+  Anchor: (Width: @ContainerWidth, Top: 70, Bottom: 20);
   LayoutMode: Top;
 
   $C.@Container #UpgradeContainer {
@@ -57,7 +57,7 @@ Group #PageLayout {
 
       Group #UpgradeSlotsContainer {
         LayoutMode: LeftCenterWrap;
-        Anchor: (Height: 280, Width: @ContainerWidth);
+        Anchor: (Height: 225, Width: @ContainerWidth);
       }
     }
   }
