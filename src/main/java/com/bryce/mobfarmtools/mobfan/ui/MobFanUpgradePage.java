@@ -4,6 +4,7 @@ import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanConstants;
+import com.bryce.mobfarmtools.util.MFTPreviewUtil;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.matrix.Matrix4d;
@@ -21,9 +22,6 @@ import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import org.jspecify.annotations.Nullable;
 
 public final class MobFanUpgradePage extends MachineUpgradePage {
-    private static final Vector3f PREVIEW_COLOR = new Vector3f(0.1f, 1.0f, 0.9f);
-    private static final float PREVIEW_DURATION_SECONDS = 86400.0f;
-
     public MobFanUpgradePage(PlayerRef playerRef, Ref<ChunkStore> mobFanRef, BlockPosition blockPosition, int rotationIndex) {
         super(playerRef, mobFanRef, MachineUpgradePage.MachineUpgradePageConfig.builder("Mob Fan Upgrades", blockPosition, rotationIndex)
                 .enableUpgrade(MachineUpgradeType.WIDTH, MobFanConstants.FAN_UPGRADE_MAX)
@@ -56,34 +54,21 @@ public final class MobFanUpgradePage extends MachineUpgradePage {
                     if (mobFan == null) {
                         return;
                     }
-                    showPreview(context.getPlayerRef(), context.getBlockPosition(), context.getRotationIndex(), mobFan);
+                    MFTPreviewUtil.ShowBoxPreview(
+                            context.getPlayerRef(),
+                            context.getBlockPosition(),
+                            context.getRotationIndex(),
+                            mobFan.getFanLength(),
+                            mobFan.getFanWidth(),
+                            mobFan.getFanHeight(),
+                            mobFan.getBaseForward()
+                    );
                 })
                 .build());
     }
 
     public static void clearAllPreviews(World world) {
         MachineUpgradePage.clearAllPreviews(world);
-    }
-
-    private static void showPreview(PlayerRef playerRef, BlockPosition blockPosition, int rotationIndex, MobFanComponent mobFan) {
-        RotationTuple rot = RotationTuple.get(rotationIndex);
-        Vector3d forward = Rotation.rotate(mobFan.getBaseForward(), rot.yaw(), rot.pitch(), rot.roll()).normalize();
-        Vector3d blockCenter = new Vector3d(blockPosition.x + 0.5, blockPosition.y + 0.5, blockPosition.z + 0.5);
-
-        double length = mobFan.getFanLength();
-        double width = mobFan.getFanWidth();
-        double height = mobFan.getFanHeight();
-        double start = 0.5;
-        Vector3d boxCenter = blockCenter.clone().add(forward.clone().scale(start + length * 0.5));
-
-        Matrix4d matrix = new Matrix4d().identity();
-        Matrix4d tmp = new Matrix4d();
-        matrix.translate(boxCenter);
-        matrix.rotateEuler(rot.pitch().getRadians(), rot.yaw().getRadians(), rot.roll().getRadians(), tmp);
-        matrix.scale(width, height, length);
-
-        DisplayDebug packet = new DisplayDebug(DebugShape.Cube, matrix.asFloatData(), PREVIEW_COLOR, PREVIEW_DURATION_SECONDS, true, null);
-        playerRef.getPacketHandler().write(packet);
     }
 
     @Nullable

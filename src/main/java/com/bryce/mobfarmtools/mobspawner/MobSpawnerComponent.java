@@ -112,6 +112,8 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     public float getLifetime() { return lifetime; }
     public int getSpawnRateMin() { return spawnRateMin; }
     public int getSpawnRateMax() { return spawnRateMax; }
+    public int getSpawnAmountMin() { return spawnAmountMin; }
+    public int getSpawnAmountMax() { return spawnAmountMax; }
     public int getFailedTries() {
         return failedTries;
     }
@@ -146,6 +148,10 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     }
     public void setRandomSpawnRate() { currentSpawnRate = MFTMathUtil.RandomRange(spawnRateMin, spawnRateMax); }
     public void setRandomSpawnAmount() { currentSpawnAmount = MFTMathUtil.RandomRange(spawnAmountMin, spawnAmountMax); }
+    public void setSpawnRateMin(int value) { spawnRateMin = value; }
+    public void setSpawnRateMax(int value) { spawnRateMax = value; }
+    public void setSpawnAmountMin(int value) { spawnAmountMin = value; }
+    public void setSpawnAmountMax(int value) { spawnAmountMax = value; }
 
     public void incrementFailedTries(int val) { failedTries += val; }
     public void incrementLifetime(float amount) { lifetime += amount; }
@@ -168,6 +174,42 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         }
 
         debugger.atInfo("Spawned "+currentSpawnAmount+" "+entityId+"s");
+    }
+
+    public int getSpawnRateMinFromSpeedUpgrade(int upgradeCount) {
+        return switch (upgradeCount) {
+            case 1 -> MobSpawnerConstants.UPG1_SPAWN_RATE_MIN;
+            case 2 -> MobSpawnerConstants.UPG2_SPAWN_RATE_MIN;
+            case 3 -> MobSpawnerConstants.UPG3_SPAWN_RATE_MIN;
+            case 4 -> MobSpawnerConstants.UPG4_SPAWN_RATE_MIN;
+            default -> MobSpawnerConstants.DEF_SPAWN_RATE_MIN;
+        };
+    }
+
+    public int getSpawnRateMaxFromSpeedUpgrade(int upgradeCount) {
+        return switch (upgradeCount) {
+            case 1 -> MobSpawnerConstants.UPG1_SPAWN_RATE_MAX;
+            case 2 -> MobSpawnerConstants.UPG2_SPAWN_RATE_MAX;
+            case 3 -> MobSpawnerConstants.UPG3_SPAWN_RATE_MAX;
+            case 4 -> MobSpawnerConstants.UPG4_SPAWN_RATE_MAX;
+            default -> MobSpawnerConstants.DEF_SPAWN_RATE_MAX;
+        };
+    }
+
+    public int getSpawnAmountMinFromOutputUpgrade(int upgradeCount) {
+        return switch (upgradeCount) {
+            case 1 -> MobSpawnerConstants.UPG1_SPAWN_AMOUNT_MIN;
+            case 2 -> MobSpawnerConstants.UPG2_SPAWN_AMOUNT_MIN;
+            default -> MobSpawnerConstants.DEF_SPAWN_AMOUNT_MIN;
+        };
+    }
+
+    public int getSpawnAmountMaxFromOutputUpgrade(int upgradeCount) {
+        return switch (upgradeCount) {
+            case 1 -> MobSpawnerConstants.UPG1_SPAWN_AMOUNT_MAX;
+            case 2 -> MobSpawnerConstants.UPG2_SPAWN_AMOUNT_MAX;
+            default -> MobSpawnerConstants.DEF_SPAWN_AMOUNT_MAX;
+        };
     }
 
     public void sendInfoMessage(Player player) {

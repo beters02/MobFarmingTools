@@ -2,6 +2,8 @@ package com.bryce.mobfarmtools.mobspawner;
 
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
+import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
+import com.bryce.mobfarmtools.mobspawner.ui.MobSpawnerUpgradePage;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
@@ -51,19 +53,8 @@ public class MobSpawnerInteraction extends SimpleBlockInteraction {
         if (playerRef == null) { return; }
 
         int rotationIndex = world.getBlockRotationIndex(targetBlock.x, targetBlock.y, targetBlock.z);
-        EnumMap<MachineUpgradeType, Integer> limits = new EnumMap<>(MachineUpgradeType.class);
-        limits.put(MachineUpgradeType.SPEED, 4);
-        limits.put(MachineUpgradeType.OUTPUT, 2);
-        limits.put(MachineUpgradeType.CHUNK_LOADING, 1);
-        limits.put(MachineUpgradeType.NOISE_SUPPRESSION, 1);
 
-        MachineUpgradePage page = new MachineUpgradePage(
-                playerRef,
-                blockEntityRef,
-                MachineUpgradePage.MachineUpgradePageConfig.builder("Mob Spawner Upgrades", targetBlock, rotationIndex)
-                        .enableUpgrades(limits)
-                        .build()
-        );
+        MobSpawnerUpgradePage page = new MobSpawnerUpgradePage(playerRef, blockEntityRef, targetBlock, rotationIndex);
         player.getPageManager().openCustomPage(playerRefEntityStore, playerRefEntityStore.getStore(), page);
     }
 

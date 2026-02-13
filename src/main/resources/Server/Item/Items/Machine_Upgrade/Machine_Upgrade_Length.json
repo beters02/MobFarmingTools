@@ -1,10 +1,10 @@
 {
   "TranslationProperties": {
-    "Name": "Fan Height Upgrade",
-    "Description": "Upgrade the height of a fan by 1 block. Max 4"
+    "Name": "Length Upgrade",
+    "Description": "Upgrade the length of a machine by 1 block."
   },
-  "Id": "Mob_Fan_Upgrade_Height",
-  "Texture": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Height.png",
+  "Id": "Machine_Upgrade_Length",
+  "Texture": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Length.png",
   "Quality": "Common",
   "MaxStack": 10,
   "Categories": [
@@ -37,8 +37,8 @@
       }
     ]
   },
-  "Model": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Height.blockymodel",
-  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Height.png",
+  "Model": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Length.blockymodel",
+  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Length.png",
   "IconProperties": {
     "Scale": 1.7,
     "Rotation": [
