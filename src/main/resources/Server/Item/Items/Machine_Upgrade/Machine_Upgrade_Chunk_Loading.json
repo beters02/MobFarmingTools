@@ -4,7 +4,7 @@
     "Description": "Set the machines chunk to be loaded."
   },
   "Id": "Machine_Upgrade_Chunk_Loading",
-  "Texture": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Width.png",
+  "Texture": "Items/Machine_Upgrade/Machine_Upgrade_Chunk_Loading.png",
   "Quality": "Common",
   "MaxStack": 10,
   "Categories": [
@@ -41,8 +41,7 @@
       }
     ]
   },
-  "Model": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Width.blockymodel",
-  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Width.png",
+  "Model": "Items/Machine_Upgrade/Machine_Upgrade.blockymodel",
   "IconProperties": {
     "Scale": 1.7,
     "Rotation": [
@@ -54,5 +53,6 @@
       1,
       -8
     ]
-  }
+  },
+  "Icon": "Icons/ItemsGenerated/Machine_Upgrade_Chunk_Loading.png"
 }

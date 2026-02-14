@@ -4,7 +4,7 @@
     "Description": "Suppress the noises of a machine."
   },
   "Id": "Machine_Upgrade_Noise_Suppression",
-  "Texture": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Width.png",
+  "Texture": "Items/Machine_Upgrade/Machine_Upgrade_Noise_Suppression.png",
   "Quality": "Common",
   "MaxStack": 10,
   "Categories": [
@@ -33,8 +33,7 @@
       }
     ]
   },
-  "Model": "Items/Mob_Fan_Upgrade/Mob_Fan_Upgrade_Width.blockymodel",
-  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Width.png",
+  "Model": "Items/Machine_Upgrade/Machine_Upgrade.blockymodel",
   "IconProperties": {
     "Scale": 1.7,
     "Rotation": [
@@ -46,5 +45,6 @@
       1,
       -8
     ]
-  }
+  },
+  "Icon": "Icons/ItemsGenerated/Machine_Upgrade_Noise_Suppression.png"
 }
