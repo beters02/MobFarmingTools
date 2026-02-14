@@ -92,10 +92,17 @@ public class VacuumHopperUpgradePage extends MachineUpgradePage {
                     }  else if (type == MachineUpgradeType.CHUNK_LOADING) {
                         World world = context.getMachineRef().getStore().getExternalData().getWorld();
                         if (newCount == 0) {
+                            hopper.setChunkLoaded(false);
                             MFTChunkUtil.DisableChunkLoadIfLoaded(world, blockPosition);
                         } else {
+                            hopper.setChunkLoaded(true);
                             MFTChunkUtil.EnableChunkLoadIfLoaded(world, blockPosition);
                         }
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                VacuumHopperConstants.UpgradePageStat.CHUNK_LOADED.getIndex(),
+                                String.valueOf(hopper.isChunkLoaded())
+                        );
                     }
 
                     Store<ChunkStore> store = context.getMachineRef().getStore();

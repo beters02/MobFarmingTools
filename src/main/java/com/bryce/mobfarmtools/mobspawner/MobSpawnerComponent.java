@@ -160,6 +160,7 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     public void setSpawnAmountMin(int value) { spawnAmountMin = value; }
     public void setSpawnAmountMax(int value) { spawnAmountMax = value; }
     public void setTickLifetime(int value) { tickLifetime = value; }
+    public void setChunkLoaded(boolean value) { chunkLoaded = value; }
 
     public void incrementFailedTries(int val) { failedTries += val; }
     public void incrementLifetime(float amount) { lifetime += amount; }

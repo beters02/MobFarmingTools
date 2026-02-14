@@ -2,6 +2,7 @@ package com.bryce.mobfarmtools.mobspawner.ui;
 
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
+import com.bryce.mobfarmtools.mobfan.MobFanConstants;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerInitializer;
@@ -69,12 +70,19 @@ public class MobSpawnerUpgradePage extends MachineUpgradePage {
                                 mobSpawner.getStatValueSpawnRate()
                         );
                     } else if (type == MachineUpgradeType.CHUNK_LOADING) {
-                        World world = mobSpawnerRef.getStore().getExternalData().getWorld();
+                        World world = context.getMachineRef().getStore().getExternalData().getWorld();
                         if (newCount == 0) {
+                            mobSpawner.setChunkLoaded(false);
                             MFTChunkUtil.DisableChunkLoadIfLoaded(world, blockPosition);
                         } else {
+                            mobSpawner.setChunkLoaded(true);
                             MFTChunkUtil.EnableChunkLoadIfLoaded(world, blockPosition);
                         }
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobSpawnerConstants.UpgradePageStat.CHUNK_LOADED.getIndex(),
+                                String.valueOf(mobSpawner.isChunkLoaded())
+                        );
                     }
 
                     Store<ChunkStore> store = context.getMachineRef().getStore();

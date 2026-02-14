@@ -81,10 +81,17 @@ public final class MobFanUpgradePage extends MachineUpgradePage {
                     }  else if (type == MachineUpgradeType.CHUNK_LOADING) {
                         World world = context.getMachineRef().getStore().getExternalData().getWorld();
                         if (newCount == 0) {
+                            mobFan.setChunkLoaded(false);
                             MFTChunkUtil.DisableChunkLoadIfLoaded(world, blockPosition);
                         } else {
+                            mobFan.setChunkLoaded(true);
                             MFTChunkUtil.EnableChunkLoadIfLoaded(world, blockPosition);
                         }
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobFanConstants.UpgradePageStat.CHUNK_LOADED.getIndex(),
+                                String.valueOf(mobFan.isChunkLoaded())
+                        );
                     }
 
                     Store<ChunkStore> store = context.getMachineRef().getStore();
