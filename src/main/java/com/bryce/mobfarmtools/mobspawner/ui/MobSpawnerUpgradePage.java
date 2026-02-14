@@ -27,6 +27,20 @@ public class MobSpawnerUpgradePage extends MachineUpgradePage {
                 .addStatistic(MobSpawnerConstants.UpgradePageStat.SPAWN_RATE)
                 .addStatistic(MobSpawnerConstants.UpgradePageStat.SPAWN_AMOUNT)
                 .addStatistic(MobSpawnerConstants.UpgradePageStat.NEXT_SPAWN_TIME)
+                .onBeforePageOpen(context -> {
+                    Ref<ChunkStore> ref = context.getMachineRef();
+                    MobSpawnerComponent spawner = ref.getStore().getComponent(ref, MobSpawnerComponent.getComponentType());
+                    if (spawner != null) {
+                        MachineUpgradePage page = context.getPage();
+                        page.updateStatisticValue(MobSpawnerConstants.UpgradePageStat.ENTITY_ID.getIndex(), spawner.getEntityId());
+                        page.updateStatisticValue(MobSpawnerConstants.UpgradePageStat.NOISE_SUPPRESSED.getIndex(), String.valueOf(spawner.isNoiseSuppressed()));
+                        page.updateStatisticValue(MobSpawnerConstants.UpgradePageStat.CHUNK_LOADED.getIndex(), String.valueOf(spawner.isChunkLoaded()));
+                        page.updateStatisticValue(MobSpawnerConstants.UpgradePageStat.SPAWN_RATE.getIndex(), spawner.getStatValueSpawnRate());
+                        page.updateStatisticValue(MobSpawnerConstants.UpgradePageStat.SPAWN_AMOUNT.getIndex(), spawner.getStatValueSpawnAmount());
+                        page.updateStatisticValue(MobSpawnerConstants.UpgradePageStat.ENABLED.getIndex(), String.valueOf(spawner.isEnabled()));
+                        page.updateStatisticValue(MobSpawnerConstants.UpgradePageStat.NEXT_SPAWN_TIME.getIndex(), String.valueOf(spawner.getTimeUntilNextSpawn()));
+                    }
+                })
                 .onUpgradeChanged((context, type, oldCount, newCount) -> {
                     MobSpawnerComponent mobSpawner = getMobSpawnerComponent(context.getMachineRef());
                     if (mobSpawner == null) {
@@ -36,6 +50,7 @@ public class MobSpawnerUpgradePage extends MachineUpgradePage {
                     if (type == MachineUpgradeType.OUTPUT) {
                         mobSpawner.setSpawnAmountMin(mobSpawner.getSpawnAmountMinFromOutputUpgrade(newCount));
                         mobSpawner.setSpawnAmountMax(mobSpawner.getSpawnAmountMaxFromOutputUpgrade(newCount));
+                        mobSpawner.onSpawnAmountChanged();
                         MachineUpgradePage.pushStatisticValue(
                                 context.getMachineRef(),
                                 MobSpawnerConstants.UpgradePageStat.SPAWN_AMOUNT.getIndex(),
@@ -44,6 +59,7 @@ public class MobSpawnerUpgradePage extends MachineUpgradePage {
                     } else if (type == MachineUpgradeType.SPEED) {
                         mobSpawner.setSpawnRateMin(mobSpawner.getSpawnRateMinFromSpeedUpgrade(newCount));
                         mobSpawner.setSpawnRateMax(mobSpawner.getSpawnRateMaxFromSpeedUpgrade(newCount));
+                        mobSpawner.onSpawnRateChanged();
                         MachineUpgradePage.pushStatisticValue(
                                 context.getMachineRef(),
                                 MobSpawnerConstants.UpgradePageStat.SPAWN_RATE.getIndex(),

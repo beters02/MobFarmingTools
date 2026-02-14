@@ -82,74 +82,83 @@ Group #PageLayout {
           LayoutMode: Top;
 
           Group #StatLine0 {
-              Visible: false;
-              Anchor: (Height: 18, Bottom: 2);
-              LayoutMode: Left;
-              Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
-              Group { FlexWeight: 1; }
-              Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
           Group #StatLine1 {
             Visible: false;
             Anchor: (Height: 18, Bottom: 2);
             LayoutMode: Left;
-            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
             Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
           Group #StatLine2 {
             Visible: false;
             Anchor: (Height: 18, Bottom: 2);
             LayoutMode: Left;
-            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
             Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
           Group #StatLine3 {
             Visible: false;
             Anchor: (Height: 18, Bottom: 2);
             LayoutMode: Left;
-            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
             Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
           Group #StatLine4 {
             Visible: false;
             Anchor: (Height: 18, Bottom: 2);
             LayoutMode: Left;
-            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
             Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
           Group #StatLine5 {
             Visible: false;
             Anchor: (Height: 18, Bottom: 2);
             LayoutMode: Left;
-            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
             Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
           Group #StatLine6 {
             Visible: false;
             Anchor: (Height: 18, Bottom: 2);
             LayoutMode: Left;
-            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
             Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
           Group #StatLine7 {
             Visible: false;
             Anchor: (Height: 18, Bottom: 2);
             LayoutMode: Left;
-            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
             Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
           Group #StatLine8 {
             Visible: false;
             Anchor: (Height: 18, Bottom: 2);
             LayoutMode: Left;
-            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
             Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
           Group #StatLine9 {
             Visible: false;
             Anchor: (Height: 18, Bottom: 2);
             LayoutMode: Left;
-            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Group { FlexWeight: 1; }
             Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
           }
         }

@@ -1,7 +1,10 @@
 package com.bryce.mobfarmtools.machineupgrade.ui;
 
+import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
+import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -46,6 +49,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
     private static final Map<UUID, Boolean> PREVIEW_ENABLED_BY_PLAYER = new ConcurrentHashMap<>();
     public static final int MAX_STATS = 10;
     private static final Map<Ref<ChunkStore>, Set<MachineUpgradePage>> OPEN_BY_MACHINE = new ConcurrentHashMap<>();
+    private static MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MachineUpgradePage]");
 
     private final Ref<ChunkStore> machineRef;
     private final MachineUpgradePageConfig config;
@@ -56,6 +60,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         super(playerRef, CustomPageLifetime.CanDismiss, MachineUpgradeEventData.CODEC);
         this.machineRef = machineRef;
         this.config = config;
+        debugger.setEnabled(false);
     }
 
     @Override
@@ -76,6 +81,10 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         buildStatistics(commands, true);
         buildPlayerInventory(commands, events, player.getInventory(), true);
         updatePreviewButton(commands);
+
+        if (config.beforeOpenHandler != null) {
+            config.beforeOpenHandler.onRightBeforePageOpen(new BeforeOpenContext(this.machineRef, this));
+        }
 
         if (config.previewHandler != null) {
             events.addEventBinding(CustomUIEventBindingType.Activating, "#PreviewButton", EventData.of("Action", "preview_toggle"), false);
@@ -446,11 +455,19 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
     }
 
     public void updateStatisticValue(int index, String value) {
+        boolean isEntityId = index == (MobSpawnerConstants.UpgradePageStat.ENTITY_ID.getIndex());
+
         if (index < 0 || index >= MAX_STATS) {
+            if (isEntityId) {
+                debugger.atWarning("INDEX < 0 OR INDEX >= MAX_STATS");
+            }
             return;
         }
         StatisticLine line = runtimeStats.get(index);
         if (line == null) {
+            if (isEntityId) {
+                debugger.atWarning("LINE == NULL");
+            }
             return;
         }
         line.setValue(value);
@@ -459,6 +476,10 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         update.set(getStatLineSelector(index) + " #StatValue.Text", value);
         update.set(getStatLineSelector(index) + ".Visible", true);
         sendUpdate(update, false);
+
+        if (isEntityId) {
+            debugger.atWarning("UPDATED TO " + value);
+        }
     }
 
     public void updateStatisticDescription(int index, String description) {
@@ -503,6 +524,11 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         void onPreviewStateChanged(UpgradeEventContext context, boolean enabled);
     }
 
+    @FunctionalInterface
+    public interface BeforePageOpenHandler {
+        void onRightBeforePageOpen(BeforeOpenContext context);
+    }
+
     public static final class MachineUpgradePageConfig {
         private final String title;
         private final BlockPosition blockPosition;
@@ -512,6 +538,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         private final @Nullable UpgradeChangeHandler changeHandler;
         private final @Nullable PreviewHandler previewHandler;
         private final Map<Integer, StatisticLine> statistics;
+        private final @Nullable BeforePageOpenHandler beforeOpenHandler;
 
         private MachineUpgradePageConfig(
                 String title,
@@ -521,6 +548,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
                 EnumMap<MachineUpgradeType, Integer> upgradeLimits,
                 @Nullable UpgradeChangeHandler changeHandler,
                 @Nullable PreviewHandler previewHandler,
+                @Nullable BeforePageOpenHandler beforeOpenHandler,
                 Map<Integer, StatisticLine> statistics
         ) {
             this.title = title;
@@ -531,6 +559,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
             this.changeHandler = changeHandler;
             this.previewHandler = previewHandler;
             this.statistics = statistics;
+            this.beforeOpenHandler = beforeOpenHandler;
         }
 
         public static Builder builder(String title, BlockPosition blockPosition, int rotationIndex) {
@@ -553,6 +582,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
             private final EnumMap<MachineUpgradeType, Integer> upgradeLimits = new EnumMap<>(MachineUpgradeType.class);
             private @Nullable UpgradeChangeHandler changeHandler;
             private @Nullable PreviewHandler previewHandler;
+            private @Nullable BeforePageOpenHandler beforeOpenHandler;
             private final Map<Integer, StatisticLine> statistics;
 
             private Builder(String title, BlockPosition blockPosition, int rotationIndex) {
@@ -580,6 +610,11 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
 
             public Builder onUpgradeChanged(@Nullable UpgradeChangeHandler handler) {
                 this.changeHandler = handler;
+                return this;
+            }
+
+            public Builder onBeforePageOpen(@Nullable BeforePageOpenHandler handler) {
+                this.beforeOpenHandler = handler;
                 return this;
             }
 
@@ -622,6 +657,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
                         new EnumMap<>(upgradeLimits),
                         changeHandler,
                         previewHandler,
+                        beforeOpenHandler,
                         statsCopy
                 );
             }
@@ -662,6 +698,19 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         public int getRotationIndex() {
             return rotationIndex;
         }
+    }
+
+    public static final class BeforeOpenContext {
+        private final Ref<ChunkStore> machineRef;
+        private final MachineUpgradePage page;
+
+        private BeforeOpenContext(Ref<ChunkStore> machineRef, MachineUpgradePage page) {
+            this.machineRef = machineRef;
+            this.page = page;
+        }
+
+        public Ref<ChunkStore> getMachineRef() { return machineRef; }
+        public MachineUpgradePage getPage() { return page; }
     }
 
     public static final class MachineUpgradeEventData {

@@ -4,6 +4,7 @@ import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
 import com.bryce.mobfarmtools.mobspawner.ui.MobSpawnerUpgradePage;
+import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
@@ -28,6 +29,12 @@ import java.util.EnumMap;
 
 public class MobSpawnerInteraction extends SimpleBlockInteraction {
 
+    private MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerInteraction]");
+
+    public MobSpawnerInteraction() {
+        debugger.setEnabled(false);
+    }
+
     public static final BuilderCodec<MobSpawnerInteraction> CODEC =
             BuilderCodec.builder(
                     MobSpawnerInteraction.class,
@@ -37,20 +44,20 @@ public class MobSpawnerInteraction extends SimpleBlockInteraction {
     @Override
     protected void interactWithBlock(@NonNull World world, @NonNull CommandBuffer<EntityStore> commandBuffer, @NonNull InteractionType interactionType, @NonNull InteractionContext interactionContext, @Nullable ItemStack itemStack, @NonNull Vector3i vector3i, @NonNull CooldownHandler cooldownHandler) {
         BlockPosition targetBlock = interactionContext.getTargetBlock();
-        if (targetBlock == null) { return; }
+        if (targetBlock == null) return;
 
         WorldChunk chunk = world.getChunkIfInMemory(ChunkUtil.indexChunkFromBlock(targetBlock.x, targetBlock.z));
-        if (chunk == null) { return; }
+        if (chunk == null) return;
 
         Ref<ChunkStore> blockEntityRef = chunk.getBlockComponentEntity(targetBlock.x, targetBlock.y, targetBlock.z);
-        if (blockEntityRef == null) { return; }
+        if (blockEntityRef == null) return;
 
         Ref<EntityStore> playerRefEntityStore = interactionContext.getEntity();
         Player player = commandBuffer.getComponent(playerRefEntityStore, Player.getComponentType());
-        if (player == null) { return; }
+        if (player == null) return;
 
         PlayerRef playerRef = commandBuffer.getComponent(playerRefEntityStore, PlayerRef.getComponentType());
-        if (playerRef == null) { return; }
+        if (playerRef == null) return;
 
         int rotationIndex = world.getBlockRotationIndex(targetBlock.x, targetBlock.y, targetBlock.z);
 

@@ -108,6 +108,10 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         return MobFarmingToolsPlugin.get().getMobSpawnerComponentType();
     }
 
+    public boolean isEnabled() { return enabled; }
+    public boolean isNoiseSuppressed() { return noiseSuppressed; }
+    public boolean isChunkLoaded() { return chunkLoaded; }
+
     public String getEntityId() {
         return entityId;
     }
@@ -229,6 +233,16 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         return min + "/" + max;
     }
 
+    public void onSpawnRateChanged() {
+        setTickLifetime(0);
+        setLifetime(0);
+        setRandomSpawnRate();
+    }
+
+    public void onSpawnAmountChanged() {
+        setRandomSpawnAmount();
+    }
+
     public void sendInfoMessage(Player player) {
         player.sendMessage(Message.raw("Enabled: " + enabled));
         player.sendMessage(Message.raw("Chunk Loaded: " + chunkLoaded));
@@ -247,16 +261,18 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     @Override
     public @Nullable Component<ChunkStore> clone() {
         MobSpawnerComponent copy = new MobSpawnerComponent();
+        copy.entityId = this.entityId;
         copy.spawnRateMin = this.spawnRateMin;
         copy.spawnRateMax = this.spawnRateMax;
         copy.spawnAmountMin = this.spawnAmountMin;
         copy.spawnAmountMax = this.spawnAmountMax;
-        copy.maxEntities = this.maxEntities;
         copy.chunkLoaded = this.chunkLoaded;
-        copy.tickLifetime = this.tickLifetime;
         copy.noiseSuppressed = this.noiseSuppressed;
-        copy.entityId = this.entityId;
         copy.enabled = this.enabled;
+
+        copy.maxEntities = this.maxEntities;
+        copy.tickLifetime = this.tickLifetime;
+        copy.lifetime = this.lifetime;
         copy.entitySize = this.entitySize;
         return copy;
     }

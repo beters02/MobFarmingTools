@@ -3,6 +3,8 @@ package com.bryce.mobfarmtools.mobswab;
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.config.MobFarmingToolsConfig;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
+import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
+import com.bryce.mobfarmtools.mobspawner.ui.MobSpawnerUpgradePage;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTEntityUtil;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -101,10 +103,10 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
         String entityId = getOrInfo(meta.getMobId(), player, meta);
         if (Objects.equals(entityId, "None")) return;
 
-        swabSpawnerAction(spawner, player, meta, entityId);
+        swabSpawnerAction(spawner, blockRef, player, meta, entityId);
     }
 
-    private void swabSpawnerAction(MobSpawnerComponent spawnerComponent, Player player, MobSwabMetadata meta, String entityId) {
+    private void swabSpawnerAction(MobSpawnerComponent spawnerComponent, Ref<ChunkStore> blockRef, Player player, MobSwabMetadata meta, String entityId) {
         if (isEntityIdBlacklisted(entityId)) {
             player.sendMessage(Message.raw("Applying " + entityId + " to spawner has been disabled."));
             return;
@@ -112,6 +114,11 @@ public class MobSwabInteraction extends SimpleInstantInteraction {
 
         spawnerComponent.setEntityId(entityId);
         spawnerComponent.setEntitySize(meta.getFixedEntitySize());
+        MobSpawnerUpgradePage.pushStatisticValue(
+                blockRef,
+                MobSpawnerConstants.UpgradePageStat.ENTITY_ID.getIndex(),
+                entityId
+        );
 
         if (player.getGameMode() != GameMode.Creative) {
             Inventory inventory = player.getInventory();
