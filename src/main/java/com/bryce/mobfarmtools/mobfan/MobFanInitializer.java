@@ -4,6 +4,7 @@ import com.bryce.mobfarmtools.chunks.ForcedChunkPersistence;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
+import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
@@ -101,40 +102,16 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
-        MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFanComponent.getComponentType());
         World world = store.getExternalData().getWorld();
         MobFanUpgradePage.clearAllPreviews(world);
 
-        if (removeReason == RemoveReason.UNLOAD || mobFan == null) {
-            return;
-        }
+        if (removeReason == RemoveReason.UNLOAD) return;
 
-        Vector3i pos = mobFan.getStoredWorldPos();
-        if (pos == null) {
-            BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
-            if (info == null) {
-                return;
-            }
+        Vector3i pos = MFTBlockUtil.GetWorldPosFromBlockRef(store, ref);
+        if (pos == null) return;
 
-            Store<ChunkStore> chunkStore = info.getChunkRef().getStore();
-            WorldChunk worldChunk = chunkStore.getComponent(info.getChunkRef(), WorldChunk.getComponentType());
-            if (worldChunk == null) {
-                return;
-            }
-
-            int localX = ChunkUtil.xFromBlockInColumn(info.getIndex());
-            int worldY = ChunkUtil.yFromBlockInColumn(info.getIndex());
-            int localZ = ChunkUtil.zFromBlockInColumn(info.getIndex());
-            int worldX = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getX(), localX);
-            int worldZ = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getZ(), localZ);
-            pos = new Vector3i(worldX, worldY, worldZ);
-        }
-
-        if(mobFan.getStoredWorld() != null) {
-            world = mobFan.getStoredWorld();
-        }
-
-        if (mobFan.isChunkLoaded()) {
+        MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFanComponent.getComponentType());
+        if (mobFan != null && mobFan.isChunkLoaded()) {
             ForcedChunkPersistence.setForced(world, pos, false);
         }
 
@@ -143,18 +120,8 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
             return;
         }
 
-        List<ItemStack> drops = new ArrayList<>();
-        for (MachineUpgradeType type : MachineUpgradeType.values()) {
-            int count = upgrades.getCount(type);
-            if (count <= 0) {
-                continue;
-            }
-            drops.add(new ItemStack(type.getItemId(), count));
-        }
-
-        if (drops.isEmpty()) {
-            return;
-        }
+        List<ItemStack> drops = upgrades.getUpgradeDrops();
+        if (drops.isEmpty()) return;
 
         Store<EntityStore> entityStore = world.getEntityStore().getStore();
         Vector3d dropPosition = pos.toVector3d().add(0.5, 0.0, 0.5);

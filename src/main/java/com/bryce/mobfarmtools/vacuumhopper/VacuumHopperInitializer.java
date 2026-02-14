@@ -6,6 +6,7 @@ import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
+import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.vacuumhopper.ui.VacuumHopperUpgradePage;
 import com.hypixel.hytale.component.*;
@@ -64,23 +65,8 @@ public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
             return;
         }
 
-        BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
-        if (info == null || info.getChunkRef() == null) {
-            return;
-        }
-
-        Store<ChunkStore> chunkStore = info.getChunkRef().getStore();
-        WorldChunk worldChunk = chunkStore.getComponent(info.getChunkRef(), WorldChunk.getComponentType());
-        if (worldChunk == null) {
-            return;
-        }
-
-        int localX = ChunkUtil.xFromBlockInColumn(info.getIndex());
-        int worldY = ChunkUtil.yFromBlockInColumn(info.getIndex());
-        int localZ = ChunkUtil.zFromBlockInColumn(info.getIndex());
-        int worldX = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getX(), localX);
-        int worldZ = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getZ(), localZ);
-        Vector3i pos = new Vector3i(worldX, worldY, worldZ);
+        Vector3i pos = MFTBlockUtil.GetWorldPosFromBlockRef(store, ref);
+        if (pos == null) return;
 
         VacuumHopperComponent vacuum = store.getComponent(ref, VacuumHopperComponent.getComponentType());
         if (vacuum != null && vacuum.isChunkLoaded()) {
@@ -88,21 +74,10 @@ public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
         }
 
         MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
-        if (upgrades == null) {
-            return;
-        }
+        if (upgrades == null) return;
 
-        List<ItemStack> drops = new ArrayList<>();
-        for (MachineUpgradeType type : MachineUpgradeType.values()) {
-            int count = upgrades.getCount(type);
-            if (count <= 0) {
-                continue;
-            }
-            drops.add(new ItemStack(type.getItemId(), count));
-        }
-        if (drops.isEmpty()) {
-            return;
-        }
+        List<ItemStack> drops = upgrades.getUpgradeDrops();
+        if (drops.isEmpty()) return;
 
         Store<EntityStore> entityStore = world.getEntityStore().getStore();
         Vector3d dropPosition = pos.toVector3d().add(0.5, 0.0, 0.5);

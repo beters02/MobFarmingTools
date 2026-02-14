@@ -75,6 +75,14 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
                             (component, value) -> component.enabled = value,
                             component -> component.enabled)
                     .add()
+                    .append(new KeyedCodec<>("CurrentSpawnRate", Codec.INTEGER),
+                            (component, value) -> component.currentSpawnRate = value,
+                            component -> component.currentSpawnRate)
+                    .add()
+                    .append(new KeyedCodec<>("CurrentSpawnAmount", Codec.INTEGER),
+                            (component, value) -> component.currentSpawnAmount = value,
+                            component -> component.currentSpawnAmount)
+                    .add()
                     .build();
 
 
@@ -97,11 +105,7 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     private int failedTries = 0;
     private int tickLifetime = 0;
 
-    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerComponent]");
-
-    public MobSpawnerComponent() {
-        debugger.setEnabled(false);
-    }
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerComponent]", MobSpawnerConstants.DEBUGGER_ENABLED);
 
     @NonNull
     public static ComponentType<ChunkStore, MobSpawnerComponent> getComponentType() {
@@ -125,6 +129,8 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     }
     public int getMaxEntities() { return maxEntities; }
     public int getTickLifetime() { return tickLifetime; }
+    public int getCurrentSpawnRate() { return currentSpawnRate; }
+    public int getCurrentSpawnAmount() { return currentSpawnAmount; }
     public float getTimeUntilNextSpawn() {
         if (!canTick()) return -1;
         return currentSpawnRate - lifetime;
@@ -271,10 +277,17 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         copy.noiseSuppressed = this.noiseSuppressed;
         copy.enabled = this.enabled;
 
+        copy.currentSpawnRate = this.currentSpawnRate;
+        copy.currentSpawnAmount = this.currentSpawnAmount;
+
         copy.maxEntities = this.maxEntities;
         copy.tickLifetime = this.tickLifetime;
         copy.lifetime = this.lifetime;
         copy.entitySize = this.entitySize;
+
+        copy.failedTries = this.failedTries;
+
+        debugger.atInfo("CurrentSpawnRate:" + currentSpawnRate);
         return copy;
     }
 }

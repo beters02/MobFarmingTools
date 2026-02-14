@@ -1,10 +1,7 @@
 package com.bryce.mobfarmtools.util;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
-import com.hypixel.hytale.component.ArchetypeChunk;
-import com.hypixel.hytale.component.CommandBuffer;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.block.BlockUtil;
 import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.math.util.ChunkUtil;
@@ -29,6 +26,27 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class MFTBlockUtil {
+
+    public static @Nullable Vector3i GetWorldPosFromBlockRef(ComponentAccessor<ChunkStore> accessor, Ref<ChunkStore> blockRef) {
+        BlockModule.BlockStateInfo info = accessor.getComponent(blockRef, BlockModule.BlockStateInfo.getComponentType());
+        if (info == null) return null;
+
+        Ref<ChunkStore> chunkRef = info.getChunkRef();
+        if (!chunkRef.isValid()) return null;
+
+        WorldChunk chunk = accessor.getComponent(chunkRef, WorldChunk.getComponentType());
+        if (chunk == null) return null;
+
+        int index = info.getIndex();
+        int localX = ChunkUtil.xFromBlockInColumn(index);
+        int y      = ChunkUtil.yFromBlockInColumn(index); // already world Y in this encoding
+        int localZ = ChunkUtil.zFromBlockInColumn(index);
+
+        int x = ChunkUtil.worldCoordFromLocalCoord(chunk.getX(), localX);
+        int z = ChunkUtil.worldCoordFromLocalCoord(chunk.getZ(), localZ);
+
+        return new Vector3i(x, y, z);
+    }
 
     public static @Nullable Vector3d GetWorldPosFromBlockStateInfo(BlockModule.BlockStateInfo info) {
         int blockIndex = info.getIndex();

@@ -28,11 +28,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
     private final ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType;
-    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerSystem]");
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerSystem]", MobSpawnerConstants.DEBUGGER_ENABLED);
 
     public MobSpawnerSystem(ComponentType<ChunkStore, MobSpawnerComponent> mobSpawnerComponentType) {
         this.mobSpawnerComponentType = mobSpawnerComponentType;
-        debugger.setEnabled(false);
     }
 
     private record SpawnResult(boolean ok, String msg) {}

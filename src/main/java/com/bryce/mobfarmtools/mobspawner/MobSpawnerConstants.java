@@ -7,6 +7,8 @@ import org.jspecify.annotations.Nullable;
 
 public class MobSpawnerConstants {
 
+    public static final boolean DEBUGGER_ENABLED = true;
+
     public static final int MAX_FAILED_SPAWN_TRIES = 5;
     public static final double SPAWN_RADIUS = 3; // 7x7
 

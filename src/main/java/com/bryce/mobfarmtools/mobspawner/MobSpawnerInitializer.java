@@ -6,6 +6,7 @@ import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
 import com.bryce.mobfarmtools.mobspawner.ui.MobSpawnerUpgradePage;
+import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
@@ -29,18 +30,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MobSpawnerInitializer extends RefSystem<ChunkStore> {
-    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerInitializer]");
-
-    public MobSpawnerInitializer() {
-        debugger.setEnabled(false);
-    }
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerInitializer]", MobSpawnerConstants.DEBUGGER_ENABLED);
 
     @Override
     public void onEntityAdded(@NonNull Ref<ChunkStore> ref, @NonNull AddReason addReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
         MobSpawnerComponent spawnerComponent = store.getComponent(ref, MobSpawnerComponent.getComponentType());
         if (spawnerComponent == null) {
             debugger.atWarning("Could not find spawner component on spawner added.");
+            return;
         }
+
+        debugger.atInfo("CURRENT SPAWN RATE: " + spawnerComponent.getCurrentSpawnRate());
     }
 
     @Override
@@ -48,27 +48,10 @@ public class MobSpawnerInitializer extends RefSystem<ChunkStore> {
         World world = store.getExternalData().getWorld();
         MobSpawnerUpgradePage.clearAllPreviews(world);
 
-        if (removeReason == RemoveReason.UNLOAD) {
-            return;
-        }
+        if (removeReason == RemoveReason.UNLOAD) return;
 
-        BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
-        if (info == null) {
-            return;
-        }
-
-        Store<ChunkStore> chunkStore = ref.getStore();
-        WorldChunk worldChunk = chunkStore.getComponent(ref, WorldChunk.getComponentType());
-        if (worldChunk == null) {
-            return;
-        }
-
-        int localX = ChunkUtil.xFromBlockInColumn(info.getIndex());
-        int worldY = ChunkUtil.yFromBlockInColumn(info.getIndex());
-        int localZ = ChunkUtil.zFromBlockInColumn(info.getIndex());
-        int worldX = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getX(), localX);
-        int worldZ = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getZ(), localZ);
-        Vector3i pos = new Vector3i(worldX, worldY, worldZ);
+        Vector3i pos = MFTBlockUtil.GetWorldPosFromBlockRef(store, ref);
+        if (pos == null) return;
 
         MobSpawnerComponent mobSpawner = store.getComponent(ref, MobSpawnerComponent.getComponentType());
         if (mobSpawner != null && mobSpawner.isChunkLoaded()) {
@@ -76,21 +59,10 @@ public class MobSpawnerInitializer extends RefSystem<ChunkStore> {
         }
 
         MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
-        if (upgrades == null) {
-            return;
-        }
+        if (upgrades == null) return;
 
-        List<ItemStack> drops = new ArrayList<>();
-        for (MachineUpgradeType type : MachineUpgradeType.values()) {
-            int count = upgrades.getCount(type);
-            if (count <= 0) {
-                continue;
-            }
-            drops.add(new ItemStack(type.getItemId(), count));
-        }
-        if (drops.isEmpty()) {
-            return;
-        }
+        List<ItemStack> drops = upgrades.getUpgradeDrops();
+        if (drops.isEmpty()) return;
 
         Store<EntityStore> entityStore = world.getEntityStore().getStore();
         Vector3d dropPosition = pos.toVector3d().add(0.5, 0.0, 0.5);

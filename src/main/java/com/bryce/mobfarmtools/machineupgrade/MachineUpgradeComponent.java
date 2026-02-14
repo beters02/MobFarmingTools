@@ -6,11 +6,14 @@ import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MachineUpgradeComponent implements Component<ChunkStore> {
     private static final int SLOT_COUNT = MachineUpgradeType.values().length;
@@ -55,6 +58,18 @@ public class MachineUpgradeComponent implements Component<ChunkStore> {
         for (int i = 0; i < len; i++) {
             upgradeCounts[i] = Math.max(0, value[i]);
         }
+    }
+
+    public List<ItemStack> getUpgradeDrops() {
+        List<ItemStack> drops = new ArrayList<>();
+        for (MachineUpgradeType type : MachineUpgradeType.values()) {
+            int count = getCount(type);
+            if (count <= 0) {
+                continue;
+            }
+            drops.add(new ItemStack(type.getItemId(), count));
+        }
+        return drops;
     }
 
     @Override
