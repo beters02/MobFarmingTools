@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.util;
 
 import com.hypixel.hytale.math.matrix.Matrix4d;
+import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.Vector3f;
 import com.hypixel.hytale.protocol.BlockPosition;
@@ -67,6 +68,15 @@ public class MFTPreviewUtil {
         matrix.scale(width, height, length);
 
         ShowBoxPreview(playerRef, matrix, DEFAULT_PREVIEW_COLOR, DEFAULT_PREVIEW_DURATION_SECONDS);
+    }
+
+    public static void ShowBoxPreview(PlayerRef playerRef, Box box) {
+        Matrix4d boxMatrix = new Matrix4d()
+                .identity()
+                .translate(box.middleX(), box.middleY(), box.middleZ())
+                .scale(box.width(), box.height(), box.depth());
+
+        ShowBoxPreview(playerRef, boxMatrix, DEFAULT_PREVIEW_COLOR, DEFAULT_PREVIEW_DURATION_SECONDS);
     }
 
     public static void ShowBoxPreview(

@@ -1,5 +1,6 @@
 package com.bryce.mobfarmtools.vacuumhopper.ui;
 
+import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.chunks.ForcedChunkPersistence;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
@@ -7,13 +8,18 @@ import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanConstants;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
+import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTChunkUtil;
+import com.bryce.mobfarmtools.util.MFTMathUtil;
 import com.bryce.mobfarmtools.util.MFTPreviewUtil;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperComponent;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperConstants;
+import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperSystem;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.packets.player.ClearDebugShapes;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -37,14 +43,18 @@ public class VacuumHopperUpgradePage extends MachineUpgradePage {
                     if (hopper == null) {
                         return;
                     }
-                    MFTPreviewUtil.ShowBoxPreviewFromMiddle(
-                            context.getPlayerRef(),
-                            context.getBlockPosition(),
-                            context.getRotationIndex(),
+
+                    Vector3i pos = MFTBlockUtil.GetWorldPosFromBlockRef(vacuumHopperRef.getStore(), vacuumHopperRef);
+                    if (pos == null) return;
+
+                    Box box = MFTMathUtil.GetBoxFromPosition(
+                            pos.toVector3d(),
                             hopper.getLength(),
                             hopper.getWidth(),
-                            hopper.getHeight()
+                            hopper.getHeight(),
+                            new Vector3d(0, 0, -1), rotationIndex
                     );
+                    MFTPreviewUtil.ShowBoxPreview(context.getPlayerRef(), box);
                 })
                 .addStatistic(VacuumHopperConstants.UpgradePageStat.ENABLED)
                 .addStatistic(VacuumHopperConstants.UpgradePageStat.CHUNK_LOADED)

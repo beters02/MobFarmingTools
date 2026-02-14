@@ -48,7 +48,8 @@ public class MFTMathUtil {
         Vector3d forward = GetForwardDirection(baseForward, rotationIndex);
         Vector3d right = Rotation.rotate(new Vector3d(1, 0, 0), rot.yaw(), rot.pitch(), rot.roll()).normalize();
         Vector3d up = Rotation.rotate(new Vector3d(0, 1, 0), rot.yaw(), rot.pitch(), rot.roll()).normalize();
-        Vector3d blockCenter = new Vector3d(x, y, z);
+        // x/y/z are block-world coordinates (block corner), so shift to block center.
+        Vector3d blockCenter = new Vector3d(x + 0.5, y + 0.5, z + 0.5);
 
         Vector3d halfForward = forward.clone().scale(length * 0.5);
         Vector3d halfRight = right.clone().scale(width * 0.5);

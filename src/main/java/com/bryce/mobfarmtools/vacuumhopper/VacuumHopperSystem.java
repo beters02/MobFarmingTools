@@ -1,5 +1,6 @@
 package com.bryce.mobfarmtools.vacuumhopper;
 
+import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.util.*;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
