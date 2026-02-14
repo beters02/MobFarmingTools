@@ -1,6 +1,6 @@
 {
   "TranslationProperties": {
-    "Name": "Length Upgrade",
+    "Name": "server.items.Upgrade_Length.name",
     "Description": "Upgrade the length of a machine by 1 block."
   },
   "Id": "Machine_Upgrade_Length",
@@ -20,6 +20,10 @@
       {
         "ItemId": "Ingredient_Bar_Gold",
         "Quantity": 1
+      },
+      {
+        "ItemId": "Ingredient_Leather_Medium",
+        "Quantity": 3
       },
       {
         "ItemId": "Plant_Moss_Green",

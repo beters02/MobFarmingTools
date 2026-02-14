@@ -1,6 +1,6 @@
 {
   "TranslationProperties": {
-    "Name": "Speed Upgrade",
+    "Name": "server.items.Upgrade_Speed.name",
     "Description": "Upgrade the speed of a machine."
   },
   "Id": "Machine_Upgrade_Speed",
@@ -11,19 +11,23 @@
     "Items.Example"
   ],
   "Recipe": {
-    "TimeSeconds": 3.5,
+    "TimeSeconds": 10,
     "Input": [
       {
-        "ItemId": "Ingredient_Bar_Silver",
-        "Quantity": 5
+        "ItemId": "Ingredient_Bar_Adamantite",
+        "Quantity": 20
       },
       {
-        "ItemId": "Ingredient_Bar_Gold",
+        "ItemId": "Ingredient_Leather_Heavy",
+        "Quantity": 15
+      },
+      {
+        "ItemId": "Ingredient_Fabric_Scrap_Cindercloth",
+        "Quantity": 15
+      },
+      {
+        "ItemId": "Ingredient_Voidheart",
         "Quantity": 1
-      },
-      {
-        "ItemId": "Plant_Moss_Green",
-        "Quantity": 5
       }
     ],
     "BenchRequirement": [
@@ -33,7 +37,7 @@
         "Categories": [
           "Workbench_Survival"
         ],
-        "RequiredTierLevel": 2
+        "RequiredTierLevel": 3
       }
     ]
   },
