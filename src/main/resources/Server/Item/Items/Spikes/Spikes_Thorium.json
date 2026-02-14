@@ -13,7 +13,11 @@
     "Input": [
       {
         "ItemId": "Ingredient_Bar_Thorium",
-        "Quantity": 20
+        "Quantity": 12
+      },
+      {
+        "ItemId": "Ingredient_Leather_Medium",
+        "Quantity": 3
       },
       {
         "ItemId": "Ingredient_Fibre",
@@ -53,7 +57,7 @@
     "BlockEntity": {
       "Components": {
         "Mob_Farming_Tools:Spikes_Component": {
-          "DamagePerSecond": 12
+          "DamagePerSecond": 11
         }
       }
     },

@@ -13,7 +13,11 @@
     "Input": [
       {
         "ItemId": "Ingredient_Bar_Adamantite",
-        "Quantity": 30
+        "Quantity": 12
+      },
+      {
+        "ItemId": "Ingredient_Leather_Heavy",
+        "Quantity": 3
       },
       {
         "ItemId": "Ingredient_Fibre",
@@ -53,7 +57,7 @@
     "BlockEntity": {
       "Components": {
         "Mob_Farming_Tools:Spikes_Component": {
-          "DamagePerSecond": 21,
+          "DamagePerSecond": 17,
           "SpikesType": "Adamantite"
         }
       }

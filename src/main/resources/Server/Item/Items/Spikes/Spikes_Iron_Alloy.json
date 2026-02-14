@@ -20,6 +20,10 @@
         "Quantity": 10
       },
       {
+        "ItemId": "Ingredient_Leather_Light",
+        "Quantity": 5
+      },
+      {
         "ItemId": "Ingredient_Fibre",
         "Quantity": 10
       }
