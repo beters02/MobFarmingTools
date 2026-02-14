@@ -5,6 +5,7 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.Vector3f;
 import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.DebugShape;
+import com.hypixel.hytale.protocol.packets.player.ClearDebugShapes;
 import com.hypixel.hytale.protocol.packets.player.DisplayDebug;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
@@ -14,6 +15,12 @@ public class MFTPreviewUtil {
 
     private static final Vector3f DEFAULT_PREVIEW_COLOR = new Vector3f(0.1f, 1.0f, 0.9f);
     private static final float DEFAULT_PREVIEW_DURATION_SECONDS = 86400.0f;
+
+    private static void ShowBoxPreview(PlayerRef playerRef, Matrix4d matrix, Vector3f previewColor, float previewDurationSeconds) {
+        playerRef.getPacketHandler().write(new ClearDebugShapes());
+        DisplayDebug packet = new DisplayDebug(DebugShape.Cube, matrix.asFloatData(), previewColor, previewDurationSeconds, true, null);
+        playerRef.getPacketHandler().write(packet);
+    }
 
     public static void ShowBoxPreview(
             PlayerRef playerRef,
@@ -39,8 +46,7 @@ public class MFTPreviewUtil {
         matrix.rotateEuler(rot.pitch().getRadians(), rot.yaw().getRadians(), rot.roll().getRadians(), tmp);
         matrix.scale(width, height, length);
 
-        DisplayDebug packet = new DisplayDebug(DebugShape.Cube, matrix.asFloatData(), previewColor, previewDurationSeconds, true, null);
-        playerRef.getPacketHandler().write(packet);
+        ShowBoxPreview(playerRef, matrix, previewColor, previewDurationSeconds);
     }
 
     public static void ShowBoxPreviewFromMiddle(
@@ -60,8 +66,7 @@ public class MFTPreviewUtil {
         matrix.rotateEuler(rot.pitch().getRadians(), rot.yaw().getRadians(), rot.roll().getRadians(), tmp);
         matrix.scale(width, height, length);
 
-        DisplayDebug packet = new DisplayDebug(DebugShape.Cube, matrix.asFloatData(), DEFAULT_PREVIEW_COLOR, DEFAULT_PREVIEW_DURATION_SECONDS, true, null);
-        playerRef.getPacketHandler().write(packet);
+        ShowBoxPreview(playerRef, matrix, DEFAULT_PREVIEW_COLOR, DEFAULT_PREVIEW_DURATION_SECONDS);
     }
 
     public static void ShowBoxPreview(
