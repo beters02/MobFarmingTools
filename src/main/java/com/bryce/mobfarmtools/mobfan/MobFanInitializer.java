@@ -1,5 +1,6 @@
 package com.bryce.mobfarmtools.mobfan;
 
+import com.bryce.mobfarmtools.chunks.ForcedChunkPersistence;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
@@ -12,6 +13,7 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockMaterial;
+import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
@@ -101,10 +103,6 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
         MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFanComponent.getComponentType());
         World world = store.getExternalData().getWorld();
-        if (mobFan != null && mobFan.getStoredWorld() != null) {
-            world = mobFan.getStoredWorld();
-        }
-
         MobFanUpgradePage.clearAllPreviews(world);
 
         if (removeReason == RemoveReason.UNLOAD || mobFan == null) {
@@ -114,7 +112,7 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
         Vector3i pos = mobFan.getStoredWorldPos();
         if (pos == null) {
             BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
-            if (info == null || info.getChunkRef() == null) {
+            if (info == null) {
                 return;
             }
 
@@ -130,6 +128,14 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
             int worldX = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getX(), localX);
             int worldZ = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getZ(), localZ);
             pos = new Vector3i(worldX, worldY, worldZ);
+        }
+
+        if(mobFan.getStoredWorld() != null) {
+            world = mobFan.getStoredWorld();
+        }
+
+        if (mobFan.isChunkLoaded()) {
+            ForcedChunkPersistence.setForced(world, pos, false);
         }
 
         MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());

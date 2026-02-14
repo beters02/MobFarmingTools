@@ -31,6 +31,10 @@ public class VacuumHopperComponent implements Component<ChunkStore> {
     private int ticksLifetime = 0;
     private boolean hasAvailableContainer = false;
 
+    private int id = -1;
+    public void setId(int value) { id = value; }
+    public int getId() { return id; }
+
     public boolean isEnabled() {
         return enabled;
     }

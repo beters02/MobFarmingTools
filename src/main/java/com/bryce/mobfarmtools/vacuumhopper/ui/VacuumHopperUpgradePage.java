@@ -1,5 +1,6 @@
 package com.bryce.mobfarmtools.vacuumhopper.ui;
 
+import com.bryce.mobfarmtools.chunks.ForcedChunkPersistence;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
@@ -90,14 +91,9 @@ public class VacuumHopperUpgradePage extends MachineUpgradePage {
                                 String.valueOf(hopper.getHeight())
                         );
                     }  else if (type == MachineUpgradeType.CHUNK_LOADING) {
+                        hopper.setChunkLoaded(newCount > 0);
                         World world = context.getMachineRef().getStore().getExternalData().getWorld();
-                        if (newCount == 0) {
-                            hopper.setChunkLoaded(false);
-                            MFTChunkUtil.DisableChunkLoadIfLoaded(world, blockPosition);
-                        } else {
-                            hopper.setChunkLoaded(true);
-                            MFTChunkUtil.EnableChunkLoadIfLoaded(world, blockPosition);
-                        }
+                        ForcedChunkPersistence.setForced(world, blockPosition, newCount > 0);
                         MachineUpgradePage.pushStatisticValue(
                                 context.getMachineRef(),
                                 VacuumHopperConstants.UpgradePageStat.CHUNK_LOADED.getIndex(),

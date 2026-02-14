@@ -1,7 +1,11 @@
 package com.bryce.mobfarmtools.mobspawner;
 
+import com.bryce.mobfarmtools.chunks.ForcedChunkPersistence;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
+import com.bryce.mobfarmtools.mobfan.MobFanComponent;
+import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
+import com.bryce.mobfarmtools.mobspawner.ui.MobSpawnerUpgradePage;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
@@ -10,6 +14,7 @@ import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
@@ -40,22 +45,20 @@ public class MobSpawnerInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+        World world = store.getExternalData().getWorld();
+        MobSpawnerUpgradePage.clearAllPreviews(world);
+
         if (removeReason == RemoveReason.UNLOAD) {
             return;
         }
 
-        MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
-        if (upgrades == null) {
-            return;
-        }
-
         BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
-        if (info == null || info.getChunkRef() == null) {
+        if (info == null) {
             return;
         }
 
-        Store<ChunkStore> chunkStore = info.getChunkRef().getStore();
-        WorldChunk worldChunk = chunkStore.getComponent(info.getChunkRef(), WorldChunk.getComponentType());
+        Store<ChunkStore> chunkStore = ref.getStore();
+        WorldChunk worldChunk = chunkStore.getComponent(ref, WorldChunk.getComponentType());
         if (worldChunk == null) {
             return;
         }
@@ -66,6 +69,16 @@ public class MobSpawnerInitializer extends RefSystem<ChunkStore> {
         int worldX = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getX(), localX);
         int worldZ = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getZ(), localZ);
         Vector3i pos = new Vector3i(worldX, worldY, worldZ);
+
+        MobSpawnerComponent mobSpawner = store.getComponent(ref, MobSpawnerComponent.getComponentType());
+        if (mobSpawner != null && mobSpawner.isChunkLoaded()) {
+            ForcedChunkPersistence.setForced(world, pos, false);
+        }
+
+        MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
+        if (upgrades == null) {
+            return;
+        }
 
         List<ItemStack> drops = new ArrayList<>();
         for (MachineUpgradeType type : MachineUpgradeType.values()) {
@@ -79,7 +92,6 @@ public class MobSpawnerInitializer extends RefSystem<ChunkStore> {
             return;
         }
 
-        World world = store.getExternalData().getWorld();
         Store<EntityStore> entityStore = world.getEntityStore().getStore();
         Vector3d dropPosition = pos.toVector3d().add(0.5, 0.0, 0.5);
         Holder<EntityStore>[] holders = ItemComponent.generateItemDrops(entityStore, drops, dropPosition, Vector3f.ZERO);

@@ -1,11 +1,13 @@
 package com.bryce.mobfarmtools.vacuumhopper;
 
+import com.bryce.mobfarmtools.chunks.ForcedChunkPersistence;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
+import com.bryce.mobfarmtools.vacuumhopper.ui.VacuumHopperUpgradePage;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.system.RefSystem;
@@ -13,6 +15,7 @@ import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
@@ -28,10 +31,11 @@ import java.util.List;
 
 public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
     private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[VacuumHopperInitializer]");
-
     public VacuumHopperInitializer() {
         debugger.setEnabled(false);
     }
+
+    private int hopperCount = -1;
 
     @Override
     public @Nullable Query<ChunkStore> getQuery() {
@@ -43,23 +47,20 @@ public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityAdded(@NonNull Ref<ChunkStore> ref, @NonNull AddReason addReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+        hopperCount++;
         VacuumHopperComponent vacuumHopperComponent = store.getComponent(ref, VacuumHopperComponent.getComponentType());
         if (vacuumHopperComponent != null) {
             debugger.atWarning("Vacuum Hopper component found on init.");
+            vacuumHopperComponent.setId(hopperCount);
         }
     }
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
-        if (removeReason == RemoveReason.UNLOAD) {
-            return;
-        }
-
         World world = store.getExternalData().getWorld();
-        MachineUpgradePage.clearAllPreviews(world);
+        VacuumHopperUpgradePage.clearAllPreviews(world);
 
-        MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
-        if (upgrades == null) {
+        if (removeReason == RemoveReason.UNLOAD) {
             return;
         }
 
@@ -80,6 +81,16 @@ public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
         int worldX = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getX(), localX);
         int worldZ = ChunkUtil.worldCoordFromLocalCoord(worldChunk.getZ(), localZ);
         Vector3i pos = new Vector3i(worldX, worldY, worldZ);
+
+        VacuumHopperComponent vacuum = store.getComponent(ref, VacuumHopperComponent.getComponentType());
+        if (vacuum != null && vacuum.isChunkLoaded()) {
+            ForcedChunkPersistence.setForced(world, pos, false);
+        }
+
+        MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
+        if (upgrades == null) {
+            return;
+        }
 
         List<ItemStack> drops = new ArrayList<>();
         for (MachineUpgradeType type : MachineUpgradeType.values()) {

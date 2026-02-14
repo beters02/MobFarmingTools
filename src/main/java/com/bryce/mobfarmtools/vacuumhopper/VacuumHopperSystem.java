@@ -6,9 +6,11 @@ import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.spatial.SpatialResource;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
 import com.hypixel.hytale.math.shape.Box;
+import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
@@ -35,7 +37,7 @@ import java.util.List;
 
 public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
     private final ComponentType<ChunkStore, VacuumHopperComponent> vacuumHopperComponentType;
-    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[VacuumHopper]");
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[VacuumHopperSystem]");
 
     public VacuumHopperSystem(ComponentType<ChunkStore, VacuumHopperComponent> vacuumHopperComponentType) {
         this.vacuumHopperComponentType = vacuumHopperComponentType;
@@ -97,11 +99,14 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         Store<EntityStore> entityStore = world.getEntityStore().getStore();
         List<Ref<EntityStore>> items = getDroppedItemEntitiesInRadius(vacuum, pos, rotationIndex, entityStore);
         //if (!debugger.requireBool(!items.isEmpty(), "No valid dropped items.")) return;
-        if (items.isEmpty()) {
+        /*if (items.isEmpty()) {
             Box box = getItemsBox(vacuum, pos, world.getBlockRotationIndex((int) pos.x, (int) pos.y, (int) pos.z));
             debugger.atWarning("No items in " + box.min + " to " + box.max);
+        }*/
+        if (disableIfTrue(items.isEmpty(), world, pos)) {
+            checkIsChunkLoaded(vacuum, world, pos);
+            return;
         }
-        if (disableIfTrue(items.isEmpty(), world, pos)) return;
 
         boolean setEnabled = false;
 
@@ -134,7 +139,20 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
             }
         }
 
+
+        checkIsChunkLoaded(vacuum, world, pos);
         setOnBlockState(world, pos, setEnabled);
+    }
+
+    public void checkIsChunkLoaded(VacuumHopperComponent vacuum, World world, Vector3d blockPosition) {
+        if (!vacuum.isChunkLoaded()) return;
+        long chunkIndex = ChunkUtil.indexChunkFromBlock(blockPosition.x, blockPosition.z);
+        WorldChunk worldChunk = world.getChunkIfLoaded(chunkIndex);
+        if (worldChunk != null) {
+            debugger.atInfo("Chunk is loaded for " + vacuum.getId());
+        } else {
+            debugger.atInfo("Chunk is not loaded for " + vacuum.getId());
+        }
     }
 
     public void vacuumHopperTester(World world, Vector3d pos) {

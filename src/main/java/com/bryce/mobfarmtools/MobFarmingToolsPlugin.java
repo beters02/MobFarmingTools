@@ -1,5 +1,7 @@
 package com.bryce.mobfarmtools;
 
+import com.bryce.mobfarmtools.chunks.ChunkForceTickSystem;
+import com.bryce.mobfarmtools.chunks.ForcedChunkRefCountResource;
 import com.bryce.mobfarmtools.config.MobFarmingToolsConfig;
 import com.bryce.mobfarmtools.debugtool.DebugToolInteraction;
 import com.bryce.mobfarmtools.dropper.DropperComponent;
@@ -23,9 +25,7 @@ import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperInteraction;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperSystem;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
-import com.hypixel.hytale.component.Component;
-import com.hypixel.hytale.component.ComponentRegistryProxy;
-import com.hypixel.hytale.component.ComponentType;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.command.system.CommandRegistry;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
@@ -49,6 +49,8 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     private ComponentType<ChunkStore, SpikesComponent> spikesComponentType;
     private ComponentType<ChunkStore, DropperComponent> dropperComponentType;
 
+    private ResourceType<ChunkStore, ForcedChunkRefCountResource> forcedChunkRefCountResourceType;
+
     private final Config<MobFarmingToolsConfig> mftConfig = this.withConfig("MobFarmingToolsConfig", MobFarmingToolsConfig.CODEC);
 
     public static MobFarmingToolsPlugin get() {
@@ -67,6 +69,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registerCommands(this.getCommandRegistry());
         registerInteractions(this.getCodecRegistry(Interaction.CODEC));
         registerComponents(this.getChunkStoreRegistry());
+        registerResources(this.getChunkStoreRegistry());
         registerSystems(this.getChunkStoreRegistry());
         registerConfigs();
     }
@@ -83,6 +86,10 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         this.dropperComponentType = registerComponent(registry, DropperComponent.class, "Dropper_Component", DropperComponent.CODEC);
     }
 
+    private void registerResources(ComponentRegistryProxy<ChunkStore> registry) {
+        this.forcedChunkRefCountResourceType = registerResource(registry, ForcedChunkRefCountResource.class, "Forced_Chunk_Ref_Count_Resource", ForcedChunkRefCountResource.CODEC);
+    }
+
     private void registerSystems(ComponentRegistryProxy<ChunkStore> registry) {
         registry.registerSystem(new MobFanSystem(this.mobFanComponentType));
         registry.registerSystem(new MobFanInitializer());
@@ -92,6 +99,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.registerSystem(new VacuumHopperInitializer());
         registry.registerSystem(new SpikesSystem(this.spikesComponentType));
         registry.registerSystem(new DropperSystem(this.dropperComponentType));
+        registry.registerSystem(new ChunkForceTickSystem());
     }
 
     private void registerInteractions(
@@ -133,29 +141,29 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         return registry.registerComponent(componentClass,modScopeId + ":" + id, codec);
     }
 
+    private <T extends Resource<ChunkStore>> ResourceType<ChunkStore, T> registerResource(
+            ComponentRegistryProxy<ChunkStore> registry,
+            @Nonnull Class<? super T> resourceClass,
+            @Nonnull String id,
+            @Nonnull BuilderCodec<T> codec
+    ) {
+        return registry.registerResource(resourceClass,modScopeId + "_" + id, codec);
+    }
+
     public ComponentType<ChunkStore, MobFanComponent> getMobFanComponentType() {
         return this.mobFanComponentType;
     }
-
-    public ComponentType<ChunkStore, MobSpawnerComponent> getMobSpawnerComponentType() {
-        return this.mobSpawnerComponentType;
-    }
-
-    public ComponentType<ChunkStore, VacuumHopperComponent> getVacuumHopperComponentType() {
-        return this.vacuumHopperComponentType;
-    }
-
-    public ComponentType<ChunkStore, MachineUpgradeComponent> getMachineUpgradeComponentType() {
-        return this.machineUpgradeComponentType;
-    }
-
+    public ComponentType<ChunkStore, MobSpawnerComponent> getMobSpawnerComponentType() { return this.mobSpawnerComponentType; }
+    public ComponentType<ChunkStore, VacuumHopperComponent> getVacuumHopperComponentType() { return this.vacuumHopperComponentType; }
+    public ComponentType<ChunkStore, MachineUpgradeComponent> getMachineUpgradeComponentType() { return this.machineUpgradeComponentType; }
     public ComponentType<ChunkStore, SpikesComponent> getSpikesComponentType() {
         return this.spikesComponentType;
     }
-
     public ComponentType<ChunkStore, DropperComponent> getDropperComponentType() {
         return this.dropperComponentType;
     }
+
+    public ResourceType<ChunkStore, ForcedChunkRefCountResource> getForcedChunkRefCountResourceType() { return this.forcedChunkRefCountResourceType; }
 
     public Config<MobFarmingToolsConfig> getMobFarmingToolsConfig() {
         return mftConfig;

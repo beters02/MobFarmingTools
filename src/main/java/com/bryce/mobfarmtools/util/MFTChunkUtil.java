@@ -16,32 +16,4 @@ public class MFTChunkUtil {
         return IsChunkLoaded(world, ChunkUtil.indexChunkFromBlock(blockX, blockZ));
     }
 
-    public static void EnableChunkLoadIfLoaded(World world, BlockPosition blockPosition) {
-        long chunkIndex = ChunkUtil.indexChunkFromBlock(blockPosition.x, blockPosition.z);
-        WorldChunk worldChunk = world.getChunkIfLoaded(chunkIndex);
-        if (worldChunk == null) return;
-        worldChunk.addKeepLoaded();
-    }
-
-    public static void DisableChunkLoadIfLoaded(World world, BlockPosition blockPosition) {
-        long chunkIndex = ChunkUtil.indexChunkFromBlock(blockPosition.x, blockPosition.z);
-        WorldChunk worldChunk = world.getChunkIfLoaded(chunkIndex);
-        if (worldChunk == null) return;
-        worldChunk.removeKeepLoaded();
-    }
-
-    public static void EnableChunkLoadUnsafe(World world, BlockPosition blockPosition) {
-        long chunkIndex = ChunkUtil.indexChunkFromBlock(blockPosition.x, blockPosition.z);
-        WorldChunk worldChunk = world.getChunk(chunkIndex);
-        if (worldChunk == null) return;
-        worldChunk.addKeepLoaded();
-    }
-
-    public static void DisableChunkLoadUnsafe(World world, BlockPosition blockPosition) {
-        long chunkIndex = ChunkUtil.indexChunkFromBlock(blockPosition.x, blockPosition.z);
-        WorldChunk worldChunk = world.getChunk(chunkIndex);
-        if (worldChunk == null) return;
-        worldChunk.removeKeepLoaded();
-    }
-
 }

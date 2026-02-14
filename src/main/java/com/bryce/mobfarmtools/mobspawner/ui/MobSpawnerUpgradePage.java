@@ -1,5 +1,6 @@
 package com.bryce.mobfarmtools.mobspawner.ui;
 
+import com.bryce.mobfarmtools.chunks.ForcedChunkPersistence;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobfan.MobFanConstants;
@@ -70,14 +71,9 @@ public class MobSpawnerUpgradePage extends MachineUpgradePage {
                                 mobSpawner.getStatValueSpawnRate()
                         );
                     } else if (type == MachineUpgradeType.CHUNK_LOADING) {
+                        mobSpawner.setChunkLoaded(newCount > 0);
                         World world = context.getMachineRef().getStore().getExternalData().getWorld();
-                        if (newCount == 0) {
-                            mobSpawner.setChunkLoaded(false);
-                            MFTChunkUtil.DisableChunkLoadIfLoaded(world, blockPosition);
-                        } else {
-                            mobSpawner.setChunkLoaded(true);
-                            MFTChunkUtil.EnableChunkLoadIfLoaded(world, blockPosition);
-                        }
+                        ForcedChunkPersistence.setForced(world, blockPosition, newCount > 0);
                         MachineUpgradePage.pushStatisticValue(
                                 context.getMachineRef(),
                                 MobSpawnerConstants.UpgradePageStat.CHUNK_LOADED.getIndex(),
