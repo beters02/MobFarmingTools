@@ -6,6 +6,7 @@ import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanConstants;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
+import com.bryce.mobfarmtools.util.MFTChunkUtil;
 import com.bryce.mobfarmtools.util.MFTPreviewUtil;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperComponent;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperConstants;
@@ -89,7 +90,12 @@ public class VacuumHopperUpgradePage extends MachineUpgradePage {
                                 String.valueOf(hopper.getHeight())
                         );
                     }  else if (type == MachineUpgradeType.CHUNK_LOADING) {
-                        //TODO: enable chunk loading
+                        World world = context.getMachineRef().getStore().getExternalData().getWorld();
+                        if (newCount == 0) {
+                            MFTChunkUtil.DisableChunkLoadIfLoaded(world, blockPosition);
+                        } else {
+                            MFTChunkUtil.EnableChunkLoadIfLoaded(world, blockPosition);
+                        }
                     }
 
                     Store<ChunkStore> store = context.getMachineRef().getStore();

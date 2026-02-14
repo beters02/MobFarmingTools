@@ -5,6 +5,7 @@ import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanConstants;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
+import com.bryce.mobfarmtools.util.MFTChunkUtil;
 import com.bryce.mobfarmtools.util.MFTPreviewUtil;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperComponent;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperConstants;
@@ -56,33 +57,33 @@ public final class MobFanUpgradePage extends MachineUpgradePage {
                         return;
                     }
 
-                    switch (type) {
-                        case WIDTH -> {
-                            mobFan.setWidthUpgrades(newCount);
-                            MachineUpgradePage.pushStatisticValue(
-                                    context.getMachineRef(),
-                                    MobFanConstants.UpgradePageStat.WIDTH.getIndex(),
-                                    String.valueOf(mobFan.getFanWidth())
-                            );
-                        }
-                        case HEIGHT -> {
-                            mobFan.setHeightUpgrades(newCount);
-                            MachineUpgradePage.pushStatisticValue(
-                                    context.getMachineRef(),
-                                    MobFanConstants.UpgradePageStat.HEIGHT.getIndex(),
-                                    String.valueOf(mobFan.getFanHeight())
-                            );
-                        }
-                        case LENGTH -> {
-                            mobFan.setLengthUpgrades(newCount);
-                            MachineUpgradePage.pushStatisticValue(
-                                    context.getMachineRef(),
-                                    MobFanConstants.UpgradePageStat.LENGTH.getIndex(),
-                                    String.valueOf(mobFan.getFanLength())
-                            );
-                        }
-                        default -> {
-                            return;
+                    if (type == MachineUpgradeType.LENGTH) {
+                        mobFan.setLengthUpgrades(newCount);
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobFanConstants.UpgradePageStat.LENGTH.getIndex(),
+                                String.valueOf(mobFan.getFanLength())
+                        );
+                    } else if (type == MachineUpgradeType.WIDTH) {
+                        mobFan.setWidthUpgrades(newCount);
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobFanConstants.UpgradePageStat.WIDTH.getIndex(),
+                                String.valueOf(mobFan.getFanWidth())
+                        );
+                    } else if (type == MachineUpgradeType.HEIGHT) {
+                        mobFan.setHeightUpgrades(newCount);
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobFanConstants.UpgradePageStat.HEIGHT.getIndex(),
+                                String.valueOf(mobFan.getFanHeight())
+                        );
+                    }  else if (type == MachineUpgradeType.CHUNK_LOADING) {
+                        World world = context.getMachineRef().getStore().getExternalData().getWorld();
+                        if (newCount == 0) {
+                            MFTChunkUtil.DisableChunkLoadIfLoaded(world, blockPosition);
+                        } else {
+                            MFTChunkUtil.EnableChunkLoadIfLoaded(world, blockPosition);
                         }
                     }
 

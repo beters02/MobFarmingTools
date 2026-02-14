@@ -5,11 +5,14 @@ import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerInitializer;
+import com.bryce.mobfarmtools.util.MFTChunkUtil;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import org.jspecify.annotations.Nullable;
 
@@ -66,7 +69,12 @@ public class MobSpawnerUpgradePage extends MachineUpgradePage {
                                 mobSpawner.getStatValueSpawnRate()
                         );
                     } else if (type == MachineUpgradeType.CHUNK_LOADING) {
-                        //TODO: enable chunk loading
+                        World world = mobSpawnerRef.getStore().getExternalData().getWorld();
+                        if (newCount == 0) {
+                            MFTChunkUtil.DisableChunkLoadIfLoaded(world, blockPosition);
+                        } else {
+                            MFTChunkUtil.EnableChunkLoadIfLoaded(world, blockPosition);
+                        }
                     }
 
                     Store<ChunkStore> store = context.getMachineRef().getStore();
