@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.bryce"
-version = "0.3-PRE-2"
+version = "0.3-PRE-3"
 val javaVersion = 25
 
 repositories {
