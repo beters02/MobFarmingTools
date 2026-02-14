@@ -50,3 +50,12 @@
     );
   }
 };
+
+@StatLine = Group {
+    Visible: false;
+    Anchor: (Height: 18, Bottom: 2);
+    LayoutMode: Left;
+    Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+    Group { FlexWeight: 1; }
+    Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+}

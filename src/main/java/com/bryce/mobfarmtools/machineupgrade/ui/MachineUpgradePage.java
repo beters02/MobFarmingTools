@@ -30,9 +30,12 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,9 +44,12 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
     private static final String SLOT_UI = "Pages/MobFanSlot.ui";
     private static final String UPGRADE_SLOT_UI = "Pages/MachineUpgradeSlot.ui";
     private static final Map<UUID, Boolean> PREVIEW_ENABLED_BY_PLAYER = new ConcurrentHashMap<>();
+    public static final int MAX_STATS = 10;
+    private static final Map<Ref<ChunkStore>, Set<MachineUpgradePage>> OPEN_BY_MACHINE = new ConcurrentHashMap<>();
 
     private final Ref<ChunkStore> machineRef;
     private final MachineUpgradePageConfig config;
+    private final Map<Integer, StatisticLine> runtimeStats = new ConcurrentHashMap<>();
     private boolean previewEnabled;
 
     public MachineUpgradePage(PlayerRef playerRef, Ref<ChunkStore> machineRef, MachineUpgradePageConfig config) {
@@ -63,8 +69,11 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         previewEnabled = config.previewHandler != null && PREVIEW_ENABLED_BY_PLAYER.getOrDefault(playerRef.getUuid(), false);
         commands.set("#UpgradeTitle.Text", config.title);
         commands.set("#PreviewButton.Visible", config.previewHandler != null);
+        registerOpenPage();
+        initRuntimeStats();
 
         buildUpgradeSlots(commands, events, true);
+        buildStatistics(commands, true);
         buildPlayerInventory(commands, events, player.getInventory(), true);
         updatePreviewButton(commands);
 
@@ -127,6 +136,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
 
     @Override
     public void onDismiss(@NonNull Ref<EntityStore> ref, @NonNull Store<EntityStore> store) {
+        unregisterOpenPage();
     }
 
     private void handleInventoryClick(Player player, MachineUpgradeComponent upgrades, String action) {
@@ -302,6 +312,29 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         }
     }
 
+    private void buildStatistics(UICommandBuilder commands, boolean fullRebuild) {
+        boolean hasAny = !runtimeStats.isEmpty();
+        commands.set("#StatsContainer.Visible", hasAny);
+
+        for (int i = 0; i < MAX_STATS; i++) {
+            String selector = getStatLineSelector(i);
+            StatisticLine line = runtimeStats.get(i);
+            boolean visible = line != null && (line.getDescription() != null || line.getValue() != null);
+            if (fullRebuild) {
+                commands.set(selector + ".Visible", visible);
+            } else if (!visible) {
+                commands.set(selector + ".Visible", false);
+                continue;
+            }
+
+            if (line != null) {
+                commands.set(selector + " #StatDesc.Text", line.getDescription() == null ? "" : line.getDescription());
+                commands.set(selector + " #StatValue.Text", line.getValue() == null ? "" : line.getValue());
+                commands.set(selector + ".Visible", true);
+            }
+        }
+    }
+
     private void applyInventorySlot(UICommandBuilder commands, String selector, ItemStack item) {
         if (!ItemStack.isEmpty(item)) {
             commands.set(selector + " #SlotItem.ItemId", item.getItemId());
@@ -373,6 +406,34 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         }
     }
 
+    private void initRuntimeStats() {
+        runtimeStats.clear();
+        for (Map.Entry<Integer, StatisticLine> entry : config.statistics.entrySet()) {
+            runtimeStats.put(entry.getKey(), new StatisticLine(entry.getValue().getDescription(), entry.getValue().getValue()));
+        }
+    }
+
+    private void registerOpenPage() {
+        OPEN_BY_MACHINE
+                .computeIfAbsent(machineRef, ignored -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+                .add(this);
+    }
+
+    private void unregisterOpenPage() {
+        Set<MachineUpgradePage> pages = OPEN_BY_MACHINE.get(machineRef);
+        if (pages == null) {
+            return;
+        }
+        pages.remove(this);
+        if (pages.isEmpty()) {
+            OPEN_BY_MACHINE.remove(machineRef);
+        }
+    }
+
+    private static String getStatLineSelector(int index) {
+        return "#Stats #StatLine" + index;
+    }
+
     public static void clearAllPreviews(World world) {
         if (world == null) {
             return;
@@ -381,6 +442,54 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         ClearDebugShapes packet = new ClearDebugShapes();
         for (PlayerRef ref : world.getPlayerRefs()) {
             ref.getPacketHandler().write(packet);
+        }
+    }
+
+    public void updateStatisticValue(int index, String value) {
+        if (index < 0 || index >= MAX_STATS) {
+            return;
+        }
+        StatisticLine line = runtimeStats.get(index);
+        if (line == null) {
+            return;
+        }
+        line.setValue(value);
+
+        UICommandBuilder update = new UICommandBuilder();
+        update.set(getStatLineSelector(index) + " #StatValue.Text", value);
+        update.set(getStatLineSelector(index) + ".Visible", true);
+        sendUpdate(update, false);
+    }
+
+    public void updateStatisticDescription(int index, String description) {
+        if (index < 0 || index >= MAX_STATS) {
+            return;
+        }
+        StatisticLine line = runtimeStats.get(index);
+        if (line == null) {
+            return;
+        }
+        line.setDescription(description);
+
+        UICommandBuilder update = new UICommandBuilder();
+        update.set(getStatLineSelector(index) + " #StatDesc.Text", description);
+        update.set(getStatLineSelector(index) + ".Visible", true);
+        sendUpdate(update, false);
+    }
+
+    public static void pushStatisticValue(Ref<ChunkStore> machineRef, int index, String value) {
+        Set<MachineUpgradePage> pages = OPEN_BY_MACHINE.get(machineRef);
+        if (pages == null) return;
+        for (MachineUpgradePage page : pages) {
+            page.updateStatisticValue(index, value);
+        }
+    }
+
+    public static void pushStatisticDescription(Ref<ChunkStore> machineRef, int index, String description) {
+        Set<MachineUpgradePage> pages = OPEN_BY_MACHINE.get(machineRef);
+        if (pages == null) return;
+        for (MachineUpgradePage page : pages) {
+            page.updateStatisticDescription(index, description);
         }
     }
 
@@ -402,6 +511,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
         private final EnumMap<MachineUpgradeType, Integer> upgradeLimits;
         private final @Nullable UpgradeChangeHandler changeHandler;
         private final @Nullable PreviewHandler previewHandler;
+        private final Map<Integer, StatisticLine> statistics;
 
         private MachineUpgradePageConfig(
                 String title,
@@ -410,7 +520,8 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
                 EnumSet<MachineUpgradeType> enabledUpgrades,
                 EnumMap<MachineUpgradeType, Integer> upgradeLimits,
                 @Nullable UpgradeChangeHandler changeHandler,
-                @Nullable PreviewHandler previewHandler
+                @Nullable PreviewHandler previewHandler,
+                Map<Integer, StatisticLine> statistics
         ) {
             this.title = title;
             this.blockPosition = blockPosition;
@@ -419,6 +530,7 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
             this.upgradeLimits = upgradeLimits;
             this.changeHandler = changeHandler;
             this.previewHandler = previewHandler;
+            this.statistics = statistics;
         }
 
         public static Builder builder(String title, BlockPosition blockPosition, int rotationIndex) {
@@ -441,11 +553,13 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
             private final EnumMap<MachineUpgradeType, Integer> upgradeLimits = new EnumMap<>(MachineUpgradeType.class);
             private @Nullable UpgradeChangeHandler changeHandler;
             private @Nullable PreviewHandler previewHandler;
+            private final Map<Integer, StatisticLine> statistics;
 
             private Builder(String title, BlockPosition blockPosition, int rotationIndex) {
                 this.title = title;
                 this.blockPosition = blockPosition;
                 this.rotationIndex = rotationIndex;
+                this.statistics = new HashMap<>();
             }
 
             public Builder enableUpgrade(MachineUpgradeType type, int maxCount) {
@@ -474,10 +588,32 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
                 return this;
             }
 
+            public Builder addStatistic(int index, String description) {
+                return addStatistic(index, description, "");
+            }
+
+            public Builder addStatistic(int index, String description, String initialValue) {
+                if (index < 0 || index >= MAX_STATS) {
+                    return this;
+                }
+                statistics.put(index, new StatisticLine(description, initialValue));
+                return this;
+            }
+
+            public Builder addStatistic(UpgradePageStatDef stat) {
+                if (stat == null) return this;
+                return addStatistic(stat.getIndex(), stat.getDescription(), stat.getDefaultValue());
+            }
+
             public MachineUpgradePageConfig build() {
                 EnumSet<MachineUpgradeType> enabledCopy = enabledUpgrades.isEmpty()
                         ? EnumSet.noneOf(MachineUpgradeType.class)
                         : EnumSet.copyOf(enabledUpgrades);
+                Map<Integer, StatisticLine> statsCopy = new HashMap<>();
+                for (Map.Entry<Integer, StatisticLine> entry : statistics.entrySet()) {
+                    StatisticLine line = entry.getValue();
+                    statsCopy.put(entry.getKey(), new StatisticLine(line.getDescription(), line.getValue()));
+                }
                 return new MachineUpgradePageConfig(
                         title,
                         blockPosition,
@@ -485,7 +621,8 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
                         enabledCopy,
                         new EnumMap<>(upgradeLimits),
                         changeHandler,
-                        previewHandler
+                        previewHandler,
+                        statsCopy
                 );
             }
         }
@@ -540,5 +677,20 @@ public class MachineUpgradePage extends InteractiveCustomUIPage<MachineUpgradePa
 
         private MachineUpgradeEventData() {
         }
+    }
+
+    public static final class StatisticLine {
+        private String description;
+        private String value;
+
+        public StatisticLine(String description, String value) {
+            this.description = description;
+            this.value = value;
+        }
+
+        public String getDescription() { return description; }
+        public String getValue() { return value; }
+        public void setDescription(String description) { this.description = description; }
+        public void setValue(String value) { this.value = value; }
     }
 }

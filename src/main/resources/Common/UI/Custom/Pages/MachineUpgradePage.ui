@@ -6,8 +6,8 @@ $C = "../Common.ui";
 @SlotSpacing = 2;
 @SlotsPerRow = 9;
 @GridPadding = 2;
-@GridWidth = (@SlotSize * @SlotsPerRow) + (@SlotSpacing * (@SlotsPerRow - 1)) + (@GridPadding * 2);
-@ContainerWidth = 717;
+@GridWidth = ((@SlotSize * @SlotsPerRow) + (@SlotSpacing * (@SlotsPerRow - 1)) + (@GridPadding * 2)) + 50;
+@ContainerWidth = 900;
 @PanelSpacing = 8;
 
 $C.@PageOverlay {}
@@ -53,11 +53,106 @@ Group #PageLayout {
     }
 
     #Content {
-      LayoutMode: Top;
+      LayoutMode: Left;
 
       Group #UpgradeSlotsContainer {
         LayoutMode: LeftCenterWrap;
-        Anchor: (Height: 225, Width: @ContainerWidth);
+        Anchor: (Height: 270, Width: 538);
+      }
+
+      Group #StatsContainer {
+        Anchor: (Height: 270, Width: 200, Left: 60);
+        LayoutMode: Top;
+        Background: (Color: #131c27(0.75));
+        Padding: (Left: 8, Right: 8, Top: 8, Bottom: 8);
+
+        Label {
+          Text: "Stats";
+          Style: (
+            FontSize: 14,
+            TextColor: #e0e8f0,
+            RenderBold: true,
+            HorizontalAlignment: Start,
+            VerticalAlignment: Center
+          );
+          Anchor: (Height: 22, Bottom: 6);
+        }
+
+        Group #Stats {
+          LayoutMode: Top;
+
+          Group #StatLine0 {
+              Visible: false;
+              Anchor: (Height: 18, Bottom: 2);
+              LayoutMode: Left;
+              Label #StatDesc { Text: ""; Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+              Group { FlexWeight: 1; }
+              Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+          Group #StatLine1 {
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+          Group #StatLine2 {
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+          Group #StatLine3 {
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+          Group #StatLine4 {
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+          Group #StatLine5 {
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+          Group #StatLine6 {
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+          Group #StatLine7 {
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+          Group #StatLine8 {
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+          Group #StatLine9 {
+            Visible: false;
+            Anchor: (Height: 18, Bottom: 2);
+            LayoutMode: Left;
+            Label #StatDesc { Text: ""; Anchor: (Width: 120); Style: (FontSize: 12, TextColor: #b8c7d9, HorizontalAlignment: Start, VerticalAlignment: Center); }
+            Label #StatValue { Text: ""; Anchor: (Height: 18); Style: (FontSize: 12, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center, RenderBold: true); }
+          }
+        }
       }
     }
   }
@@ -94,4 +189,3 @@ Group #PageLayout {
 }
 
 $C.@BackButton #BackButton {}
-

@@ -85,15 +85,17 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     private int spawnAmountMax = MobSpawnerConstants.DEF_SPAWN_AMOUNT_MAX;
     private int maxEntities = MobSpawnerConstants.DEF_MAX_ENTITIES;
     private boolean chunkLoaded = MobSpawnerConstants.DEF_CHUNK_LOADED;
-    private String entityId = "None";
-    private boolean enabled = true;
-    private int[] entitySize;
+    private boolean noiseSuppressed = MobSpawnerConstants.DEF_NOISE_SUPPRESSED;
 
     // local mutable vars
+    private boolean enabled = MobSpawnerConstants.DEF_ENABLED;
+    private String entityId = "None";
+    private int[] entitySize;
     private float lifetime = 0f;
     private int currentSpawnRate = MobSpawnerConstants.DEF_SPAWN_RATE_MAX;
     private int currentSpawnAmount = MobSpawnerConstants.DEF_SPAWN_AMOUNT_MIN;
     private int failedTries = 0;
+    private int tickLifetime = 0;
 
     private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobSpawnerComponent]");
 
@@ -118,6 +120,7 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         return failedTries;
     }
     public int getMaxEntities() { return maxEntities; }
+    public int getTickLifetime() { return tickLifetime; }
     public float getTimeUntilNextSpawn() {
         if (!canTick()) return -1;
         return currentSpawnRate - lifetime;
@@ -152,9 +155,11 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     public void setSpawnRateMax(int value) { spawnRateMax = value; }
     public void setSpawnAmountMin(int value) { spawnAmountMin = value; }
     public void setSpawnAmountMax(int value) { spawnAmountMax = value; }
+    public void setTickLifetime(int value) { tickLifetime = value; }
 
     public void incrementFailedTries(int val) { failedTries += val; }
     public void incrementLifetime(float amount) { lifetime += amount; }
+    public void incrementTickLifetime(int amount) { tickLifetime += amount; }
 
     public boolean canTick() { return enabled && !Objects.equals(entityId, "None"); }
     public boolean canSpawn() { return lifetime >= currentSpawnRate; }
@@ -212,6 +217,18 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         };
     }
 
+    public String getStatValueSpawnRate() {
+        return spawnRateMin + "/" + spawnRateMax;
+    }
+
+    public String getStatValueSpawnAmount() {
+        return spawnAmountMin + "/" + spawnAmountMax;
+    }
+
+    public static String getStatValue(int min, int max) {
+        return min + "/" + max;
+    }
+
     public void sendInfoMessage(Player player) {
         player.sendMessage(Message.raw("Enabled: " + enabled));
         player.sendMessage(Message.raw("Chunk Loaded: " + chunkLoaded));
@@ -236,6 +253,8 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         copy.spawnAmountMax = this.spawnAmountMax;
         copy.maxEntities = this.maxEntities;
         copy.chunkLoaded = this.chunkLoaded;
+        copy.tickLifetime = this.tickLifetime;
+        copy.noiseSuppressed = this.noiseSuppressed;
         copy.entityId = this.entityId;
         copy.enabled = this.enabled;
         copy.entitySize = this.entitySize;

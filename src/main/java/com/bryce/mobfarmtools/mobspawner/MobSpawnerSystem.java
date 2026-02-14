@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.mobspawner;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTEntityUtil;
@@ -43,6 +44,16 @@ public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
         if (!spawnerComponent.canTick()) return;
 
         spawnerComponent.incrementLifetime(dt);
+
+        spawnerComponent.incrementTickLifetime(1);
+        if (spawnerComponent.getTickLifetime() >= MobSpawnerConstants.TICKS_UPDATE_STAT) {
+            spawnerComponent.setTickLifetime(0);
+            MachineUpgradePage.pushStatisticValue(
+                    archetypeChunk.getReferenceTo(index),
+                    MobSpawnerConstants.UpgradePageStat.NEXT_SPAWN_TIME.getIndex(),
+                    String.valueOf(Math.round(spawnerComponent.getTimeUntilNextSpawn()))
+            );
+        }
 
         if(spawnerComponent.canSpawn()) {
             if (spawnerComponent.getFailedTries() >= MobSpawnerConstants.MAX_FAILED_SPAWN_TRIES) {

@@ -3,6 +3,8 @@ package com.bryce.mobfarmtools.mobspawner.ui;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
+import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
+import com.bryce.mobfarmtools.mobspawner.MobSpawnerInitializer;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.protocol.BlockPosition;
@@ -13,10 +15,18 @@ import org.jspecify.annotations.Nullable;
 
 public class MobSpawnerUpgradePage extends MachineUpgradePage {
     public MobSpawnerUpgradePage(PlayerRef playerRef, Ref<ChunkStore> mobSpawnerRef, BlockPosition blockPosition, int rotationIndex) {
+
         super(playerRef, mobSpawnerRef, MachineUpgradePage.MachineUpgradePageConfig.builder("Mob Spawner Upgrades", blockPosition, rotationIndex)
                 .enableUpgrade(MachineUpgradeType.CHUNK_LOADING, 1)
                 .enableUpgrade(MachineUpgradeType.OUTPUT, 2)
                 .enableUpgrade(MachineUpgradeType.SPEED, 4)
+                .addStatistic(MobSpawnerConstants.UpgradePageStat.ENTITY_ID)
+                .addStatistic(MobSpawnerConstants.UpgradePageStat.ENABLED)
+                .addStatistic(MobSpawnerConstants.UpgradePageStat.CHUNK_LOADED)
+                .addStatistic(MobSpawnerConstants.UpgradePageStat.NOISE_SUPPRESSED)
+                .addStatistic(MobSpawnerConstants.UpgradePageStat.SPAWN_RATE)
+                .addStatistic(MobSpawnerConstants.UpgradePageStat.SPAWN_AMOUNT)
+                .addStatistic(MobSpawnerConstants.UpgradePageStat.NEXT_SPAWN_TIME)
                 .onUpgradeChanged((context, type, oldCount, newCount) -> {
                     MobSpawnerComponent mobSpawner = getMobSpawnerComponent(context.getMachineRef());
                     if (mobSpawner == null) {
@@ -26,9 +36,19 @@ public class MobSpawnerUpgradePage extends MachineUpgradePage {
                     if (type == MachineUpgradeType.OUTPUT) {
                         mobSpawner.setSpawnAmountMin(mobSpawner.getSpawnAmountMinFromOutputUpgrade(newCount));
                         mobSpawner.setSpawnAmountMax(mobSpawner.getSpawnAmountMaxFromOutputUpgrade(newCount));
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobSpawnerConstants.UpgradePageStat.SPAWN_AMOUNT.getIndex(),
+                                mobSpawner.getStatValueSpawnAmount()
+                        );
                     } else if (type == MachineUpgradeType.SPEED) {
                         mobSpawner.setSpawnRateMin(mobSpawner.getSpawnRateMinFromSpeedUpgrade(newCount));
                         mobSpawner.setSpawnRateMax(mobSpawner.getSpawnRateMaxFromSpeedUpgrade(newCount));
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobSpawnerConstants.UpgradePageStat.SPAWN_RATE.getIndex(),
+                                mobSpawner.getStatValueSpawnRate()
+                        );
                     } else if (type == MachineUpgradeType.CHUNK_LOADING) {
                         //TODO: enable chunk loading
                     }
