@@ -3,6 +3,8 @@ package com.bryce.mobfarmtools.vacuumhopper;
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanConstants;
+import com.hypixel.hytale.codec.Codec;
+import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
@@ -13,6 +15,38 @@ import org.jspecify.annotations.Nullable;
 public class VacuumHopperComponent implements Component<ChunkStore> {
     public static final BuilderCodec<VacuumHopperComponent> CODEC =
             BuilderCodec.builder(VacuumHopperComponent.class, VacuumHopperComponent::new)
+                    .append(new KeyedCodec<>("LengthUpgrades", Codec.INTEGER),
+                            (component, value) -> component.lengthUpgrades = value,
+                            component -> component.lengthUpgrades)
+                    .add()
+                    .append(new KeyedCodec<>("WidthUpgrades", Codec.INTEGER),
+                            (component, value) -> component.widthUpgrades = value,
+                            component -> component.widthUpgrades)
+                    .add()
+                    .append(new KeyedCodec<>("HeightUpgrades", Codec.INTEGER),
+                            (component, value) -> component.heightUpgrades = value,
+                            component -> component.heightUpgrades)
+                    .add()
+                    .append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
+                            (component, value) -> component.enabled = value,
+                            component -> component.enabled)
+                    .add()
+                    .append(new KeyedCodec<>("ChunkLoaded", Codec.BOOLEAN),
+                            (component, value) -> component.chunkLoaded = value,
+                            component -> component.chunkLoaded)
+                    .add()
+                    .append(new KeyedCodec<>("NoiseSuppressed", Codec.BOOLEAN),
+                            (component, value) -> component.noiseSuppressed = value,
+                            component -> component.noiseSuppressed)
+                    .add()
+                    .append(new KeyedCodec<>("Lifetime", Codec.FLOAT),
+                            (component, value) -> component.lifetime = value,
+                            component -> component.lifetime)
+                    .add()
+                    .append(new KeyedCodec<>("TicksLifetime", Codec.INTEGER),
+                            (component, value) -> component.ticksLifetime = value,
+                            component -> component.ticksLifetime)
+                    .add()
                     .afterDecode(VacuumHopperComponent::applyUpgradeCounts)
                     .build();
 

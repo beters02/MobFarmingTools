@@ -83,6 +83,14 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
                             (component, value) -> component.currentSpawnAmount = value,
                             component -> component.currentSpawnAmount)
                     .add()
+                    .append(new KeyedCodec<>("Lifetime", Codec.FLOAT),
+                            (component, value) -> component.lifetime = value,
+                            component -> component.lifetime)
+                    .add()
+                    .append(new KeyedCodec<>("TickLifetime", Codec.INTEGER),
+                            (component, value) -> component.tickLifetime = value,
+                            component -> component.tickLifetime)
+                    .add()
                     .build();
 
 
@@ -286,8 +294,6 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
         copy.entitySize = this.entitySize;
 
         copy.failedTries = this.failedTries;
-
-        debugger.atInfo("CurrentSpawnRate:" + currentSpawnRate);
         return copy;
     }
 }

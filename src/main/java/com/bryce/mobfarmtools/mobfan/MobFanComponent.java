@@ -31,27 +31,35 @@ import java.util.List;
 public class MobFanComponent implements Component<ChunkStore> {
     public static final BuilderCodec<MobFanComponent> CODEC =
             BuilderCodec.builder(
-                    MobFanComponent.class,
-                    MobFanComponent::new
-            )
-            .append(new KeyedCodec<>("LengthUpgrades", Codec.INTEGER),
-                    (component, value) -> component.lengthUpgrades = value,
-                    component -> component.lengthUpgrades)
-            .add()
-            .append(new KeyedCodec<>("WidthUpgrades", Codec.INTEGER),
-                    (component, value) -> component.widthUpgrades = value,
-                    component -> component.widthUpgrades)
-            .add()
-            .append(new KeyedCodec<>("HeightUpgrades", Codec.INTEGER),
-                    (component, value) -> component.heightUpgrades = value,
-                    component -> component.heightUpgrades)
-            .add()
-            .append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
-                    (component, value) -> component.enabled = value,
-                    component -> component.enabled)
-            .add()
-            .afterDecode(MobFanComponent::applyUpgradeCounts)
-            .build();
+                            MobFanComponent.class,
+                            MobFanComponent::new
+                    )
+                    .append(new KeyedCodec<>("LengthUpgrades", Codec.INTEGER),
+                            (component, value) -> component.lengthUpgrades = value,
+                            component -> component.lengthUpgrades)
+                    .add()
+                    .append(new KeyedCodec<>("WidthUpgrades", Codec.INTEGER),
+                            (component, value) -> component.widthUpgrades = value,
+                            component -> component.widthUpgrades)
+                    .add()
+                    .append(new KeyedCodec<>("HeightUpgrades", Codec.INTEGER),
+                            (component, value) -> component.heightUpgrades = value,
+                            component -> component.heightUpgrades)
+                    .add()
+                    .append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
+                            (component, value) -> component.enabled = value,
+                            component -> component.enabled)
+                    .add()
+                    .append(new KeyedCodec<>("ChunkLoaded", Codec.BOOLEAN),
+                            (component, value) -> component.chunkLoaded = value,
+                            component -> component.chunkLoaded)
+                    .add()
+                    .append(new KeyedCodec<>("NoiseSuppressed", Codec.BOOLEAN),
+                            (component, value) -> component.noiseSuppressed = value,
+                            component -> component.noiseSuppressed)
+                    .add()
+                    .afterDecode(MobFanComponent::applyUpgradeCounts)
+                    .build();
 
     private final float FAN_SPEED = 100f;
 
@@ -83,10 +91,10 @@ public class MobFanComponent implements Component<ChunkStore> {
 
     public void setFanLength(int amount) {
         if (amount > MobFanConstants.FAN_LENGTH_MAX) {
-            debugger.atSevere("FAN LENGTH CAN NOT BE GREATER THAN "+MobFanConstants.FAN_LENGTH_MAX);
+            debugger.atSevere("FAN LENGTH CAN NOT BE GREATER THAN " + MobFanConstants.FAN_LENGTH_MAX);
             return;
         } else if (amount < MobFanConstants.FAN_LENGTH_MIN) {
-            debugger.atSevere("FAN LENGTH CAN NOT BE LESS THAN "+ MobFanConstants.FAN_LENGTH_MIN);
+            debugger.atSevere("FAN LENGTH CAN NOT BE LESS THAN " + MobFanConstants.FAN_LENGTH_MIN);
             return;
         }
 
@@ -95,10 +103,10 @@ public class MobFanComponent implements Component<ChunkStore> {
 
     public void setFanWidth(int amount) {
         if (amount > MobFanConstants.FAN_WIDTH_MAX) {
-            debugger.atSevere("FAN WIDTH CAN NOT BE GREATER THAN "+MobFanConstants.FAN_WIDTH_MAX);
+            debugger.atSevere("FAN WIDTH CAN NOT BE GREATER THAN " + MobFanConstants.FAN_WIDTH_MAX);
             return;
         } else if (amount < MobFanConstants.FAN_WIDTH_MIN) {
-            debugger.atSevere("FAN WIDTH CAN NOT BE LESS THAN "+MobFanConstants.FAN_WIDTH_MIN);
+            debugger.atSevere("FAN WIDTH CAN NOT BE LESS THAN " + MobFanConstants.FAN_WIDTH_MIN);
             return;
         }
 
@@ -107,10 +115,10 @@ public class MobFanComponent implements Component<ChunkStore> {
 
     public void setFanHeight(int amount) {
         if (amount > MobFanConstants.FAN_HEIGHT_MAX) {
-            debugger.atSevere("FAN HEIGHT CAN NOT BE GREATER THAN "+MobFanConstants.FAN_HEIGHT_MAX);
+            debugger.atSevere("FAN HEIGHT CAN NOT BE GREATER THAN " + MobFanConstants.FAN_HEIGHT_MAX);
             return;
         } else if (amount < MobFanConstants.FAN_HEIGHT_MIN) {
-            debugger.atSevere("FAN HEIGHT CAN NOT BE LESS THAN "+MobFanConstants.FAN_HEIGHT_MIN);
+            debugger.atSevere("FAN HEIGHT CAN NOT BE LESS THAN " + MobFanConstants.FAN_HEIGHT_MIN);
             return;
         }
 
@@ -145,16 +153,26 @@ public class MobFanComponent implements Component<ChunkStore> {
                 "MobFanComponent Interaction state successfully set to " + (enabled ? "On" : "Off"));
     }
 
-    public void setStoredWorld(World world) { this._world = world; }
-    public void setStoredWorldPos(Vector3i pos) { this._worldPos = pos; }
-    public void setBaseForward(Vector3d forward) { this.baseForward = forward; }
+    public void setStoredWorld(World world) {
+        this._world = world;
+    }
+
+    public void setStoredWorldPos(Vector3i pos) {
+        this._worldPos = pos;
+    }
+
+    public void setBaseForward(Vector3d forward) {
+        this.baseForward = forward;
+    }
 
     public void incrementFanLength(int amount) {
         setFanLength(fanLength + amount);
     }
+
     public void incrementFanWidth(int amount) {
         setFanWidth(fanWidth + amount);
     }
+
     public void incrementFanHeight(int amount) {
         setFanHeight(fanHeight + amount);
     }
@@ -174,16 +192,45 @@ public class MobFanComponent implements Component<ChunkStore> {
         applyUpgradeCounts();
     }
 
-    public final int getFanLength() { return fanLength; }
-    public final int getFanWidth() { return fanWidth; }
-    public final int getFanHeight() { return fanHeight; }
-    public final int getLengthUpgrades() { return lengthUpgrades; }
-    public final int getWidthUpgrades() { return widthUpgrades; }
-    public final int getHeightUpgrades() { return heightUpgrades; }
-    public final boolean isEnabled() { return this.enabled; }
-    public final World getStoredWorld() { return this._world; }
-    public final Vector3i getStoredWorldPos() { return this._worldPos; }
-    public final Vector3d getBaseForward() { return this.baseForward; }
+    public final int getFanLength() {
+        return fanLength;
+    }
+
+    public final int getFanWidth() {
+        return fanWidth;
+    }
+
+    public final int getFanHeight() {
+        return fanHeight;
+    }
+
+    public final int getLengthUpgrades() {
+        return lengthUpgrades;
+    }
+
+    public final int getWidthUpgrades() {
+        return widthUpgrades;
+    }
+
+    public final int getHeightUpgrades() {
+        return heightUpgrades;
+    }
+
+    public final boolean isEnabled() {
+        return this.enabled;
+    }
+
+    public final World getStoredWorld() {
+        return this._world;
+    }
+
+    public final Vector3i getStoredWorldPos() {
+        return this._worldPos;
+    }
+
+    public final Vector3d getBaseForward() {
+        return this.baseForward;
+    }
 
     public boolean isNoiseSuppressed() {
         return noiseSuppressed;
@@ -256,7 +303,7 @@ public class MobFanComponent implements Component<ChunkStore> {
 
         Vector3d min = new Vector3d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
         Vector3d max = new Vector3d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
-        int[] signs = new int[] { -1, 1 };
+        int[] signs = new int[]{-1, 1};
         for (int sx : signs) {
             for (int sy : signs) {
                 for (int sz : signs) {
