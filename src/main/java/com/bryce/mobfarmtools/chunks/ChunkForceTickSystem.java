@@ -10,6 +10,7 @@ import com.hypixel.hytale.component.system.tick.TickingSystem;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.chunk.ChunkFlag;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.GetChunkFlags;
@@ -32,7 +33,7 @@ public class ChunkForceTickSystem extends TickingSystem<ChunkStore> {
     @Nonnull
     @Override
     public Set<Dependency<ChunkStore>> getDependencies() {
-        return Set.of(new SystemDependency<>(Order.AFTER, ChunkUnloadingSystem.class));
+        return Set.of(new SystemDependency<>(Order.BEFORE, ChunkUnloadingSystem.class));
     }
 
     @Override
@@ -82,7 +83,11 @@ public class ChunkForceTickSystem extends TickingSystem<ChunkStore> {
             }
 
             // re-promote to ticking in case unload system turned it off
-            world.loadChunkIfInMemory(idx);
+            chunk.resetActiveTimer();
+
+            if (chunk.not(ChunkFlag.TICKING)) {
+                world.loadChunkIfInMemory(idx);
+            }
         }
     }
 
