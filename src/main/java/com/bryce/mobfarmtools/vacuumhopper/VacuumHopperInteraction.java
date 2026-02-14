@@ -3,6 +3,7 @@ package com.bryce.mobfarmtools.vacuumhopper;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
+import com.bryce.mobfarmtools.vacuumhopper.ui.VacuumHopperUpgradePage;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
@@ -56,16 +57,11 @@ public class VacuumHopperInteraction extends SimpleBlockInteraction {
         if (targetBlock == null) return;
 
         int rotationIndex = world.getBlockRotationIndex(targetBlock.x, targetBlock.y, targetBlock.z);
-        EnumMap<MachineUpgradeType, Integer> limits = new EnumMap<>(MachineUpgradeType.class);
-        limits.put(MachineUpgradeType.NOISE_SUPPRESSION, 1);
-        limits.put(MachineUpgradeType.CHUNK_LOADING, 1);
-
-        MachineUpgradePage page = new MachineUpgradePage(
+        VacuumHopperUpgradePage page = new VacuumHopperUpgradePage(
                 playerRef,
                 blockEntityRef,
-                MachineUpgradePage.MachineUpgradePageConfig.builder("Vacuum Hopper Upgrades", targetBlock, rotationIndex)
-                        .enableUpgrades(limits)
-                        .build()
+                targetBlock,
+                rotationIndex
         );
         player.getPageManager().openCustomPage(userRef, userRef.getStore(), page);
     }

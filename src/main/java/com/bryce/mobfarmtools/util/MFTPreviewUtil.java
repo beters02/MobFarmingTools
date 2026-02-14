@@ -43,6 +43,27 @@ public class MFTPreviewUtil {
         playerRef.getPacketHandler().write(packet);
     }
 
+    public static void ShowBoxPreviewFromMiddle(
+            PlayerRef playerRef,
+            BlockPosition blockPosition,
+            int rotationIndex,
+            double length,
+            double width,
+            double height
+    ) {
+        RotationTuple rot = RotationTuple.get(rotationIndex);
+        Vector3d blockCenter = new Vector3d(blockPosition.x, blockPosition.y, blockPosition.z);
+
+        Matrix4d matrix = new Matrix4d().identity();
+        Matrix4d tmp = new Matrix4d();
+        matrix.translate(blockCenter);
+        matrix.rotateEuler(rot.pitch().getRadians(), rot.yaw().getRadians(), rot.roll().getRadians(), tmp);
+        matrix.scale(width, height, length);
+
+        DisplayDebug packet = new DisplayDebug(DebugShape.Cube, matrix.asFloatData(), DEFAULT_PREVIEW_COLOR, DEFAULT_PREVIEW_DURATION_SECONDS, true, null);
+        playerRef.getPacketHandler().write(packet);
+    }
+
     public static void ShowBoxPreview(
             PlayerRef playerRef,
             BlockPosition blockPosition,

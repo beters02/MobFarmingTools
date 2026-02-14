@@ -2,6 +2,9 @@ package com.bryce.mobfarmtools.vacuumhopper;
 
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
+import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
+import com.bryce.mobfarmtools.mobfan.MobFanComponent;
+import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
@@ -52,6 +55,9 @@ public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
             return;
         }
 
+        World world = store.getExternalData().getWorld();
+        MachineUpgradePage.clearAllPreviews(world);
+
         MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
         if (upgrades == null) {
             return;
@@ -87,7 +93,6 @@ public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
             return;
         }
 
-        World world = store.getExternalData().getWorld();
         Store<EntityStore> entityStore = world.getEntityStore().getStore();
         Vector3d dropPosition = pos.toVector3d().add(0.5, 0.0, 0.5);
         Holder<EntityStore>[] holders = ItemComponent.generateItemDrops(entityStore, drops, dropPosition, Vector3f.ZERO);

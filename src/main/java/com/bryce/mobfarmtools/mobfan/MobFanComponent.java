@@ -61,7 +61,9 @@ public class MobFanComponent implements Component<ChunkStore> {
     private int lengthUpgrades = 0;
     private int widthUpgrades = 0;
     private int heightUpgrades = 0;
-    private boolean enabled = false;
+    private boolean enabled = true;
+    private boolean noiseSuppressed = false;
+    private boolean chunkLoaded = false;
     private transient SimpleItemContainer upgradeContainer;
 
     private World _world;
@@ -183,6 +185,22 @@ public class MobFanComponent implements Component<ChunkStore> {
     public final Vector3i getStoredWorldPos() { return this._worldPos; }
     public final Vector3d getBaseForward() { return this.baseForward; }
 
+    public boolean isNoiseSuppressed() {
+        return noiseSuppressed;
+    }
+
+    public boolean isChunkLoaded() {
+        return chunkLoaded;
+    }
+
+    public void setNoiseSuppressed(boolean value) {
+        noiseSuppressed = value;
+    }
+
+    public void setChunkLoaded(boolean value) {
+        chunkLoaded = value;
+    }
+
     public SimpleItemContainer getOrCreateUpgradeContainer() {
         if (upgradeContainer == null) {
             upgradeContainer = new SimpleItemContainer((short) 3);
@@ -290,6 +308,8 @@ public class MobFanComponent implements Component<ChunkStore> {
         copy.heightUpgrades = this.heightUpgrades;
         copy.enabled = this.enabled;
         copy.baseForward = this.baseForward;
+        copy.noiseSuppressed = this.noiseSuppressed;
+        copy.chunkLoaded = this.chunkLoaded;
         return copy;
     }
 }

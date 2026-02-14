@@ -1,13 +1,11 @@
 package com.bryce.mobfarmtools.vacuumhopper;
 
-import com.bryce.mobfarmtools.util.MFTBlockUtil;
-import com.bryce.mobfarmtools.util.MFTChunkUtil;
-import com.bryce.mobfarmtools.util.MFTDebugUtil;
-import com.bryce.mobfarmtools.util.MFTVectorUtil;
+import com.bryce.mobfarmtools.util.*;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
 import com.hypixel.hytale.component.spatial.SpatialResource;
 import com.hypixel.hytale.component.system.tick.EntityTickingSystem;
+import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
@@ -90,13 +88,19 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         WorldChunk worldChunk = disableIfNull(MFTChunkUtil.IsChunkLoaded(world, (int) pos.x, (int) pos.z), world, pos);
         if (worldChunk == null) return;
 
+        int rotationIndex = world.getBlockRotationIndex((int) pos.x, (int) pos.y, (int) pos.z);
+
         List<ItemContainer> containers = VacuumHopperHelpers.GetTouchingItemContainers(world, pos.toVector3i());
         //if (!debugger.requireBool(!containers.isEmpty(), "No valid containers.")) return;
         if (disableIfTrue(containers.isEmpty(), world, pos)) return;
 
         Store<EntityStore> entityStore = world.getEntityStore().getStore();
-        List<Ref<EntityStore>> items = getDroppedItemEntitiesInRadius(pos, (float) VacuumHopperConstants.ITEM_SUCK_RADIUS, entityStore);
+        List<Ref<EntityStore>> items = getDroppedItemEntitiesInRadius(vacuum, pos, rotationIndex, entityStore);
         //if (!debugger.requireBool(!items.isEmpty(), "No valid dropped items.")) return;
+        if (items.isEmpty()) {
+            Box box = getItemsBox(vacuum, pos, world.getBlockRotationIndex((int) pos.x, (int) pos.y, (int) pos.z));
+            debugger.atWarning("No items in " + box.min + " to " + box.max);
+        }
         if (disableIfTrue(items.isEmpty(), world, pos)) return;
 
         boolean setEnabled = false;
@@ -149,15 +153,19 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         world.execute(() -> entityStore.addEntity(holder, AddReason.SPAWN));
     }
 
-    public @NonNull List<Ref<EntityStore>> getDroppedItemEntitiesInRadius(Vector3d pos, float radius, Store<EntityStore> entityStore) {
+    public Box getItemsBox(VacuumHopperComponent hopper, Vector3d pos, int rotationIndex) {
+        return MFTMathUtil.GetBoxFromPosition(pos, hopper.getLength(), hopper.getWidth(), hopper.getHeight(), new Vector3d(0, 0, -1), rotationIndex);
+    }
+
+    public @NonNull List<Ref<EntityStore>> getDroppedItemEntitiesInRadius(VacuumHopperComponent hopper, Vector3d pos, int rotationIndex, Store<EntityStore> entityStore) {
         SpatialResource<Ref<EntityStore>, EntityStore> itemSpatial =
                 entityStore.getResource(EntityModule.get().getItemSpatialResourceType());
 
+        Box box = MFTMathUtil.GetBoxFromPosition(pos, hopper.getLength(), hopper.getWidth(), hopper.getHeight(), new Vector3d(0, 0, -1), rotationIndex);
         ObjectList<Ref<EntityStore>> results = SpatialResource.getThreadLocalReferenceList();
-        itemSpatial.getSpatialStructure().collect(pos, radius, results);
+        itemSpatial.getSpatialStructure().collectBox(box.min, box.max, results);
 
         List<Ref<EntityStore>> droppedItemEntities = new ArrayList<>();
-
         for (Ref<EntityStore> ref : results) {
             if (entityStore.getComponent(ref, PickupItemComponent.getComponentType()) != null) continue;
             if (entityStore.getComponent(ref, PreventPickup.getComponentType()) != null) continue;
