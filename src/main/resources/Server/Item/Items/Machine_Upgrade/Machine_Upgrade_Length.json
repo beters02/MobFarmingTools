@@ -4,7 +4,7 @@
     "Description": "Upgrade the length of a machine by 1 block."
   },
   "Id": "Machine_Upgrade_Length",
-  "Texture": "Items/Machine_Upgrade/Machine_Upgrade_Length.png",
+  "Texture": "Items/Machine_Upgrade_V2/Machine_Upgrade_Length.png",
   "Quality": "Common",
   "MaxStack": 10,
   "Categories": [
@@ -41,18 +41,18 @@
       }
     ]
   },
-  "Model": "Items/Machine_Upgrade/Machine_Upgrade.blockymodel",
-  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Length.png",
+  "Model": "Items/Machine_Upgrade_V2/Machine_Upgrade.blockymodel",
   "IconProperties": {
-    "Scale": 1.7,
+    "Scale": 0.9,
     "Rotation": [
       0,
       0,
       0
     ],
     "Translation": [
-      1,
-      -8
+      0,
+      -13
     ]
-  }
+  },
+  "Icon": "Icons/ItemsGenerated/Machine_Upgrade_Length.png"
 }
