@@ -31,6 +31,7 @@ public final class MobMasherUpgradePage extends MachineUpgradePage {
                 .addStatistic(MobMasherConstants.UpgradePageStat.NOISE_SUPPRESSED)
                 .addStatistic(MobMasherConstants.UpgradePageStat.SPEED)
                 .addStatistic(MobMasherConstants.UpgradePageStat.OUTPUT)
+                .addStatistic(MobMasherConstants.UpgradePageStat.DAMAGE_BOSSES_ENABLED)
                 .onBeforePageOpen(context -> {
                     MobMasherComponent mobMasher = getMobMasherComponent(context.getMachineRef());
                     if (mobMasher != null) {
@@ -40,21 +41,27 @@ public final class MobMasherUpgradePage extends MachineUpgradePage {
                         page.updateStatisticValue(MobMasherConstants.UpgradePageStat.ENABLED.getIndex(), String.valueOf(mobMasher.isEnabled()));
                         page.updateStatisticValue(MobMasherConstants.UpgradePageStat.SPEED.getIndex(), String.valueOf(mobMasher.getTicksPerAction()/30));
                         page.updateStatisticValue(MobMasherConstants.UpgradePageStat.OUTPUT.getIndex(), String.valueOf(mobMasher.getDamagePerAction()));
+                        page.updateStatisticValue(MobMasherConstants.UpgradePageStat.DAMAGE_BOSSES_ENABLED.getIndex(), String.valueOf(mobMasher.isDamageBossesEnabled()));
                     }
                 })
                 .onUpgradeChanged((context, type, oldCount, newCount) -> {
                     MobMasherComponent mobMasher = getMobMasherComponent(context.getMachineRef());
-                    if (mobMasher == null) {
-                        return;
-                    }
+                    if (mobMasher == null) return;
 
                     if (type == MachineUpgradeType.OUTPUT) {
                         int damage = getDamage(newCount);
+                        boolean damageBossesEnabled = getDamageBossesEnabled(newCount);
                         mobMasher.setDamagePerAction(damage);
+                        mobMasher.setDamageBossesEnabled(damageBossesEnabled);
                         MachineUpgradePage.pushStatisticValue(
                                 context.getMachineRef(),
                                 MobMasherConstants.UpgradePageStat.OUTPUT.getIndex(),
                                 String.valueOf(mobMasher.getDamagePerAction())
+                        );
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobMasherConstants.UpgradePageStat.DAMAGE_BOSSES_ENABLED.getIndex(),
+                                String.valueOf(mobMasher.isDamageBossesEnabled())
                         );
                     } else if (type == MachineUpgradeType.SPEED) {
                         int speed = getSpeed(newCount);
@@ -112,6 +119,10 @@ public final class MobMasherUpgradePage extends MachineUpgradePage {
             return MobMasherConstants.UPG2_SPEED;
         }
         return MobMasherConstants.DEF_TICKS_PER_ACTION;
+    }
+
+    private static boolean getDamageBossesEnabled(int newCount) {
+        return newCount >= MobMasherConstants.OUTPUT_AMOUNT_REQUIRED_FOR_DAMAGE_BOSSES;
     }
 
     @Nullable

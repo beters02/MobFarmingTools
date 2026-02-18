@@ -36,6 +36,29 @@ public class MobFarmingToolsConfig {
                     (config, value) -> config.spikesDamageNpcsEnabled = value,
                     (config) -> config.spikesDamageNpcsEnabled)
             .add()
+
+            .append(new KeyedCodec<>("MasherMobsBlacklist", Codec.STRING_ARRAY),
+                    (config, value) -> config.masherMobsBlacklist = value,
+                    (config) -> config.masherMobsBlacklist)
+            .add()
+            .append(new KeyedCodec<>("MasherMobsBlacklistRegex", Codec.STRING_ARRAY),
+                    (config, value) -> config.masherMobsBlacklistRegex = value,
+                    (config) -> config.masherMobsBlacklistRegex)
+            .documentation("If the EntityId contains a string from this array it will be blacklisted from the spikes.")
+            .add()
+            .append(new KeyedCodec<>("MasherDamagePlayers", Codec.BOOLEAN),
+                    (config, value) -> config.masherDamagePlayersEnabled = value,
+                    (config) -> config.masherDamagePlayersEnabled)
+            .add()
+            .append(new KeyedCodec<>("MasherDamageNpcs", Codec.BOOLEAN),
+                    (config, value) -> config.masherDamageNpcsEnabled = value,
+                    (config) -> config.masherDamageNpcsEnabled)
+            .add()
+            .append(new KeyedCodec<>("MasherDamageBosses", Codec.BOOLEAN),
+                    (config, value) -> config.masherDamageBossesEnabled = value,
+                    (config) -> config.masherDamageBossesEnabled)
+            .add()
+
             .append(new KeyedCodec<>("AdamantiteSpikesDamageBosses", Codec.BOOLEAN),
                     (config, value) -> config.adamantiteSpikesDamageBosses = value,
                     (config) -> config.adamantiteSpikesDamageBosses)
@@ -57,11 +80,22 @@ public class MobFarmingToolsConfig {
     private boolean spikesDamagePlayersEnabled = false;
     private boolean spikesDamageNpcsEnabled = true;
 
+    private String[] masherMobsBlacklist = {};
+    private String[] masherMobsBlacklistRegex = {};
+
+    private boolean masherDamagePlayersEnabled = false;
+    private boolean masherDamageNpcsEnabled = true;
+    private boolean masherDamageBossesEnabled = true;
+
     private boolean adamantiteSpikesDamageBosses = true;
 
     public boolean isSpikesDamagePlayersEnabled() { return spikesDamagePlayersEnabled; }
     public boolean isSpikesDamageNpcsEnabled() { return spikesDamageNpcsEnabled; }
     public boolean isAdamantiteSpikesDamageBossesEnabled() { return adamantiteSpikesDamageBosses; }
+
+    public boolean isMasherDamagePlayersEnabled() { return masherDamagePlayersEnabled; }
+    public boolean isMasherDamageNpcsEnabled() { return masherDamageNpcsEnabled; }
+    public boolean isMasherDamageBossesEnabled() { return masherDamageBossesEnabled; }
 
     public boolean isEntityBlacklistedSpawner(String entityId) {
         List<String> list = Arrays.asList(this.spawnerMobsBlacklist);
@@ -83,6 +117,20 @@ public class MobFarmingToolsConfig {
         if (list.contains(entityId)) return true;
 
         for ( String regexId : spikesMobsBlacklistRegex ) {
+            if (entityId.contains(regexId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isEntityBlacklistedMasher(String entityId) {
+        List<String> list = Arrays.asList(this.masherMobsBlacklist);
+
+        if (list.contains(entityId)) return true;
+
+        for ( String regexId : masherMobsBlacklistRegex ) {
             if (entityId.contains(regexId)) {
                 return true;
             }

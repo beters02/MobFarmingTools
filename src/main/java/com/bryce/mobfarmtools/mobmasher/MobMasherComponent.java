@@ -45,6 +45,10 @@ public class MobMasherComponent implements Component<ChunkStore> {
                             (component, value) -> component.damagePerAction = value,
                             component -> component.damagePerAction)
                     .add()
+                    .append(new KeyedCodec<>("DamageBosses", Codec.BOOLEAN),
+                            (component, value) -> component.damageBosses = value,
+                            component -> component.damageBosses)
+                    .add()
                     .append(new KeyedCodec<>("Enabled", Codec.BOOLEAN),
                             (component, value) -> component.enabled = value,
                             component -> component.enabled)
@@ -68,6 +72,7 @@ public class MobMasherComponent implements Component<ChunkStore> {
     private boolean enabled = MobMasherConstants.DEF_ENABLED;
     private boolean chunkLoaded = MobMasherConstants.DEF_CHUNK_LOADED;
     private boolean noiseSuppressed = MobMasherConstants.DEF_NOISE_SUPPRESSED;
+    private boolean damageBosses = MobMasherConstants.DEF_DAMAGE_BOSSES;
     private int ticksPerAction = MobMasherConstants.DEF_TICKS_PER_ACTION;
     private int damagePerAction = MobMasherConstants.DEF_DAMAGE;
     private int ticksLifetime = 0;
@@ -83,6 +88,8 @@ public class MobMasherComponent implements Component<ChunkStore> {
     public boolean isChunkLoaded() {
         return chunkLoaded;
     }
+
+    public boolean isDamageBossesEnabled() { return damageBosses; }
 
     public int getTicksPerAction() { return ticksPerAction; }
 
@@ -105,6 +112,8 @@ public class MobMasherComponent implements Component<ChunkStore> {
     public void setTicksLifetime(int value) { ticksLifetime = value; }
 
     public void incrementTicksLifetime(int value) { ticksLifetime += value; }
+
+    public void setDamageBossesEnabled(boolean value) { damageBosses = value; }
 
     public void setEnabled(World world, Vector3i blockPos, boolean value) {
         BlockType blockType = world.getBlockType(blockPos);
@@ -131,6 +140,7 @@ public class MobMasherComponent implements Component<ChunkStore> {
         copy.noiseSuppressed = this.noiseSuppressed;
         copy.chunkLoaded = this.chunkLoaded;
         copy.ticksLifetime = this.ticksLifetime;
+        copy.damageBosses = this.damageBosses;
         return copy;
     }
 }

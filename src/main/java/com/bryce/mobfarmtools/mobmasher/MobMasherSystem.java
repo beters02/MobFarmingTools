@@ -1,5 +1,6 @@
 package com.bryce.mobfarmtools.mobmasher;
 
+import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.config.MobFarmingToolsConfig;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.spikes.SpikesComponent;
@@ -29,6 +30,7 @@ import com.hypixel.hytale.server.core.modules.entity.damage.DamageSystems;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.util.Config;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.jspecify.annotations.NonNull;
@@ -41,9 +43,11 @@ import java.util.Map;
 public class MobMasherSystem extends EntityTickingSystem<ChunkStore> {
     private final ComponentType<ChunkStore, MobMasherComponent> mobMasherComponentType;
     private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobMasherSystem]");
+    private final Config<MobFarmingToolsConfig> mftConfig;
 
     public MobMasherSystem(ComponentType<ChunkStore, MobMasherComponent> mobMasherComponentType) {
         this.mobMasherComponentType = mobMasherComponentType;
+        mftConfig = MobFarmingToolsPlugin.get().getMobFarmingToolsConfig();
         debugger.setEnabled(false);
     }
 
@@ -85,10 +89,17 @@ public class MobMasherSystem extends EntityTickingSystem<ChunkStore> {
             return;
         }
 
+        MobFarmingToolsConfig config = mftConfig.get();
+
         for (Ref<EntityStore> ref : collidingEntities) {
+
             // Player
             Player player = ref.getStore().getComponent(ref, Player.getComponentType());
             if (player != null) {
+                if (!config.isMasherDamagePlayersEnabled()) {
+                    debugger.atWarning("Damaging players is not allowed from component.");
+                    continue;
+                }
                 continue;
             }
 
@@ -101,6 +112,29 @@ public class MobMasherSystem extends EntityTickingSystem<ChunkStore> {
 
             NPCEntity npc = ref.getStore().getComponent(ref, npcEntityComponentType);
             if (npc != null) {
+
+                if (!config.isMasherDamageNpcsEnabled()) {
+                    debugger.atWarning("Damaging npcs is not allowed from component.");
+                    continue;
+                }
+
+                String entityId = npc.getNPCTypeId();
+                if (config.isEntityBlacklistedMasher(entityId)) {
+                    debugger.atWarning("Damaging " + entityId + " disabled by configuration.");
+                    continue;
+                }
+
+                if (MFTEntityUtil.IsEntityIdBoss(entityId)) {
+                    if (!config.isMasherDamageBossesEnabled()) {
+                        debugger.atWarning("Damaging boss " + entityId + " disabled by configuration");
+                        continue;
+                    }
+                    if (!masher.isDamageBossesEnabled()) {
+                        debugger.atWarning("Damaging boss " + entityId + " disabled by component");
+                        continue;
+                    }
+                }
+
                 damageEntity(ref, (float) masher.getDamagePerAction());
             }
         }
