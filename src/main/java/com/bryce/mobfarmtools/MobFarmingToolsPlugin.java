@@ -17,6 +17,9 @@ import com.bryce.mobfarmtools.mobspawner.MobSpawnerInitializer;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerInteraction;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerSystem;
 import com.bryce.mobfarmtools.mobswab.MobSwabInteraction;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterComponent;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterInitializer;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterSystem;
 import com.bryce.mobfarmtools.spikes.SpikesComponent;
 import com.bryce.mobfarmtools.spikes.SpikesSystem;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperComponent;
@@ -48,6 +51,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     private ComponentType<ChunkStore, MachineUpgradeComponent> machineUpgradeComponentType;
     private ComponentType<ChunkStore, SpikesComponent> spikesComponentType;
     private ComponentType<ChunkStore, DropperComponent> dropperComponentType;
+    private ComponentType<ChunkStore, MFTSoundEmitterComponent> soundEmitterComponentType;
 
     private ResourceType<ChunkStore, ForcedChunkRefCountResource> forcedChunkRefCountResourceType;
 
@@ -84,6 +88,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         this.machineUpgradeComponentType = registerComponent(registry, MachineUpgradeComponent.class, "Machine_Upgrade_Component", MachineUpgradeComponent.CODEC);
         this.spikesComponentType = registerComponent(registry, SpikesComponent.class, "Spikes_Component", SpikesComponent.CODEC);
         this.dropperComponentType = registerComponent(registry, DropperComponent.class, "Dropper_Component", DropperComponent.CODEC);
+        this.soundEmitterComponentType = registerComponent(registry, MFTSoundEmitterComponent.class, "Sound_Emitter_Component", MFTSoundEmitterComponent.CODEC);
     }
 
     private void registerResources(ComponentRegistryProxy<ChunkStore> registry) {
@@ -100,6 +105,8 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
         registry.registerSystem(new SpikesSystem(this.spikesComponentType));
         registry.registerSystem(new DropperSystem(this.dropperComponentType));
         registry.registerSystem(new ChunkForceTickSystem());
+        registry.registerSystem(new MFTSoundEmitterSystem(this.soundEmitterComponentType));
+        registry.registerSystem(new MFTSoundEmitterInitializer());
     }
 
     private void registerInteractions(
@@ -162,6 +169,7 @@ public class MobFarmingToolsPlugin extends JavaPlugin {
     public ComponentType<ChunkStore, DropperComponent> getDropperComponentType() {
         return this.dropperComponentType;
     }
+    public ComponentType<ChunkStore, MFTSoundEmitterComponent> getSoundEmitterComponentType() { return this.soundEmitterComponentType; }
 
     public ResourceType<ChunkStore, ForcedChunkRefCountResource> getForcedChunkRefCountResourceType() { return this.forcedChunkRefCountResourceType; }
 

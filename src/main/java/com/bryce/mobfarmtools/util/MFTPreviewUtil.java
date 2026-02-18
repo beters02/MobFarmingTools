@@ -19,7 +19,20 @@ public class MFTPreviewUtil {
 
     private static void ShowBoxPreview(PlayerRef playerRef, Matrix4d matrix, Vector3f previewColor, float previewDurationSeconds) {
         playerRef.getPacketHandler().write(new ClearDebugShapes());
-        DisplayDebug packet = new DisplayDebug(DebugShape.Cube, matrix.asFloatData(), previewColor, previewDurationSeconds, true, null);
+
+        com.hypixel.hytale.protocol.Vector3f fixedPreviewColor = new com.hypixel.hytale.protocol.Vector3f(previewColor);
+
+        DisplayDebug packet = new DisplayDebug(
+                DebugShape.Cube,
+                matrix.asFloatData(),
+                fixedPreviewColor,              // must be protocol.Vector3f
+                previewDurationSeconds,
+                true,
+                null,
+                1.0f
+        );
+
+        //DisplayDebug packet = new DisplayDebug(DebugShape.Cube, matrix.asFloatData(), previewColor, previewDurationSeconds, true, null);
         playerRef.getPacketHandler().write(packet);
     }
 

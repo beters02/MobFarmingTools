@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.vacuumhopper;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterComponent;
 import com.bryce.mobfarmtools.util.*;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.component.query.Query;
@@ -53,13 +54,13 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         );
     }
 
-    private boolean disableIfTrue(boolean value, World world, Vector3d pos) {
-        if (value) setOnBlockState(world, pos, false);
+    private boolean disableIfTrue(boolean value, Ref<ChunkStore> blockRef, World world, Vector3d pos) {
+        if (value) setOnBlockState(blockRef, world, pos, false);
         return value;
     }
 
-    private <T> T disableIfNull(T value, World world, Vector3d pos) {
-        if (value == null) setOnBlockState(world, pos, false);
+    private <T> T disableIfNull(T value, Ref<ChunkStore> blockRef, World world, Vector3d pos) {
+        if (value == null) setOnBlockState(blockRef, world, pos, false);
         return value;
     }
 
@@ -88,14 +89,16 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
 
         World world = store.getExternalData().getWorld();
 
-        WorldChunk worldChunk = disableIfNull(MFTChunkUtil.IsChunkLoaded(world, (int) pos.x, (int) pos.z), world, pos);
+        Ref<ChunkStore> blockRef = archetypeChunk.getReferenceTo(index);
+
+        WorldChunk worldChunk = disableIfNull(MFTChunkUtil.IsChunkLoaded(world, (int) pos.x, (int) pos.z), blockRef, world, pos);
         if (worldChunk == null) return;
 
         int rotationIndex = world.getBlockRotationIndex((int) pos.x, (int) pos.y, (int) pos.z);
 
         List<ItemContainer> containers = VacuumHopperHelpers.GetTouchingItemContainers(world, pos.toVector3i());
         //if (!debugger.requireBool(!containers.isEmpty(), "No valid containers.")) return;
-        if (disableIfTrue(containers.isEmpty(), world, pos)) return;
+        if (disableIfTrue(containers.isEmpty(), blockRef, world, pos)) return;
 
         Store<EntityStore> entityStore = world.getEntityStore().getStore();
         List<Ref<EntityStore>> items = getDroppedItemEntitiesInRadius(vacuum, pos, rotationIndex, entityStore);
@@ -104,7 +107,7 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
             Box box = getItemsBox(vacuum, pos, world.getBlockRotationIndex((int) pos.x, (int) pos.y, (int) pos.z));
             debugger.atWarning("No items in " + box.min + " to " + box.max);
         }*/
-        if (disableIfTrue(items.isEmpty(), world, pos)) {
+        if (disableIfTrue(items.isEmpty(), blockRef, world, pos)) {
             checkIsChunkLoaded(vacuum, world, pos);
             return;
         }
@@ -142,7 +145,7 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
 
 
         checkIsChunkLoaded(vacuum, world, pos);
-        setOnBlockState(world, pos, setEnabled);
+        setOnBlockState(blockRef, world, pos, setEnabled);
     }
 
     public void checkIsChunkLoaded(VacuumHopperComponent vacuum, World world, Vector3d blockPosition) {
@@ -232,9 +235,18 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         itemVelocity.addInstruction(push, null, ChangeVelocityType.Add);
     }
 
-    public void setOnBlockState(World world, Vector3d pos, boolean enabled) {
+    public void setOnBlockState(Ref<ChunkStore> blockRef, World world, Vector3d pos, boolean enabled) {
         BlockType blockType = world.getBlockType(pos.toVector3i());
         if (blockType == null) return;
         world.setBlockInteractionState(pos.toVector3i(), blockType, enabled ? "On" : "Off");
+
+        MFTSoundEmitterComponent emitter = blockRef.getStore().getComponent(blockRef, MFTSoundEmitterComponent.getComponentType());
+        if (emitter != null) {
+            if (enabled) {
+                boolean soundPlayed = emitter.PlaySound(blockRef, "SFX_MFT_Vacuum_Hum_Steady");
+            } else {
+                boolean soundStopped = emitter.StopSound(blockRef, "SFX_MFT_Vacuum_Hum_Steady");
+            }
+        }
     }
 }

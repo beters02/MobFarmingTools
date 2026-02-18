@@ -3,14 +3,19 @@ package com.bryce.mobfarmtools.vacuumhopper;
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanConstants;
+import com.bryce.mobfarmtools.sounds.SoundManager;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.Component;
 import com.hypixel.hytale.component.ComponentType;
+import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class VacuumHopperComponent implements Component<ChunkStore> {
     public static final BuilderCodec<VacuumHopperComponent> CODEC =
@@ -64,8 +69,13 @@ public class VacuumHopperComponent implements Component<ChunkStore> {
     private float lifetime = 0f;
     private int ticksLifetime = 0;
     private boolean hasAvailableContainer = false;
-
     private int id = -1;
+
+    private Map<String, SoundManager.MFTSound> sounds = new HashMap<>();
+    private Map<String, String> soundsAssetIds = Map.of(
+            "hum", "SFX_MFT_Vacuum_Hum_Steady"
+    );
+
     public void setId(int value) { id = value; }
     public int getId() { return id; }
 
@@ -87,6 +97,8 @@ public class VacuumHopperComponent implements Component<ChunkStore> {
     public int getLengthUpgrades() { return lengthUpgrades; }
     public int getWidthUpgrades() { return widthUpgrades; }
     public int getHeightUpgrades() { return heightUpgrades; }
+    public Map<String, String> getSoundsAssetIds() { return soundsAssetIds; }
+    public Map<String, SoundManager.MFTSound> getSounds() { return sounds; }
 
     public void setLifetime(float value) {
         lifetime = value;
@@ -94,15 +106,13 @@ public class VacuumHopperComponent implements Component<ChunkStore> {
     public void setTicksLifetime(int value) {
         ticksLifetime = value;
     }
-    public void setEnabled(boolean value) {
-        enabled = value;
-    }
     public void setHasAvailableContainer(boolean value) { hasAvailableContainer = value; }
     private void setLength(int value) { length = value; }
     private void setWidth(int value) { width = value; }
     private void setHeight(int value) { height = value; }
     public void setNoiseSuppressed(boolean value) { noiseSuppressed = value; }
     public void setChunkLoaded(boolean value) { chunkLoaded = value; }
+    public void setSounds(Map<String, SoundManager.MFTSound> value) { sounds = value; }
     public void setLengthUpgrades(int value) {
         lengthUpgrades = value;
         applyUpgradeCounts();
@@ -115,12 +125,21 @@ public class VacuumHopperComponent implements Component<ChunkStore> {
         heightUpgrades = value;
         applyUpgradeCounts();
     }
+    public void setEnabled(boolean value) {
+        enabled = value;
+    }
 
     public void incrementLifetime(float amount) {
         lifetime += amount;
     }
     public void incrementTicksLifetime(int amount) {
         ticksLifetime += amount;
+    }
+
+    public boolean playSound(String soundAssetIdsKey) {
+        SoundManager.MFTSound sound = sounds.get(soundAssetIdsKey);
+        if (sound == null) return false;
+        return sound.Play();
     }
 
     private void applyUpgradeCounts() {

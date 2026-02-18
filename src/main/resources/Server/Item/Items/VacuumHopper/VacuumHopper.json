@@ -88,7 +88,12 @@
     "BlockEntity": {
       "Components": {
         "Mob_Farming_Tools:Vacuum_Hopper_Component": {},
-        "Mob_Farming_Tools:Machine_Upgrade_Component": {}
+        "Mob_Farming_Tools:Machine_Upgrade_Component": {},
+        "Mob_Farming_Tools:Sound_Emitter_Component": {
+          "SoundIds": [
+            "SFX_MFT_Vacuum_Hum_Steady"
+          ]
+        }
       }
     },
     "Interactions": {

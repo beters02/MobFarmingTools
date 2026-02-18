@@ -6,6 +6,8 @@ import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterComponent;
+import com.bryce.mobfarmtools.sounds.SoundManager;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.vacuumhopper.ui.VacuumHopperUpgradePage;
@@ -29,11 +31,12 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
     private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[VacuumHopperInitializer]");
     public VacuumHopperInitializer() {
-        debugger.setEnabled(false);
+        debugger.setEnabled(VacuumHopperConstants.DEBUGGER_ENABLED);
     }
 
     private int hopperCount = -1;
@@ -48,16 +51,27 @@ public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityAdded(@NonNull Ref<ChunkStore> ref, @NonNull AddReason addReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+        debugger.atWarning("VACUUM HOPPER INITIALIZED!@!#!@#!#");
         hopperCount++;
         VacuumHopperComponent vacuumHopperComponent = store.getComponent(ref, VacuumHopperComponent.getComponentType());
-        if (vacuumHopperComponent != null) {
-            debugger.atWarning("Vacuum Hopper component found on init.");
-            vacuumHopperComponent.setId(hopperCount);
+        if (vacuumHopperComponent == null) {
+            debugger.atWarning("VACUUM HOPPER COMPONENT NOT FOUND!");
+            return;
+        }
+
+        // play looping sounds
+        MFTSoundEmitterComponent emitter = store.getComponent(ref, MFTSoundEmitterComponent.getComponentType());
+        if (emitter == null) {
+            // fix previously placed vacuum hoppers not having its sound emitter component
+            String[] soundIds = {"SFX_MFT_Vacuum_Hum_Steady"};
+            commandBuffer.putComponent(ref, MFTSoundEmitterComponent.getComponentType(), new MFTSoundEmitterComponent(soundIds));
         }
     }
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+        SoundManager.DestroyAllForBlock(ref); // add this at top
+
         World world = store.getExternalData().getWorld();
         VacuumHopperUpgradePage.clearAllPreviews(world);
 

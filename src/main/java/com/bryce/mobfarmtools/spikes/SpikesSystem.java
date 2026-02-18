@@ -191,8 +191,9 @@ public class SpikesSystem extends EntityTickingSystem<ChunkStore> {
         }
 
         // 2) Collect candidate entities from tangible spatial resource
+
         SpatialResource<Ref<EntityStore>, EntityStore> spatial =
-                entityStore.getResource(CollisionModule.get().getTangiableEntitySpatialComponent());
+                entityStore.getResource(CollisionModule.get().getTangibleEntitySpatialResourceType());
 
         ObjectList<Ref<EntityStore>> candidates = SpatialResource.getThreadLocalReferenceList();
         candidates.clear();
