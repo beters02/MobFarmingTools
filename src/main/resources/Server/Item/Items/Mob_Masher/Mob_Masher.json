@@ -57,7 +57,7 @@
     "State": {
       "Definitions": {
         "On": {
-          "CustomModelAnimation": "Blocks/Mob_Masher/Mob_Masher_Mashing.blockyanim",
+          "CustomModelAnimation": "Blocks/Mob_Masher/Mob_Masher_Mashing_4.blockyanim",
           "Looping": true
         },
         "Off": {
