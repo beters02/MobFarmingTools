@@ -47,6 +47,7 @@
     "Material": "Solid",
     "DrawType": "Model",
     "CustomModel": "Blocks/Mob_Masher/Mob_Masher.blockymodel",
+    "CustomModelScale": 0.5,
     "CustomModelTexture": [
       {
         "Texture": "BlockTextures/Mob_Masher/Mob_Masher.png",

@@ -37,6 +37,14 @@ public class MobMasherInitializer extends RefSystem<ChunkStore> {
     private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobMasherInitializer]");
 
     @Override
+    public @Nullable Query<ChunkStore> getQuery() {
+        return Query.and(
+                BlockModule.BlockStateInfo.getComponentType(),
+                MobMasherComponent.getComponentType()
+        );
+    }
+
+    @Override
     public void onEntityAdded(@NonNull Ref<ChunkStore> ref, @NonNull AddReason addReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
         debugger.setEnabled(false);
 
@@ -98,91 +106,5 @@ public class MobMasherInitializer extends RefSystem<ChunkStore> {
         if (holders.length > 0) {
             world.execute(() -> entityStore.addEntities(holders, AddReason.SPAWN));
         }
-    }
-
-    @Override
-    public @Nullable Query<ChunkStore> getQuery() {
-        return Query.and(
-            BlockModule.BlockStateInfo.getComponentType(),
-            MobFanComponent.getComponentType()
-        );
-    }
-
-    private static int applyFloorCeilingRotation(
-        @NonNull World world,
-        @NonNull WorldChunk worldChunk,
-        int worldX,
-        int worldY,
-        int worldZ,
-        int localX,
-        int localY,
-        int localZ,
-        int sectionY,
-        int currentRotation,
-        @NonNull Store<ChunkStore> chunkStore
-    ) {
-        BlockType below = world.getBlockType(worldX, worldY - 1, worldZ);
-        BlockType above = world.getBlockType(worldX, worldY + 1, worldZ);
-        boolean solidBelow = isSolid(below);
-        boolean solidAbove = isSolid(above);
-
-        if (solidBelow == solidAbove) {
-            return currentRotation;
-        }
-
-        Rotation yaw = RotationTuple.get(currentRotation).yaw();
-        Rotation pitch = solidBelow ? Rotation.Ninety : Rotation.TwoSeventy;
-        int newRotation = RotationTuple.index(yaw, pitch, Rotation.None);
-
-        if (newRotation == currentRotation) {
-            return currentRotation;
-        }
-
-        int blockId = worldChunk.getBlock(localX, worldY, localZ);
-        BlockType blockType = BlockType.getAssetMap().getAsset(blockId);
-        if (blockType == null) {
-            return currentRotation;
-        }
-
-        Ref<ChunkStore> sectionRef = world.getChunkStore().getChunkSectionReference(worldChunk.getX(), sectionY, worldChunk.getZ());
-        if (sectionRef == null) {
-            return currentRotation;
-        }
-
-        BlockSection blockSection = chunkStore.getComponent(sectionRef, BlockSection.getComponentType());
-        if (blockSection == null) {
-            return currentRotation;
-        }
-
-        int filler = blockSection.getFiller(localX, localY, localZ);
-        worldChunk.setBlock(localX, worldY, localZ, blockId, blockType, newRotation, filler, 198);
-        return newRotation;
-    }
-
-    private static boolean isSolid(@Nullable BlockType blockType) {
-        return blockType != null && blockType != BlockType.EMPTY && blockType.getMaterial() != BlockMaterial.Empty;
-    }
-
-    private static void migrateLegacyFanUpgrades(Ref<ChunkStore> ref, Store<ChunkStore> store, MobFanComponent mobFan, CommandBuffer<ChunkStore> commandBuffer) {
-        MachineUpgradeComponent upgrades = store.getComponent(ref, MachineUpgradeComponent.getComponentType());
-        if (upgrades == null) {
-            upgrades = new MachineUpgradeComponent();
-        }
-
-        int width = upgrades.getCount(MachineUpgradeType.WIDTH);
-        int height = upgrades.getCount(MachineUpgradeType.HEIGHT);
-        int length = upgrades.getCount(MachineUpgradeType.LENGTH);
-        if (width == 0 && height == 0 && length == 0) {
-            upgrades.setCount(MachineUpgradeType.WIDTH, mobFan.getWidthUpgrades());
-            upgrades.setCount(MachineUpgradeType.HEIGHT, mobFan.getHeightUpgrades());
-            upgrades.setCount(MachineUpgradeType.LENGTH, mobFan.getLengthUpgrades());
-        } else {
-            mobFan.setWidthUpgrades(width);
-            mobFan.setHeightUpgrades(height);
-            mobFan.setLengthUpgrades(length);
-            commandBuffer.putComponent(ref, MachineUpgradeComponent.getComponentType(), upgrades);
-        }
-
-        commandBuffer.putComponent(ref, MachineUpgradeComponent.getComponentType(), upgrades);
     }
 }
