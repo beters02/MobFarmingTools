@@ -49,6 +49,22 @@ public class MobMasherInitializer extends RefSystem<ChunkStore> {
         }
 
         SoundManager.StopAllForBlock(ref);
+
+        // set enabled so on state animation is played
+
+        MobMasherComponent masher = store.getComponent(ref, MobMasherComponent.getComponentType());
+        if (masher == null) {
+            debugger.atWarning("Failed to set enabled during init; MasherComponent is null.");
+            return;
+        }
+
+        Vector3i blockPos = MFTBlockUtil.GetWorldPosFromBlockRef(store, ref);
+        if (blockPos == null) {
+            debugger.atWarning("Failed to set enabled during init; BlockPosition is null");
+            return;
+        }
+
+        masher.setEnabled(store.getExternalData().getWorld(), blockPos, masher.isEnabled());
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.vector.Vector3d;
+import com.hypixel.hytale.protocol.BlockPosition;
 import com.hypixel.hytale.protocol.ChangeVelocityType;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
@@ -89,10 +90,6 @@ public class MobMasherComponent implements Component<ChunkStore> {
 
     public int getTicksLifetime() { return ticksLifetime; }
 
-    public void setEnabled(boolean value) {
-        enabled = value;
-    }
-
     public void setNoiseSuppressed(boolean value) {
         noiseSuppressed = value;
     }
@@ -108,6 +105,18 @@ public class MobMasherComponent implements Component<ChunkStore> {
     public void setTicksLifetime(int value) { ticksLifetime = value; }
 
     public void incrementTicksLifetime(int value) { ticksLifetime += value; }
+
+    public void setEnabled(World world, Vector3i blockPos, boolean value) {
+        BlockType blockType = world.getBlockType(blockPos);
+        if (blockType == null) {
+            debugger.atWarning("BlockType returned null. Block interaction state cannot be changed.");
+            return;
+        }
+
+        enabled = value;
+        world.setBlockInteractionState(blockPos, blockType, enabled ? "On" : "Off");
+        debugger.atInfo("Interaction state successfully set to " + (enabled ? "On" : "Off"));
+    }
 
     public static ComponentType<ChunkStore, MobMasherComponent> getComponentType() {
         return MobFarmingToolsPlugin.get().getMobMasherComponentType();
