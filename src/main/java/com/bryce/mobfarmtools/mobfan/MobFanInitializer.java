@@ -47,13 +47,18 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
             String[] soundIds = {"SFX_MFT_Fan_Buzz_Low"};
             emitter = new MFTSoundEmitterComponent(soundIds);
             commandBuffer.putComponent(ref, MFTSoundEmitterComponent.getComponentType(), emitter);
+        } else {
+            // patch for previously placed fans that was given the wrong sound.
+            if (emitter.GetSound(ref, "SFX_MFT_Fan_Buzz_Low") == null) {
+                SoundManager.NewSound(ref, "SFX_MFT_Fan_Buzz_Low");
+            }
         }
 
         SoundManager.StopAllForBlock(ref);
         emitter.PlaySound(ref, "SFX_MFT_Fan_Buzz_Low");
 
         BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
-        
+
         if (info == null) return;
 
         MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFanComponent.getComponentType());
@@ -86,17 +91,17 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
                 int sectionY = ChunkUtil.indexSection(worldY);
                 int localY = worldY & 31;
                 rotationIndex = applyFloorCeilingRotation(
-                    world,
-                    worldChunk,
-                    worldX,
-                    worldY,
-                    worldZ,
-                    localX,
-                    localY,
-                    localZ,
-                    sectionY,
-                    rotationIndex,
-                    chunkStore
+                        world,
+                        worldChunk,
+                        worldX,
+                        worldY,
+                        worldZ,
+                        localX,
+                        localY,
+                        localZ,
+                        sectionY,
+                        rotationIndex,
+                        chunkStore
                 );
             }
 
@@ -149,23 +154,23 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
     @Override
     public @Nullable Query<ChunkStore> getQuery() {
         return Query.and(
-            BlockModule.BlockStateInfo.getComponentType(),
-            MobFanComponent.getComponentType()
+                BlockModule.BlockStateInfo.getComponentType(),
+                MobFanComponent.getComponentType()
         );
     }
 
     private static int applyFloorCeilingRotation(
-        @NonNull World world,
-        @NonNull WorldChunk worldChunk,
-        int worldX,
-        int worldY,
-        int worldZ,
-        int localX,
-        int localY,
-        int localZ,
-        int sectionY,
-        int currentRotation,
-        @NonNull Store<ChunkStore> chunkStore
+            @NonNull World world,
+            @NonNull WorldChunk worldChunk,
+            int worldX,
+            int worldY,
+            int worldZ,
+            int localX,
+            int localY,
+            int localZ,
+            int sectionY,
+            int currentRotation,
+            @NonNull Store<ChunkStore> chunkStore
     ) {
         BlockType below = world.getBlockType(worldX, worldY - 1, worldZ);
         BlockType above = world.getBlockType(worldX, worldY + 1, worldZ);
