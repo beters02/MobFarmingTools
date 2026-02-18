@@ -98,7 +98,7 @@ public final class MobFanUpgradePage extends MachineUpgradePage {
                         }
                         MachineUpgradePage.pushStatisticValue(
                                 context.getMachineRef(),
-                                MobSpawnerConstants.UpgradePageStat.NOISE_SUPPRESSED.getIndex(),
+                                MobFanConstants.UpgradePageStat.NOISE_SUPPRESSED.getIndex(),
                                 String.valueOf(mobFan.isNoiseSuppressed())
                         );
                     }

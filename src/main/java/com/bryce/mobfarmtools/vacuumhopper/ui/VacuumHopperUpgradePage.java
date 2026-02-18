@@ -119,7 +119,7 @@ public class VacuumHopperUpgradePage extends MachineUpgradePage {
                         }
                         MachineUpgradePage.pushStatisticValue(
                                 context.getMachineRef(),
-                                MobSpawnerConstants.UpgradePageStat.NOISE_SUPPRESSED.getIndex(),
+                                VacuumHopperConstants.UpgradePageStat.NOISE_SUPPRESSED.getIndex(),
                                 String.valueOf(hopper.isNoiseSuppressed())
                         );
                     }
