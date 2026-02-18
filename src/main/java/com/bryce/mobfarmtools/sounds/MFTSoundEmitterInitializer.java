@@ -29,7 +29,7 @@ import java.util.Map;
 public class MFTSoundEmitterInitializer extends RefSystem<ChunkStore> {
     private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[SoundEmitterInitializer]");
     public MFTSoundEmitterInitializer() {
-        debugger.setEnabled(true);
+        debugger.setEnabled(false);
     }
 
     @Override

@@ -12,7 +12,7 @@ public class VacuumHopperConstants {
     public static double ITEM_SUCK_SPEED = 150;
     public static double ITEM_SUCK_Y = 3;
 
-    public static boolean DEBUGGER_ENABLED = true;
+    public static boolean DEBUGGER_ENABLED = false;
 
     public static boolean DEF_NOISE_SUPPRESSED = false;
     public static boolean DEF_ENABLED = true;

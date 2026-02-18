@@ -36,7 +36,7 @@ public class MFTSoundEmitterComponent implements Component<ChunkStore> {
 
     private boolean initialized = false;
     private boolean suppressed = false;
-    private MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[SoundEmitterComponent]", true);
+    private MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[SoundEmitterComponent]", false);
 
     public MFTSoundEmitterComponent() {}
     public MFTSoundEmitterComponent(String[] soundIds) {

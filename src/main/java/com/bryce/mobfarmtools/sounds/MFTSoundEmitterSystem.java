@@ -33,7 +33,7 @@ public class MFTSoundEmitterSystem extends EntityTickingSystem<ChunkStore> {
 
     public MFTSoundEmitterSystem(ComponentType<ChunkStore, MFTSoundEmitterComponent> soundEmitterComponentType) {
         this.soundEmitterComponentType = soundEmitterComponentType;
-        debugger.setEnabled(true);
+        debugger.setEnabled(false);
     }
 
     @Override
