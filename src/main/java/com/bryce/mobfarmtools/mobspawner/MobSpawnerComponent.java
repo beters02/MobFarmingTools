@@ -67,6 +67,10 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
                             (component, value) -> component.chunkLoaded = value,
                             component -> component.chunkLoaded)
                     .add()
+                    .append(new KeyedCodec<>("NoiseSuppressed", Codec.BOOLEAN),
+                            (component, value) -> component.noiseSuppressed = value,
+                            component -> component.noiseSuppressed)
+                    .add()
                     .append(new KeyedCodec<>("EntitySize", Codec.INT_ARRAY),
                             (component, value) -> component.entitySize = value,
                             component -> component.entitySize)
@@ -175,6 +179,7 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     public void setSpawnAmountMax(int value) { spawnAmountMax = value; }
     public void setTickLifetime(int value) { tickLifetime = value; }
     public void setChunkLoaded(boolean value) { chunkLoaded = value; }
+    public void setNoiseSuppressed(boolean value) { noiseSuppressed = value; }
 
     public void incrementFailedTries(int val) { failedTries += val; }
     public void incrementLifetime(float amount) { lifetime += amount; }

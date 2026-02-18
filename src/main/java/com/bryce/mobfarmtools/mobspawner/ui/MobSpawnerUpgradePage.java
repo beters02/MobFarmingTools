@@ -7,6 +7,7 @@ import com.bryce.mobfarmtools.mobfan.MobFanConstants;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerComponent;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerInitializer;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterComponent;
 import com.bryce.mobfarmtools.util.MFTChunkUtil;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -78,6 +79,17 @@ public class MobSpawnerUpgradePage extends MachineUpgradePage {
                                 context.getMachineRef(),
                                 MobSpawnerConstants.UpgradePageStat.CHUNK_LOADED.getIndex(),
                                 String.valueOf(mobSpawner.isChunkLoaded())
+                        );
+                    } else if (type == MachineUpgradeType.NOISE_SUPPRESSION) {
+                        mobSpawner.setNoiseSuppressed(newCount > 0);
+                        MFTSoundEmitterComponent emitter = context.getMachineRef().getStore().getComponent(context.getMachineRef(), MFTSoundEmitterComponent.getComponentType());
+                        if (emitter != null) {
+                            emitter.setSuppressed(newCount > 0, context.getMachineRef());
+                        }
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobSpawnerConstants.UpgradePageStat.NOISE_SUPPRESSED.getIndex(),
+                                String.valueOf(mobSpawner.isNoiseSuppressed())
                         );
                     }
 

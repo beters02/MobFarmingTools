@@ -58,6 +58,14 @@ public final class SoundManager {
         }
     }
 
+    public static void StopAllForBlock(Ref<ChunkStore> blockRef) {
+        Set<MFTSound> sounds = SOUNDS_BY_BLOCK.get(blockRef.getIndex());
+        if (sounds == null) return;
+        for (MFTSound sound : sounds) {
+            sound.Stop();
+        }
+    }
+
     public static @Nullable Set<MFTSound> GetAllForBlock(Ref<ChunkStore> blockRef) {
         return SOUNDS_BY_BLOCK.get(blockRef.getIndex());
     }

@@ -6,6 +6,7 @@ import com.bryce.mobfarmtools.machineupgrade.ui.MachineUpgradePage;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanConstants;
 import com.bryce.mobfarmtools.mobspawner.MobSpawnerConstants;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterComponent;
 import com.bryce.mobfarmtools.util.MFTChunkUtil;
 import com.bryce.mobfarmtools.util.MFTPreviewUtil;
 import com.bryce.mobfarmtools.vacuumhopper.VacuumHopperComponent;
@@ -87,6 +88,17 @@ public final class MobFanUpgradePage extends MachineUpgradePage {
                                 context.getMachineRef(),
                                 MobFanConstants.UpgradePageStat.CHUNK_LOADED.getIndex(),
                                 String.valueOf(mobFan.isChunkLoaded())
+                        );
+                    } else if (type == MachineUpgradeType.NOISE_SUPPRESSION) {
+                        mobFan.setNoiseSuppressed(newCount > 0);
+                        MFTSoundEmitterComponent emitter = context.getMachineRef().getStore().getComponent(context.getMachineRef(), MFTSoundEmitterComponent.getComponentType());
+                        if (emitter != null) {
+                            emitter.setSuppressed(newCount > 0, context.getMachineRef());
+                        }
+                        MachineUpgradePage.pushStatisticValue(
+                                context.getMachineRef(),
+                                MobSpawnerConstants.UpgradePageStat.NOISE_SUPPRESSED.getIndex(),
+                                String.valueOf(mobFan.isNoiseSuppressed())
                         );
                     }
 
