@@ -4,7 +4,7 @@
     "Description": "Suppress the noises of a machine."
   },
   "Id": "Machine_Upgrade_Noise_Suppression",
-  "Texture": "Items/Machine_Upgrade/Machine_Upgrade_Noise_Suppression.png",
+  "Texture": "Items/Machine_Upgrade_V2/Machine_Upgrade_Noise_Suppression.png",
   "Quality": "Common",
   "MaxStack": 10,
   "Categories": [
@@ -33,18 +33,18 @@
       }
     ]
   },
-  "Model": "Items/Machine_Upgrade/Machine_Upgrade.blockymodel",
+  "Model": "Items/Machine_Upgrade_V2/Machine_Upgrade.blockymodel",
   "IconProperties": {
-    "Scale": 1.7,
+    "Scale": 0.9,
     "Rotation": [
       0,
       0,
       0
     ],
     "Translation": [
-      1,
-      -8
+      0,
+      -13
     ]
   },
-  "Icon": "Icons/ItemsGenerated/Machine_Upgrade_Noise_Suppression.png"
+  "Icon": "Icons/Items/Machine_Upgrade_Noise_Suppression.png"
 }

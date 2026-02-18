@@ -20,7 +20,7 @@
     }
   },
   "Model": "Items/Debug_Tool/Debug_Tool.blockymodel",
-  "Icon": "Icons/ItemsGenerated/Mob_Fan_Upgrade_Height.png",
+  "Icon": "Icons/Items/Machine_Upgrade_Speed.png",
   "IconProperties": {
     "Scale": 1.7,
     "Rotation": [
