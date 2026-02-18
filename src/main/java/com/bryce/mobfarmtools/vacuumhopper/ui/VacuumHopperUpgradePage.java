@@ -35,6 +35,7 @@ public class VacuumHopperUpgradePage extends MachineUpgradePage {
                 .enableUpgrade(MachineUpgradeType.WIDTH, VacuumHopperConstants.SIZE_UPGRADE_MAX)
                 .enableUpgrade(MachineUpgradeType.HEIGHT, VacuumHopperConstants.SIZE_UPGRADE_MAX)
                 .enableUpgrade(MachineUpgradeType.LENGTH, VacuumHopperConstants.SIZE_UPGRADE_MAX)
+                .enableUpgrade(MachineUpgradeType.NOISE_SUPPRESSION, 1)
                 .withPreview((context, enabled) -> {
                     if (!enabled) {
                         context.getPlayerRef().getPacketHandler().write(new ClearDebugShapes());

@@ -34,6 +34,7 @@ public final class MobFanUpgradePage extends MachineUpgradePage {
                 .enableUpgrade(MachineUpgradeType.WIDTH, MobFanConstants.FAN_UPGRADE_MAX)
                 .enableUpgrade(MachineUpgradeType.HEIGHT, MobFanConstants.FAN_UPGRADE_MAX)
                 .enableUpgrade(MachineUpgradeType.LENGTH, MobFanConstants.FAN_UPGRADE_MAX)
+                .enableUpgrade(MachineUpgradeType.NOISE_SUPPRESSION, 1)
                 .addStatistic(MobFanConstants.UpgradePageStat.ENABLED)
                 .addStatistic(MobFanConstants.UpgradePageStat.CHUNK_LOADED)
                 .addStatistic(MobFanConstants.UpgradePageStat.NOISE_SUPPRESSED)

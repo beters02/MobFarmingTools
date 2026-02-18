@@ -26,6 +26,7 @@ public class MobSpawnerUpgradePage extends MachineUpgradePage {
                 .enableUpgrade(MachineUpgradeType.CHUNK_LOADING, 1)
                 .enableUpgrade(MachineUpgradeType.OUTPUT, 2)
                 .enableUpgrade(MachineUpgradeType.SPEED, 4)
+                .enableUpgrade(MachineUpgradeType.NOISE_SUPPRESSION, 1)
                 .addStatistic(MobSpawnerConstants.UpgradePageStat.ENTITY_ID)
                 .addStatistic(MobSpawnerConstants.UpgradePageStat.ENABLED)
                 .addStatistic(MobSpawnerConstants.UpgradePageStat.CHUNK_LOADED)
