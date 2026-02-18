@@ -1,6 +1,7 @@
 package com.bryce.mobfarmtools.mobspawner;
 
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterComponent;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTMathUtil;
 import com.hypixel.hytale.codec.Codec;
@@ -188,7 +189,7 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
     public boolean canTick() { return enabled && !Objects.equals(entityId, "None"); }
     public boolean canSpawn() { return lifetime >= currentSpawnRate; }
 
-    public void spawnAction(Store<EntityStore> entityStore, Vector3d spawnPos, Vector3d blockPos) {
+    public void spawnAction(Ref<ChunkStore> blockRef, Store<EntityStore> entityStore, Vector3d spawnPos, Vector3d blockPos) {
         blockPos.y += 1;
         blockPos.x += 0.5;
         blockPos.z += 0.5;
@@ -200,6 +201,11 @@ public class MobSpawnerComponent implements Component<ChunkStore> {
                 blockPos,
                 entityStore
             );
+        }
+
+        MFTSoundEmitterComponent emitter = blockRef.getStore().getComponent(blockRef, MFTSoundEmitterComponent.getComponentType());
+        if (emitter != null) {
+            emitter.PlaySound(blockRef, "SFX_MFT_Spawner_Woosh_Quick");
         }
 
         debugger.atInfo("Spawned "+currentSpawnAmount+" "+entityId+"s");

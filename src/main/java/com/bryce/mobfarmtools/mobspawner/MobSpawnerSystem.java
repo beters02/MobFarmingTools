@@ -98,7 +98,7 @@ public class MobSpawnerSystem extends EntityTickingSystem<ChunkStore> {
         Vector3d spawnPos = findEntitySpawnLocation(world, worldPos, spawnerComponent.getEntitySize().toVector3d());
         if (spawnPos == null) return new SpawnResult(false, "EntitySpawnLocation not found");
 
-        spawnerComponent.spawnAction(entityStore, spawnPos, worldPos);
+        spawnerComponent.spawnAction(archetypeChunk.getReferenceTo(index), entityStore, spawnPos, worldPos);
         return new SpawnResult(true, "Spawn action fired.");
     }
 

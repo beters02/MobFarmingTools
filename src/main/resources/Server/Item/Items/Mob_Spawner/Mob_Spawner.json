@@ -77,7 +77,12 @@
     "BlockEntity": {
       "Components": {
         "Mob_Farming_Tools:Mob_Spawner_Component": {},
-        "Mob_Farming_Tools:Machine_Upgrade_Component": {}
+        "Mob_Farming_Tools:Machine_Upgrade_Component": {},
+        "Mob_Farming_Tools:Sound_Emitter_Component": {
+          "SoundIds": [
+            "SFX_MFT_Spawner_Woosh_Quick"
+          ]
+        }
       }
     },
     "Interactions": {

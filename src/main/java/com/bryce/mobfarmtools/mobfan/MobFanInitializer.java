@@ -4,6 +4,8 @@ import com.bryce.mobfarmtools.chunks.ForcedChunkPersistence;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterComponent;
+import com.bryce.mobfarmtools.sounds.SoundManager;
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.hypixel.hytale.component.*;
@@ -38,6 +40,17 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
     @Override
     public void onEntityAdded(@NonNull Ref<ChunkStore> ref, @NonNull AddReason addReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
         debugger.setEnabled(false);
+
+        MFTSoundEmitterComponent emitter = store.getComponent(ref, MFTSoundEmitterComponent.getComponentType());
+        if (emitter == null) {
+            // fix previously placed vacuum hoppers not having its sound emitter component
+            String[] soundIds = {"SFX_MFT_Vacuum_Hum_Steady"};
+            emitter = new MFTSoundEmitterComponent(soundIds);
+            commandBuffer.putComponent(ref, MFTSoundEmitterComponent.getComponentType(), emitter);
+        }
+
+        SoundManager.StopAllForBlock(ref);
+        emitter.PlaySound(ref, "SFX_MFT_Fan_Buzz_Low");
 
         BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
         
@@ -102,6 +115,8 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+        SoundManager.DestroyAllForBlock(ref);
+
         World world = store.getExternalData().getWorld();
         MobFanUpgradePage.clearAllPreviews(world);
 

@@ -73,11 +73,6 @@ public class VacuumHopperComponent implements Component<ChunkStore> {
     private boolean hasAvailableContainer = false;
     private int id = -1;
 
-    private Map<String, SoundManager.MFTSound> sounds = new HashMap<>();
-    private Map<String, String> soundsAssetIds = Map.of(
-            "hum", "SFX_MFT_Vacuum_Hum_Steady"
-    );
-
     public void setId(int value) { id = value; }
     public int getId() { return id; }
 
@@ -99,8 +94,6 @@ public class VacuumHopperComponent implements Component<ChunkStore> {
     public int getLengthUpgrades() { return lengthUpgrades; }
     public int getWidthUpgrades() { return widthUpgrades; }
     public int getHeightUpgrades() { return heightUpgrades; }
-    public Map<String, String> getSoundsAssetIds() { return soundsAssetIds; }
-    public Map<String, SoundManager.MFTSound> getSounds() { return sounds; }
 
     public void setLifetime(float value) {
         lifetime = value;
@@ -114,7 +107,6 @@ public class VacuumHopperComponent implements Component<ChunkStore> {
     private void setHeight(int value) { height = value; }
     public void setNoiseSuppressed(boolean value) { noiseSuppressed = value; }
     public void setChunkLoaded(boolean value) { chunkLoaded = value; }
-    public void setSounds(Map<String, SoundManager.MFTSound> value) { sounds = value; }
     public void setLengthUpgrades(int value) {
         lengthUpgrades = value;
         applyUpgradeCounts();
@@ -136,12 +128,6 @@ public class VacuumHopperComponent implements Component<ChunkStore> {
     }
     public void incrementTicksLifetime(int amount) {
         ticksLifetime += amount;
-    }
-
-    public boolean playSound(String soundAssetIdsKey) {
-        SoundManager.MFTSound sound = sounds.get(soundAssetIdsKey);
-        if (sound == null) return false;
-        return sound.Play();
     }
 
     private void applyUpgradeCounts() {

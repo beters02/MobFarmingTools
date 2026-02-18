@@ -70,7 +70,7 @@ public class VacuumHopperInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
-        SoundManager.DestroyAllForBlock(ref); // add this at top
+        SoundManager.DestroyAllForBlock(ref);
 
         World world = store.getExternalData().getWorld();
         VacuumHopperUpgradePage.clearAllPreviews(world);

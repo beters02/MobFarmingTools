@@ -47,7 +47,12 @@
     "BlockEntity": {
       "Components": {
         "Mob_Farming_Tools:Mob_Fan_Component": {},
-        "Mob_Farming_Tools:Machine_Upgrade_Component": {}
+        "Mob_Farming_Tools:Machine_Upgrade_Component": {},
+        "Mob_Farming_Tools:Sound_Emitter_Component": {
+          "SoundIds": [
+            "SFX_MFT_Fan_Buzz_Low"
+          ]
+        }
       }
     },
     "Interactions": {
