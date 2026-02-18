@@ -190,11 +190,22 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         List<Ref<EntityStore>> droppedItemEntities = new ArrayList<>();
         for (Ref<EntityStore> ref : results) {
             if (entityStore.getComponent(ref, PickupItemComponent.getComponentType()) != null) continue;
-            if (entityStore.getComponent(ref, PreventPickup.getComponentType()) != null) continue;
+            if (entityStore.getComponent(ref, PreventPickup.getComponentType()) != null && !isItemTerrariaAddonsCoin(ref)) continue;
             droppedItemEntities.add(ref);
         }
 
         return droppedItemEntities;
+    }
+
+    private boolean isItemTerrariaAddonsCoin(Ref<EntityStore> itemRef) {
+        ItemComponent itemComponent = itemRef.getStore().getComponent(itemRef, ItemComponent.getComponentType());
+        if (itemComponent == null) return false;
+
+        ItemStack stack = itemComponent.getItemStack();
+        if (stack == null) return false;
+
+        String itemId = stack.getItemId();
+        return itemId.startsWith("Ingredient_Coin");
     }
 
     public boolean addItemStackToAnyValidContainerRecursive(List<ItemContainer> containers, ItemComponent itemComponent, ItemStack itemStack, Ref<EntityStore> ref) {
