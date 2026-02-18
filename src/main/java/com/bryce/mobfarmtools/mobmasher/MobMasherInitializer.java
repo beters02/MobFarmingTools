@@ -1,8 +1,9 @@
-package com.bryce.mobfarmtools.mobfan;
+package com.bryce.mobfarmtools.mobmasher;
 
 import com.bryce.mobfarmtools.chunks.ForcedChunkPersistence;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeComponent;
 import com.bryce.mobfarmtools.machineupgrade.MachineUpgradeType;
+import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.ui.MobFanUpgradePage;
 import com.bryce.mobfarmtools.sounds.MFTSoundEmitterComponent;
 import com.bryce.mobfarmtools.sounds.SoundManager;
@@ -16,13 +17,12 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
 import com.hypixel.hytale.protocol.BlockMaterial;
-import com.hypixel.hytale.protocol.BlockPosition;
+import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
-import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
-import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
+import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
 import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
@@ -31,11 +31,10 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MobFanInitializer extends RefSystem<ChunkStore> {
-    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobFanInitializer]");
+public class MobMasherInitializer extends RefSystem<ChunkStore> {
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobMasherInitializer]");
 
     @Override
     public void onEntityAdded(@NonNull Ref<ChunkStore> ref, @NonNull AddReason addReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
@@ -44,73 +43,12 @@ public class MobFanInitializer extends RefSystem<ChunkStore> {
         MFTSoundEmitterComponent emitter = store.getComponent(ref, MFTSoundEmitterComponent.getComponentType());
         if (emitter == null) {
             // fix previously placed vacuum hoppers not having its sound emitter component
-            String[] soundIds = {"SFX_MFT_Fan_Buzz_Low"};
+            String[] soundIds = {"SFX_MFT_Spawner_Woosh_Quick"};
             emitter = new MFTSoundEmitterComponent(soundIds);
             commandBuffer.putComponent(ref, MFTSoundEmitterComponent.getComponentType(), emitter);
         }
 
         SoundManager.StopAllForBlock(ref);
-        emitter.PlaySound(ref, "SFX_MFT_Fan_Buzz_Low");
-
-        BlockModule.BlockStateInfo info = commandBuffer.getComponent(ref, BlockModule.BlockStateInfo.getComponentType());
-        
-        if (info == null) return;
-
-        MobFanComponent mobFan = commandBuffer.getComponent(ref, MobFanComponent.getComponentType());
-
-        if (mobFan != null) {
-            int localX = ChunkUtil.xFromBlockInColumn(info.getIndex());
-            int worldY = ChunkUtil.yFromBlockInColumn(info.getIndex());
-            int localZ = ChunkUtil.zFromBlockInColumn(info.getIndex());
-
-            Store<ChunkStore> chunkStore = info.getChunkRef().getStore();
-            World world = chunkStore.getExternalData().getWorld();
-            WorldChunk worldChunk = chunkStore.getComponent(info.getChunkRef(), WorldChunk.getComponentType());
-
-            if (worldChunk == null) {
-                debugger.atWarning("WORLD CHUNK NOT FOUND!");
-                return;
-            }
-
-            int chunkX = worldChunk.getX();
-            int chunkZ = worldChunk.getZ();
-
-            int worldX = ChunkUtil.worldCoordFromLocalCoord(chunkX, localX);
-            int worldZ = ChunkUtil.worldCoordFromLocalCoord(chunkZ, localZ);
-
-            int rotationIndex = world.getBlockRotationIndex(worldX, worldY, worldZ);
-            BlockType placedBlockType = world.getBlockType(worldX, worldY, worldZ);
-            String placedBlockId = placedBlockType == null ? "" : placedBlockType.getId();
-            boolean isFloorOrCeiling = placedBlockId.contains("Floor") || placedBlockId.contains("Ceiling");
-            if (addReason == AddReason.SPAWN && isFloorOrCeiling) {
-                int sectionY = ChunkUtil.indexSection(worldY);
-                int localY = worldY & 31;
-                rotationIndex = applyFloorCeilingRotation(
-                    world,
-                    worldChunk,
-                    worldX,
-                    worldY,
-                    worldZ,
-                    localX,
-                    localY,
-                    localZ,
-                    sectionY,
-                    rotationIndex,
-                    chunkStore
-                );
-            }
-
-            mobFan.setStoredWorld(world);
-            mobFan.setStoredWorldPos(new Vector3i(worldX, worldY, worldZ));
-            mobFan.setBaseForward(new Vector3d(0, 0, -1));
-            migrateLegacyFanUpgrades(ref, chunkStore, mobFan, commandBuffer);
-
-            debugger.atInfo("MobFanComponent successfully initialized.");
-
-            mobFan.setEnabled(true);
-
-            debugger.atInfo("Rotation index of added mob fan: " + rotationIndex);
-        }
     }
 
     @Override
