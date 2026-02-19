@@ -2,13 +2,7 @@ package com.bryce.mobfarmtools.sounds;
 
 import com.bryce.mobfarmtools.util.MFTBlockUtil;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
-import com.bryce.mobfarmtools.util.MFTSoundUtil;
-import com.hypixel.hytale.component.AddReason;
-import com.hypixel.hytale.component.Holder;
-import com.hypixel.hytale.component.NonSerialized;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.RemoveReason;
-import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
@@ -23,103 +17,155 @@ import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import io.sentry.internal.debugmeta.IDebugMetaLoader;
 import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class SoundManager {
     private static final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[SoundManager]", SoundManagerConstants.DEBUGGER_ENABLED);
-    private static final Map<Integer, Set<MFTSound>> SOUNDS_BY_BLOCK = new ConcurrentHashMap<>();
+    private static final Map<BlockSoundKey, Map<String, MFTSound>> SOUNDS_BY_BLOCK = new ConcurrentHashMap<>();
+    private static final Map<Integer, BlockSoundKey> REF_INDEX_TO_KEY = new ConcurrentHashMap<>();
 
     private SoundManager() {}
 
     public static @Nullable MFTSound NewSound(Ref<ChunkStore> blockRef, String soundEventId) {
         if (blockRef == null || !blockRef.isValid()) {
-            debugger.atWarning("BLOCK REF IS FUCKING INVALID.");
+            debugger.atWarning("Cannot create sound, block ref is invalid.");
             return null;
         }
 
-        MFTSound sound = new MFTSound(blockRef, soundEventId);
-        SOUNDS_BY_BLOCK
-                .computeIfAbsent(blockRef.getIndex(), k -> ConcurrentHashMap.newKeySet())
-                .add(sound);
+        BlockSoundKey key = resolveKey(blockRef);
+        if (key == null) {
+            debugger.atWarning("Cannot create sound, failed to resolve block key.");
+            return null;
+        }
+
+        REF_INDEX_TO_KEY.put(blockRef.getIndex(), key);
+
+        Map<String, MFTSound> soundsById = SOUNDS_BY_BLOCK.computeIfAbsent(key, k -> new ConcurrentHashMap<>());
+        MFTSound existing = soundsById.get(soundEventId);
+        if (existing != null && !existing.isDestroyed()) {
+            return existing;
+        }
+
+        MFTSound sound = new MFTSound(key, blockRef, soundEventId);
+        soundsById.put(soundEventId, sound);
         return sound;
     }
 
     public static void DestroyAllForBlock(Ref<ChunkStore> blockRef) {
-        Set<MFTSound> sounds = SOUNDS_BY_BLOCK.remove(blockRef.getIndex());
-        if (sounds == null) {
-            debugger.atWarning("sounds is null during destroy");
+        BlockSoundKey key = resolveKey(blockRef);
+        if (key == null && blockRef != null) {
+            key = REF_INDEX_TO_KEY.get(blockRef.getIndex());
+        }
+        if (key == null) {
             return;
         }
-        for (MFTSound sound : sounds) {
-            sound.Stop();
-            sound.Destroy();
+
+        Map<String, MFTSound> sounds = SOUNDS_BY_BLOCK.remove(key);
+        if (sounds != null) {
+            for (MFTSound sound : sounds.values().toArray(MFTSound[]::new)) {
+                sound.Destroy();
+            }
         }
+
+        if (blockRef != null) {
+            REF_INDEX_TO_KEY.remove(blockRef.getIndex());
+        }
+        removeRefMappingsForKey(key);
     }
 
     public static void StopAllForBlock(Ref<ChunkStore> blockRef) {
-        Set<MFTSound> sounds = SOUNDS_BY_BLOCK.get(blockRef.getIndex());
-        if (sounds == null) {
-            debugger.atWarning("sounds is null during stop");
+        BlockSoundKey key = resolveKey(blockRef);
+        if (key == null && blockRef != null) {
+            key = REF_INDEX_TO_KEY.get(blockRef.getIndex());
+        }
+        if (key == null) {
             return;
         }
-        for (MFTSound sound : sounds) {
-            sound.Stop();
+
+        Map<String, MFTSound> sounds = SOUNDS_BY_BLOCK.get(key);
+        if (sounds == null) {
+            return;
+        }
+        for (MFTSound sound : sounds.values()) {
+            if (sound != null) {
+                sound.Stop();
+            }
         }
     }
 
     public static @Nullable Set<MFTSound> GetAllForBlock(Ref<ChunkStore> blockRef) {
-        return SOUNDS_BY_BLOCK.get(blockRef.getIndex());
+        Map<String, MFTSound> sounds = GetAllForBlockAsMap(blockRef);
+        return sounds == null ? null : Set.copyOf(sounds.values());
     }
 
     public static @Nullable Map<String, MFTSound> GetAllForBlockAsMap(Ref<ChunkStore> blockRef) {
-        Set<MFTSound> set = GetAllForBlock(blockRef);
-        if (set == null) return null;
-        Map<String, MFTSound> soundsMap = new HashMap<>();
-        set.forEach(sound -> {
-            soundsMap.put(sound.getSoundEventId(), sound);
-        });
-        return soundsMap;
+        BlockSoundKey key = resolveKey(blockRef);
+        if (key == null && blockRef != null) {
+            key = REF_INDEX_TO_KEY.get(blockRef.getIndex());
+        }
+        if (key == null) {
+            return null;
+        }
+
+        Map<String, MFTSound> sounds = SOUNDS_BY_BLOCK.get(key);
+        if (sounds == null) {
+            return null;
+        }
+        return new HashMap<>(sounds);
+    }
+
+    private static @Nullable BlockSoundKey resolveKey(@Nullable Ref<ChunkStore> blockRef) {
+        if (blockRef == null || !blockRef.isValid()) {
+            return null;
+        }
+
+        Vector3i pos = MFTBlockUtil.GetWorldPosFromBlockRef(blockRef.getStore(), blockRef);
+        if (pos == null) {
+            return null;
+        }
+
+        World world = blockRef.getStore().getExternalData().getWorld();
+        return new BlockSoundKey(System.identityHashCode(world), pos.x, pos.y, pos.z);
+    }
+
+    private static void removeRefMappingsForKey(BlockSoundKey key) {
+        REF_INDEX_TO_KEY.entrySet().removeIf(e -> e.getValue().equals(key));
     }
 
     public static final class MFTSound {
-        private final Ref<ChunkStore> blockRef;
+        private final BlockSoundKey blockKey;
         private final String soundEventId;
         private final int soundEventIndex;
         private final boolean looped;
+        private final World world;
+        private final Vector3d position;
         private final MFTDebugUtil.Debugger debugger;
 
         private volatile boolean destroyed;
         private volatile boolean playing;
         private volatile Ref<EntityStore> emitterRef;
 
-        private MFTSound(Ref<ChunkStore> blockRef, String soundEventId) {
-            this.blockRef = blockRef;
+        private MFTSound(BlockSoundKey blockKey, Ref<ChunkStore> blockRef, String soundEventId) {
+            this.blockKey = blockKey;
             this.soundEventId = soundEventId;
             this.soundEventIndex = SoundEvent.getAssetMap().getIndex(soundEventId);
             this.looped = isLoopedSoundEvent(soundEventIndex);
+            this.world = blockRef.getStore().getExternalData().getWorld();
+            this.position = new Vector3d(blockKey.x + 0.5, blockKey.y + 0.5, blockKey.z + 0.5);
             this.debugger = new MFTDebugUtil.Debugger("[SoundManagerSound_"+soundEventId+"]", SoundManagerConstants.DEBUGGER_ENABLED);
         }
 
         public boolean Play() {
-            if (destroyed || soundEventIndex == 0 || !blockRef.isValid()) {
+            if (destroyed || soundEventIndex == 0) {
                 debugger.atWarning("Play failed.");
                 debugger.atWarning("Destroyed: " + destroyed);
                 debugger.atWarning("SoundEventIndex == 0: " + (soundEventIndex == 0));
-                debugger.atWarning("BlockRefIsValid: " + blockRef.isValid());
-                return false;
-            }
-
-            Store<ChunkStore> chunkStore = blockRef.getStore();
-            World world = chunkStore.getExternalData().getWorld();
-            Vector3d pos = getCenterWorldPos(chunkStore, blockRef);
-            if (pos == null) {
-                debugger.atWarning("Play failed because pos == null.");
                 return false;
             }
 
@@ -127,9 +173,9 @@ public final class SoundManager {
                 SoundUtil.playSoundEvent3d(
                         soundEventIndex,
                         SoundCategory.SFX,
-                        pos.x,
-                        pos.y,
-                        pos.z,
+                        position.x,
+                        position.y,
+                        position.z,
                         world.getEntityStore().getStore()
                 );
                 playing = false; // fire-and-forget one-shot
@@ -143,10 +189,10 @@ public final class SoundManager {
                 return true;
             }
 
-            Store<EntityStore> entityStore = world.getEntityStore().getStore();
+            com.hypixel.hytale.component.Store<EntityStore> entityStore = world.getEntityStore().getStore();
 
             Holder<EntityStore> holder = EntityStore.REGISTRY.newHolder();
-            holder.addComponent(TransformComponent.getComponentType(), new TransformComponent(pos, new Vector3f()));
+            holder.addComponent(TransformComponent.getComponentType(), new TransformComponent(position, new Vector3f()));
             holder.addComponent(NetworkId.getComponentType(), new NetworkId(entityStore.getExternalData().takeNextNetworkId()));
             holder.addComponent(Intangible.getComponentType(), Intangible.INSTANCE);
 
@@ -167,52 +213,37 @@ public final class SoundManager {
         }
 
         public boolean Stop() {
-            if (destroyed) {
-                debugger.atWarning("Sound is destroyed so cannot stop.");
-                return false;
-            }
-
             Ref<EntityStore> ref = emitterRef;
             if (ref == null || !ref.isValid()) {
-                debugger.atWarning("Ref does not exist or is invalid so cannot stop.");
-
-                if (ref != null) {
-                    debugger.atWarning(String.valueOf(ref.isValid()));
-                } else {
-                    debugger.atWarning("ref is null");
-                }
-
+                playing = false;
                 return true;
             }
 
+            emitterRef = null;
             playing = false;
 
-            Store<ChunkStore> chunkStore = blockRef.getStore();
-            World world = chunkStore.getExternalData().getWorld();
-            Store<EntityStore> entityStore = world.getEntityStore().getStore();
+            com.hypixel.hytale.component.Store<EntityStore> entityStore = world.getEntityStore().getStore();
 
             world.execute(() -> {
                 if (ref.isValid()) {
                     entityStore.removeEntity(ref, RemoveReason.REMOVE);
-                } else {
-                    debugger.atWarning(String.valueOf("world ref is not valid"));
                 }
             });
 
-            debugger.atInfo("Stop success.");
             return true;
         }
 
         public void Destroy() {
-            Stop();
             if (destroyed) return;
+            Stop();
             destroyed = true;
 
-            Set<MFTSound> set = SOUNDS_BY_BLOCK.get(blockRef.getIndex());
-            if (set != null) {
-                set.remove(this);
-                if (set.isEmpty()) {
-                    SOUNDS_BY_BLOCK.remove(blockRef.getIndex());
+            Map<String, MFTSound> sounds = SOUNDS_BY_BLOCK.get(blockKey);
+            if (sounds != null) {
+                sounds.remove(soundEventId);
+                if (sounds.isEmpty()) {
+                    SOUNDS_BY_BLOCK.remove(blockKey);
+                    removeRefMappingsForKey(blockKey);
                 }
             }
         }
@@ -247,11 +278,31 @@ public final class SoundManager {
             }
             return false;
         }
+    }
 
-        private static @Nullable Vector3d getCenterWorldPos(Store<ChunkStore> chunkStore, Ref<ChunkStore> blockRef) {
-            Vector3i blockPos = MFTBlockUtil.GetWorldPosFromBlockRef(chunkStore, blockRef);
-            if (blockPos == null) return null;
-            return blockPos.toVector3d().add(0.5, 0.5, 0.5);
+    private static final class BlockSoundKey {
+        private final int worldIdentity;
+        private final int x;
+        private final int y;
+        private final int z;
+
+        private BlockSoundKey(int worldIdentity, int x, int y, int z) {
+            this.worldIdentity = worldIdentity;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof BlockSoundKey other)) return false;
+            return worldIdentity == other.worldIdentity && x == other.x && y == other.y && z == other.z;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(worldIdentity, x, y, z);
         }
     }
 }

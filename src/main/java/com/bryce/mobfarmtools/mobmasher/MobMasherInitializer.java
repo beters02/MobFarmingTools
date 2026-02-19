@@ -76,10 +76,7 @@ public class MobMasherInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
-        debugger.atWarning("mother fucking penis");
-        SoundManager.StopAllForBlock(ref);
         SoundManager.DestroyAllForBlock(ref);
-        debugger.atWarning("mother fucking penis");
 
         World world = store.getExternalData().getWorld();
         MobFanUpgradePage.clearAllPreviews(world);
