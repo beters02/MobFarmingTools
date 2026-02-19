@@ -81,13 +81,13 @@
         "Mob_Farming_Tools:Machine_Upgrade_Component": {},
         "Mob_Farming_Tools:Sound_Emitter_Component": {
           "SoundIds": [
-            "SFX_MFT_Spawner_Woosh_Quick"
+            "SFX_MFT_Mob_Masher_Clang"
           ]
         }
       }
     },
     "Interactions": {
-      "Use": "Mob_Spawner_Interaction"
+      "Use": "Mob_Masher_Interaction"
     },
     "BlockParticleSetId": "Metal",
     "ParticleColor": "#3e3e3e",

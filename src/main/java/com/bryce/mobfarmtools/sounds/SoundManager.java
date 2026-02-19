@@ -52,15 +52,22 @@ public final class SoundManager {
 
     public static void DestroyAllForBlock(Ref<ChunkStore> blockRef) {
         Set<MFTSound> sounds = SOUNDS_BY_BLOCK.remove(blockRef.getIndex());
-        if (sounds == null) return;
+        if (sounds == null) {
+            debugger.atWarning("sounds is null during destroy");
+            return;
+        }
         for (MFTSound sound : sounds) {
+            sound.Stop();
             sound.Destroy();
         }
     }
 
     public static void StopAllForBlock(Ref<ChunkStore> blockRef) {
         Set<MFTSound> sounds = SOUNDS_BY_BLOCK.get(blockRef.getIndex());
-        if (sounds == null) return;
+        if (sounds == null) {
+            debugger.atWarning("sounds is null during stop");
+            return;
+        }
         for (MFTSound sound : sounds) {
             sound.Stop();
         }
@@ -160,12 +167,24 @@ public final class SoundManager {
         }
 
         public boolean Stop() {
-            if (destroyed) return false;
+            if (destroyed) {
+                debugger.atWarning("Sound is destroyed so cannot stop.");
+                return false;
+            }
 
             Ref<EntityStore> ref = emitterRef;
-            if (ref == null || !ref.isValid()) return true;
+            if (ref == null || !ref.isValid()) {
+                debugger.atWarning("Ref does not exist or is invalid so cannot stop.");
 
-            emitterRef = null;
+                if (ref != null) {
+                    debugger.atWarning(String.valueOf(ref.isValid()));
+                } else {
+                    debugger.atWarning("ref is null");
+                }
+
+                return true;
+            }
+
             playing = false;
 
             Store<ChunkStore> chunkStore = blockRef.getStore();
@@ -175,6 +194,8 @@ public final class SoundManager {
             world.execute(() -> {
                 if (ref.isValid()) {
                     entityStore.removeEntity(ref, RemoveReason.REMOVE);
+                } else {
+                    debugger.atWarning(String.valueOf("world ref is not valid"));
                 }
             });
 

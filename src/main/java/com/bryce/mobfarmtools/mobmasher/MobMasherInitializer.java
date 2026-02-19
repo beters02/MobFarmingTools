@@ -46,12 +46,11 @@ public class MobMasherInitializer extends RefSystem<ChunkStore> {
 
     @Override
     public void onEntityAdded(@NonNull Ref<ChunkStore> ref, @NonNull AddReason addReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
-        debugger.setEnabled(false);
 
         MFTSoundEmitterComponent emitter = store.getComponent(ref, MFTSoundEmitterComponent.getComponentType());
         if (emitter == null) {
             // fix previously placed vacuum hoppers not having its sound emitter component
-            String[] soundIds = {"SFX_MFT_Spawner_Woosh_Quick"};
+            String[] soundIds = {"SFX_MFT_Mob_Masher_Clang"};
             emitter = new MFTSoundEmitterComponent(soundIds);
             commandBuffer.putComponent(ref, MFTSoundEmitterComponent.getComponentType(), emitter);
         }
@@ -72,12 +71,15 @@ public class MobMasherInitializer extends RefSystem<ChunkStore> {
             return;
         }
 
-        masher.setEnabled(store.getExternalData().getWorld(), blockPos, masher.isEnabled());
+        masher.setEnabled(ref, blockPos, masher.isEnabled());
     }
 
     @Override
     public void onEntityRemove(@NonNull Ref<ChunkStore> ref, @NonNull RemoveReason removeReason, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
+        debugger.atWarning("mother fucking penis");
+        SoundManager.StopAllForBlock(ref);
         SoundManager.DestroyAllForBlock(ref);
+        debugger.atWarning("mother fucking penis");
 
         World world = store.getExternalData().getWorld();
         MobFanUpgradePage.clearAllPreviews(world);

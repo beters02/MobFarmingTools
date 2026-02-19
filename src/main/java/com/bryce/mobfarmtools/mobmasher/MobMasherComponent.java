@@ -3,6 +3,7 @@ package com.bryce.mobfarmtools.mobmasher;
 import com.bryce.mobfarmtools.MobFarmingToolsPlugin;
 import com.bryce.mobfarmtools.mobfan.MobFanComponent;
 import com.bryce.mobfarmtools.mobfan.MobFanConstants;
+import com.bryce.mobfarmtools.sounds.MFTSoundEmitterComponent;
 import com.bryce.mobfarmtools.util.MFTDebugUtil;
 import com.bryce.mobfarmtools.util.MFTVectorUtil;
 import com.hypixel.hytale.codec.Codec;
@@ -115,7 +116,8 @@ public class MobMasherComponent implements Component<ChunkStore> {
 
     public void setDamageBossesEnabled(boolean value) { damageBosses = value; }
 
-    public void setEnabled(World world, Vector3i blockPos, boolean value) {
+    public void setEnabled(Ref<ChunkStore> blockRef, Vector3i blockPos, boolean value) {
+        World world = blockRef.getStore().getExternalData().getWorld();
         BlockType blockType = world.getBlockType(blockPos);
         if (blockType == null) {
             debugger.atWarning("BlockType returned null. Block interaction state cannot be changed.");
@@ -123,6 +125,17 @@ public class MobMasherComponent implements Component<ChunkStore> {
         }
 
         enabled = value;
+
+        MFTSoundEmitterComponent emitter = blockRef.getStore().getComponent(blockRef, MFTSoundEmitterComponent.getComponentType());
+
+        if (emitter != null) {
+            if (value) {
+                emitter.PlaySound(blockRef, "SFX_MFT_Mob_Masher_Clang");
+            } else {
+                emitter.StopSound(blockRef, "SFX_MFT_Mob_Masher_Clang");
+            }
+        }
+
         world.setBlockInteractionState(blockPos, blockType, enabled ? "On" : "Off");
         debugger.atInfo("Interaction state successfully set to " + (enabled ? "On" : "Off"));
     }

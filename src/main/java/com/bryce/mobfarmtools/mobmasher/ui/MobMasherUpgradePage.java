@@ -21,7 +21,7 @@ import org.jspecify.annotations.Nullable;
 
 public final class MobMasherUpgradePage extends MachineUpgradePage {
     public MobMasherUpgradePage(PlayerRef playerRef, Ref<ChunkStore> mobFanRef, BlockPosition blockPosition, int rotationIndex) {
-        super(playerRef, mobFanRef, MachineUpgradePageConfig.builder("Mob Fan Upgrades", blockPosition, rotationIndex)
+        super(playerRef, mobFanRef, MachineUpgradePageConfig.builder("Mob Masher Upgrade", blockPosition, rotationIndex)
                 .enableUpgrade(MachineUpgradeType.CHUNK_LOADING, 1)
                 .enableUpgrade(MachineUpgradeType.SPEED, MobMasherConstants.SPEED_UPGRADE_MAX)
                 .enableUpgrade(MachineUpgradeType.OUTPUT, MobMasherConstants.OUTPUT_UPGRADE_MAX)
