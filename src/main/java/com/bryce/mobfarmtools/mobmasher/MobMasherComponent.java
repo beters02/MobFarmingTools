@@ -67,7 +67,7 @@ public class MobMasherComponent implements Component<ChunkStore> {
                     .add()
                     .build();
 
-    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobMasherComponent]");
+    private final MFTDebugUtil.Debugger debugger = new MFTDebugUtil.Debugger("[MobMasherComponent]", false);
 
     private boolean enabled = MobMasherConstants.DEF_ENABLED;
     private boolean chunkLoaded = MobMasherConstants.DEF_CHUNK_LOADED;
