@@ -20,13 +20,13 @@
     "UIComponentList": {},
     "Transform": {
       "Position": {
-        "X": 0.0,
-        "Y": 83.49559020996094,
-        "Z": 0.0
+        "X": 4.0517354011535645,
+        "Y": 80.0,
+        "Z": -0.9157269597053528
       },
       "Rotation": {
         "Pitch": 0.0,
-        "Yaw": 0.8561012148857117,
+        "Yaw": -1.3772507905960083,
         "Roll": 0.0
       }
     },
@@ -36,7 +36,7 @@
     "Velocity": {
       "Velocity": {
         "X": 0.0,
-        "Y": -20.810353664214464,
+        "Y": 0.0,
         "Z": 0.0
       }
     },
@@ -125,13 +125,13 @@
         "SortType": "Name"
       },
       "PlayerData": {
-        "BlockIdVersion": 1,
+        "BlockIdVersion": 11,
         "World": "default",
         "KnownRecipes": [],
         "PerWorldData": {
           "default": {
             "LastMovementStates": {
-              "Flying": true
+              "Flying": false
             },
             "FirstSpawn": false,
             "DeathPositions": [],
@@ -146,7 +146,11 @@
       "BlockPlacementOverride": false,
       "HotbarManager": {
         "SavedHotbars": [
-          null,
+          {
+            "Id": "Simple",
+            "Capacity": 9,
+            "Items": {}
+          },
           null,
           null,
           null,
@@ -234,8 +238,8 @@
     },
     "HeadRotation": {
       "Rotation": {
-        "Pitch": -0.2415000945329666,
-        "Yaw": 0.7209993600845337,
+        "Pitch": -0.1925003081560135,
+        "Yaw": -1.363250970840454,
         "Roll": 0.0
       }
     }

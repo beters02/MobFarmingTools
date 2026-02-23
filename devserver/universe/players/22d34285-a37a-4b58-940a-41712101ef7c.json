@@ -20,13 +20,13 @@
     "UIComponentList": {},
     "Transform": {
       "Position": {
-        "X": 0.0,
+        "X": 4.0517354011535645,
         "Y": 80.0,
-        "Z": 0.0
+        "Z": -0.9157269597053528
       },
       "Rotation": {
         "Pitch": 0.0,
-        "Yaw": -0.9681020379066467,
+        "Yaw": -1.3772507905960083,
         "Roll": 0.0
       }
     },
@@ -125,11 +125,19 @@
         "SortType": "Name"
       },
       "PlayerData": {
-        "BlockIdVersion": 1,
+        "BlockIdVersion": 11,
         "World": "default",
         "KnownRecipes": [],
         "PerWorldData": {
           "default": {
+            "LastPosition": {
+              "X": 4.0517354011535645,
+              "Y": 80.0,
+              "Z": -0.9157269597053528,
+              "Pitch": -0.1925003081560135,
+              "Yaw": -1.363250970840454,
+              "Roll": 0.0
+            },
             "LastMovementStates": {
               "Flying": false
             },
@@ -238,8 +246,8 @@
     },
     "HeadRotation": {
       "Rotation": {
-        "Pitch": -0.20825031399726868,
-        "Yaw": -0.9082508683204651,
+        "Pitch": -0.1925003081560135,
+        "Yaw": -1.363250970840454,
         "Roll": 0.0
       }
     }
