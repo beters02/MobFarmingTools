@@ -1,3 +1,7 @@
+./devserver
+devserver
+devserver/
+
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -43,6 +47,7 @@ build/
 .gradle
 .kotlin
 devserver
+./devserver
 /.idea/
 devserver/universe/worlds/default/resources/Time.json.bak
 devserver/universe/worlds/default/resources/Time.json
