@@ -42,14 +42,14 @@
     "Material": "Solid",
     "DrawType": "Model",
     "Opacity": "Transparent",
-    "CustomModel": "Blocks/Benches/ArcaneTable.blockymodel",
+    "CustomModel": "Blocks/Benches/Mob_Farming_Bench.blockymodel",
     "CustomModelTexture": [
       {
-        "Texture": "Blocks/Benches/ArcaneTable_Texture.png",
+        "Texture": "BlockTextures/Benches/Mob_Farming_Bench.png",
         "Weight": 1
       }
     ],
-    "HitboxType": "Bench_Alchemy",
+    "HitboxType": "Bench_Workbench",
     "VariantRotation": "NESW",
     "Bench": {
       "Type": "Crafting",
@@ -59,22 +59,22 @@
       "Categories": [
         {
           "Id": "MobFarmingBench_Upgrades",
-          "Icon": "Icons/CraftingCategories/Arcane/Portal_Device.png",
+          "Icon": "Icons/CraftingCategories/Machine_Upgrade_Chunk_Loading.png",
           "Name": "server.benchCategories.mobFarming.upgrades"
         },
         {
           "Id": "MobFarmingBench_Machines",
-          "Icon": "Icons/CraftingCategories/Arcane/Bench_Memories.png",
+          "Icon": "Icons/CraftingCategories/Mob_Fan.png",
           "Name": "server.benchCategories.mobFarming.machines"
         },
         {
           "Id": "MobFarmingBench_Misc",
-          "Icon": "Icons/CraftingCategories/Arcane/Bench_Memories.png",
+          "Icon": "Icons/CraftingCategories/Mob_Swab.png",
           "Name": "server.benchCategories.mobFarming.misc"
         },
         {
           "Id": "MobFarmingBench_Spikes",
-          "Icon": "Icons/CraftingCategories/Arcane/Bench_Memories.png",
+          "Icon": "Icons/CraftingCategories/Spikes_Adamantite.png",
           "Name": "server.benchCategories.mobFarming.spikes"
         }
       ],
@@ -132,13 +132,8 @@
     "State": {
       "Id": "crafting",
       "Definitions": {
-        "CraftCompleted": {
-          "CustomModelAnimation": "Blocks/Benches/Alchemy_Crafting.blockyanim",
-          "Looping": true
-        },
-        "CraftCompletedInstant": {
-          "CustomModelAnimation": "Blocks/Benches/Alchemy_Crafting.blockyanim"
-        }
+        "CraftCompleted": {},
+        "CraftCompletedInstant": {}
       }
     },
     "Gathering": {
