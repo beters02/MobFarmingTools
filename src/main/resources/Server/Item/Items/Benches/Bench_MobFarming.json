@@ -1,0 +1,181 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.Bench_MobFarming.name",
+    "Description": "server.items.Bench_MobFarming.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Bench_Arcane.png",
+  "Categories": [
+    "Furniture.Benches"
+  ],
+  "Recipe": {
+    "TimeSeconds": 3,
+    "Input": [
+      {
+        "ItemId": "Ingredient_Bar_Iron",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Fabric_Scrap_Linen",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Life_Essence",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Void_Essence",
+        "Quantity": 10
+      }
+    ],
+    "BenchRequirement": [
+      {
+        "Id": "Workbench",
+        "Type": "Crafting",
+        "Categories": [
+          "Workbench_Crafting"
+        ],
+        "RequiredTierLevel": 1
+      }
+    ]
+  },
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "Model",
+    "Opacity": "Transparent",
+    "CustomModel": "Blocks/Benches/ArcaneTable.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Blocks/Benches/ArcaneTable_Texture.png",
+        "Weight": 1
+      }
+    ],
+    "HitboxType": "Bench_Alchemy",
+    "VariantRotation": "NESW",
+    "Bench": {
+      "Type": "Crafting",
+      "LocalOpenSoundEventId": "SFX_Arcane_Workbench_Open_Local",
+      "LocalCloseSoundEventId": "SFX_Arcane_Workbench_Close_Local",
+      "CompletedSoundEventId": "SFX_Arcane_Workbench_Craft",
+      "Categories": [
+        {
+          "Id": "MobFarmingBench_Upgrades",
+          "Icon": "Icons/CraftingCategories/Arcane/Portal_Device.png",
+          "Name": "server.benchCategories.mobFarming.upgrades"
+        },
+        {
+          "Id": "MobFarmingBench_Machines",
+          "Icon": "Icons/CraftingCategories/Arcane/Bench_Memories.png",
+          "Name": "server.benchCategories.mobFarming.machines"
+        },
+        {
+          "Id": "MobFarmingBench_Misc",
+          "Icon": "Icons/CraftingCategories/Arcane/Bench_Memories.png",
+          "Name": "server.benchCategories.mobFarming.misc"
+        },
+        {
+          "Id": "MobFarmingBench_Spikes",
+          "Icon": "Icons/CraftingCategories/Arcane/Bench_Memories.png",
+          "Name": "server.benchCategories.mobFarming.spikes"
+        }
+      ],
+      "Id": "MobFarmingBench",
+      "TierLevels": [
+        {
+          "CraftingTimeReductionModifier": 0.0,
+          "UpgradeRequirement": {
+            "Material": [
+              {
+                "ItemId": "Ingredient_Bar_Copper",
+                "Quantity": 15
+              },
+              {
+                "ItemId": "Ingredient_Bar_Iron",
+                "Quantity": 10
+              },
+              {
+                "ItemId": "Ingredient_Fabric_Scrap_Linen",
+                "Quantity": 10
+              }
+            ],
+            "TimeSeconds": 5.0
+          }
+        },
+        {
+          "UpgradeRequirement": {
+            "Material": [
+              {
+                "ItemId": "Ingredient_Bar_Thorium",
+                "Quantity": 15
+              },
+              {
+                "ItemId": "Ingredient_Bar_Cobalt",
+                "Quantity": 10
+              },
+              {
+                "ItemId": "Ingredient_Leather_Heavy",
+                "Quantity": 10
+              },
+              {
+                "ItemId": "Ingredient_Leather_Medium",
+                "Quantity": 10
+              }
+            ],
+            "TimeSeconds": 10.0
+          },
+          "CraftingTimeReductionModifier": 0.15
+        },
+        {
+          "CraftingTimeReductionModifier": 0.3
+        }
+      ]
+    },
+    "State": {
+      "Id": "crafting",
+      "Definitions": {
+        "CraftCompleted": {
+          "CustomModelAnimation": "Blocks/Benches/Alchemy_Crafting.blockyanim",
+          "Looping": true
+        },
+        "CraftCompletedInstant": {
+          "CustomModelAnimation": "Blocks/Benches/Alchemy_Crafting.blockyanim"
+        }
+      }
+    },
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "Benches"
+      }
+    },
+    "BlockParticleSetId": "Wood",
+    "ParticleColor": "#6e4a2f",
+    "Support": {
+      "Down": [
+        {
+          "FaceType": "Full"
+        }
+      ]
+    },
+    "BlockSoundSetId": "Stone"
+  },
+  "PlayerAnimationsId": "Block",
+  "IconProperties": {
+    "Scale": 0.35,
+    "Rotation": [
+      22.5,
+      45.0,
+      22.5
+    ],
+    "Translation": [
+      11.4,
+      -18.6
+    ]
+  },
+  "Tags": {
+    "Type": [
+      "Bench"
+    ]
+  },
+  "MaxStack": 1,
+  "ItemLevel": 10,
+  "ItemSoundSetId": "ISS_Blocks_Wood"
+}

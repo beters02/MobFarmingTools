@@ -33,12 +33,12 @@
     ],
     "BenchRequirement": [
       {
-        "Id": "Workbench",
+        "Id": "MobFarmingBench",
         "Type": "Crafting",
         "Categories": [
-          "Workbench_Survival"
+          "MobFarmingBench_Misc"
         ],
-        "RequiredTierLevel": 2
+        "RequiredTierLevel": 1
       }
     ]
   },
