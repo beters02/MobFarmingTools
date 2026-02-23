@@ -1,0 +1,17 @@
+{
+  "users": {
+    "22d34285-a37a-4b58-940a-41712101ef7c": {
+      "groups": [
+        "OP",
+        "Adventure",
+        "Creative"
+      ]
+    }
+  },
+  "groups": {
+    "Default": [],
+    "OP": [
+      "*"
+    ]
+  }
+}

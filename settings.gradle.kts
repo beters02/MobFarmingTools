@@ -1,15 +1,28 @@
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-        maven("https://maven.hytale-modding.info/releases") {
-            name = "HytaleModdingReleases"
-        }
-    }
-}
+rootProject.name = "com.bryce.mobfarmtools"
 
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+    // See documentation on https://scaffoldit.dev
+    id("dev.scaffoldit") version "0.2.+"
 }
 
-rootProject.name = "MobFarmingTools"
+// Would you like to do a split project?
+// Create a folder named "common", then configure details with `common { }`
+
+hytale {
+    usePatchline("release")
+    useVersion("latest")
+
+    repositories {
+        // Any external repositories besides: MavenLocal, MavenCentral, HytaleMaven, and CurseMaven
+    }
+
+    dependencies {
+        // Any external dependency you also want to include
+    }
+
+    manifest {
+        Group = "Bryce"
+        Name = "MobFarmingTools"
+        Main = "com.bryce.mobfarmtools.MobFarmingToolsPlugin"
+    }
+}

@@ -1,20 +1,20 @@
 {
-  "Group": "${plugin_group}",
-  "Name": "${plugin_name}",
-  "Version": "${plugin_version}",
-  "Description": "${plugin_description}",
-  "Authors": [
-    {
-      "Name": "${plugin_author}"
-    }
-  ],
-  "Website": "${plugin_website}",
-  "ServerVersion": "2026.02.18-f3b8fff95",
-  "Dependencies": {
-    "Hytale:BlockModule": "*"
-  },
-  "OptionalDependencies": {},
-  "DisabledByDefault": false,
-  "IncludesAssetPack": true,
-  "Main": "${plugin_main_entrypoint}"
+    "Group": "Bryce",
+    "Name": "MobFarmingTools",
+    "Version": "0.4",
+    "Description": "A mod for mob farms",
+    "Authors": [
+        {
+            "Name": "Bryce"
+        }
+    ],
+    "Website": "",
+    "DisabledByDefault": false,
+    "IncludesAssetPack": true,
+    "Dependencies": {
+        "Hytale:BlockModule": "*"
+    },
+    "OptionalDependencies": {},
+    "ServerVersion": "2026.02.19-1a311a592",
+    "Main": "com.bryce.mobfarmtools.MobFarmingToolsPlugin"
 }
