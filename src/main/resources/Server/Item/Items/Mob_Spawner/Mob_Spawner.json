@@ -13,7 +13,7 @@
     "Input": [
       {
         "ItemId": "Ingredient_Bar_Iron",
-        "Quantity": 20
+        "Quantity": 40
       },
       {
         "ItemId": "Ingredient_Bar_Cobalt",
@@ -24,15 +24,11 @@
         "Quantity": 20
       },
       {
-        "ItemId": "Ingredient_Life_Essence",
-        "Quantity": 50
+        "ItemId": "Ingredient_Bar_Gold",
+        "Quantity": 10
       },
       {
-        "ItemId": "Ingredient_Leather_Medium",
-        "Quantity": 20
-      },
-      {
-        "ItemId": "Ingredient_Leather_Heavy",
+        "ItemId": "Ingredient_Bar_Silver",
         "Quantity": 10
       },
       {
@@ -40,8 +36,20 @@
         "Quantity": 20
       },
       {
+        "ItemId": "Ingredient_Leather_Medium",
+        "Quantity": 20
+      },
+      {
+        "ItemId": "Ingredient_Leather_Heavy",
+        "Quantity": 20
+      },
+      {
         "ItemId": "Ingredient_Voidheart",
         "Quantity": 1
+      },
+      {
+        "ItemId": "Ingredient_Life_Essence",
+        "Quantity": 50
       }
     ],
     "BenchRequirement": [

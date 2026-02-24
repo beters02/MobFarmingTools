@@ -23,11 +23,11 @@
       },
       {
         "ItemId": "Ingredient_Fabric_Scrap_Cindercloth",
-        "Quantity": 20
+        "Quantity": 15
       },
       {
-        "ItemId": "Ingredient_Voidheart",
-        "Quantity": 1
+        "ItemId": "Ingredient_Ice_Essence",
+        "Quantity": 10
       }
     ],
     "BenchRequirement": [

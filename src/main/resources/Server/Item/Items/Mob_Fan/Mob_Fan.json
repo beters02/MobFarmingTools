@@ -13,15 +13,19 @@
     "Input": [
       {
         "ItemId": "Ingredient_Bar_Iron",
-        "Quantity": 10
-      },
-      {
-        "ItemId": "Ingredient_Bar_Silver",
-        "Quantity": 10
+        "Quantity": 15
       },
       {
         "ItemId": "Ingredient_Bar_Gold",
-        "Quantity": 5
+        "Quantity": 2
+      },
+      {
+        "ItemId": "Ingredient_Fabric_Scrap_Linen",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Leather_Light",
+        "Quantity": 10
       }
     ],
     "BenchRequirement": [
