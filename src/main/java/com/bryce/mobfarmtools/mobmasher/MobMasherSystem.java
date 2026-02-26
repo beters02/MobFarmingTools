@@ -48,7 +48,7 @@ public class MobMasherSystem extends EntityTickingSystem<ChunkStore> {
     public MobMasherSystem(ComponentType<ChunkStore, MobMasherComponent> mobMasherComponentType) {
         this.mobMasherComponentType = mobMasherComponentType;
         mftConfig = MobFarmingToolsPlugin.get().getMobFarmingToolsConfig();
-        debugger.setEnabled(true);
+        debugger.setEnabled(false);
     }
 
     @Override
