@@ -32,15 +32,9 @@ public class MFTMathUtil {
         );
     }
 
-    public static Box GetBoxFromPosition(Vector3d pos, double sizeX, double sizeY, double sizeZ) {
-        return new Box(
-                new Vector3d(pos.x - (sizeX/2), pos.y - (sizeY/2), pos.z - (sizeZ/2)),
-                new Vector3d(pos.x + (sizeX/2), pos.y + (sizeY/2), pos.z + (sizeZ/2))
-        );
-    }
-
+    // returns a box centered around boxCenter
     public static Box GetBoxFromPosition(
-            double x, double y, double z,
+            Vector3d boxCenter,
             double length, double width, double height,
             Vector3d baseForward, int rotationIndex
     ) {
@@ -48,8 +42,6 @@ public class MFTMathUtil {
         Vector3d forward = GetForwardDirection(baseForward, rotationIndex);
         Vector3d right = Rotation.rotate(new Vector3d(1, 0, 0), rot.yaw(), rot.pitch(), rot.roll()).normalize();
         Vector3d up = Rotation.rotate(new Vector3d(0, 1, 0), rot.yaw(), rot.pitch(), rot.roll()).normalize();
-        // x/y/z are block-world coordinates (block corner), so shift to block center.
-        Vector3d blockCenter = new Vector3d(x + 0.5, y + 0.5, z + 0.5);
 
         Vector3d halfForward = forward.clone().scale(length * 0.5);
         Vector3d halfRight = right.clone().scale(width * 0.5);
@@ -57,11 +49,11 @@ public class MFTMathUtil {
 
         Vector3d min = new Vector3d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
         Vector3d max = new Vector3d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
-        int[] signs = new int[] { -1, 1 };
+        int[] signs = new int[]{-1, 1};
         for (int sx : signs) {
             for (int sy : signs) {
                 for (int sz : signs) {
-                    Vector3d corner = blockCenter.clone()
+                    Vector3d corner = boxCenter.clone()
                             .add(halfRight.clone().scale(sx))
                             .add(halfUp.clone().scale(sy))
                             .add(halfForward.clone().scale(sz));
@@ -78,11 +70,31 @@ public class MFTMathUtil {
         return new Box(min, max);
     }
 
-    public static Box GetBoxFromPosition(
-            Vector3d pos,
+    public static Box GetBoxInFrontOf(
+            Vector3d blockCenter,
             double length, double width, double height,
             Vector3d baseForward, int rotationIndex
     ) {
-        return GetBoxFromPosition(pos.x, pos.y, pos.z, length, width, height, baseForward, rotationIndex);
+        Vector3d forward = GetForwardDirection(baseForward, rotationIndex);
+        Vector3d boxCenter = blockCenter.clone().add(forward.clone().scale(0.5 + length * 0.5));
+        return GetBoxFromPosition(boxCenter, length, width, height, baseForward, rotationIndex);
+    }
+
+    public static Box GetBoxInFrontOf(Vector3d blockCenter, Volume3i size, Vector3d baseForward, int rotationIndex) {
+        return GetBoxInFrontOf(blockCenter, size.l, size.w, size.h, baseForward, rotationIndex);
+    }
+
+    public static final class Volume3i {
+        int l = 0;
+        int w = 0;
+        int h = 0;
+
+        public Volume3i() {}
+
+        public Volume3i(int l, int w, int h) {
+            this.l = l;
+            this.w = w;
+            this.h = h;
+        }
     }
 }
