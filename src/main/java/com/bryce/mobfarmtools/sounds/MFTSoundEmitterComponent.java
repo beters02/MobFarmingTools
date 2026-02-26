@@ -113,9 +113,7 @@ public class MFTSoundEmitterComponent implements Component<ChunkStore> {
     public void clearPendingStop() { pendingStop.clear(); }
     public void setSuppressed(boolean value, Ref<ChunkStore> blockRef) {
         suppressed = value;
-        if (!suppressed) {
-            SoundManager.StopAllForBlock(blockRef);
-        }
+        if (suppressed) SoundManager.StopAllForBlock(blockRef);
     }
 
     public static ComponentType<ChunkStore, MFTSoundEmitterComponent> getComponentType() {
