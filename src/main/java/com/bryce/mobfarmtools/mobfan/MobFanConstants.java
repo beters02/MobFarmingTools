@@ -15,9 +15,7 @@ public final class MobFanConstants {
     public static final boolean DEF_CHUNK_LOADED = false;
     public static final boolean DEF_NOISE_SUPPRESSED = false;
 
-    public static final String UPGRADE_LENGTH_ITEM_ID = "Mob_Fan_Upgrade_Length";
-    public static final String UPGRADE_WIDTH_ITEM_ID = "Mob_Fan_Upgrade_Width";
-    public static final String UPGRADE_HEIGHT_ITEM_ID = "Mob_Fan_Upgrade_Height";
+    public static final float FAN_SPEED = 100f;
 
     public enum UpgradePageStat implements UpgradePageStatDef {
         ENABLED(0, "Enabled", String.valueOf(DEF_ENABLED)),
