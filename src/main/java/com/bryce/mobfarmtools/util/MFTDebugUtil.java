@@ -40,6 +40,10 @@ public class MFTDebugUtil {
             MobFarmingToolsPlugin.LOGGER.atInfo().log(prefix+" "+msg);
         }
 
+        public void atInfo(List<?> list) {
+            list.forEach(v -> atInfo(String.valueOf(v)));
+        }
+
         public void atWarning(String msg) {
             if (!enabled) return;
             MobFarmingToolsPlugin.LOGGER.atWarning().log(prefix+" "+msg);

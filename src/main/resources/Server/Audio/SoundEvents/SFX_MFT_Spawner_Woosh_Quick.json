@@ -4,5 +4,6 @@
       "Looping": false,
       "Files": ["Sounds/Spawner_Woosh_Quick.ogg"]
     }
-  ]
+  ],
+  "Parent": "SFX_Attn_Moderate"
 }

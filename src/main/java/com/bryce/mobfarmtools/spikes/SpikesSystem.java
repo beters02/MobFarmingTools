@@ -250,13 +250,16 @@ public class SpikesSystem extends EntityTickingSystem<ChunkStore> {
     }
 
     private void damageEntity(Ref<EntityStore> ref, float amount) {
-        int causeIndex = DamageCause.getAssetMap().getIndex("Fire");
-        if (causeIndex == Integer.MIN_VALUE) {
-            debugger.atWarning("CANNOT DAMAGE ENTITY; MIN VALUE MET");
+        DamageCause cause = DamageCause.getAssetMap().getAsset("Out_Of_World"); // use your actual asset id
+        if (cause == null) {
+            cause = DamageCause.getAssetMap().getAsset("Physical"); // fallback
+        }
+        if (cause == null) {
+            debugger.atWarning("Cant execute damage; cause is null");
             return;
         }
 
-        Damage dmg = new Damage(new Damage.EnvironmentSource("Spikes"), causeIndex, amount);
+        Damage dmg = new Damage(new Damage.EnvironmentSource("Spikes"), cause, amount);
         DamageSystems.executeDamage(ref, ref.getStore(), dmg);
     }
 }

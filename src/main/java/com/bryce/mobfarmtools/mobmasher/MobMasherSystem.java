@@ -48,7 +48,7 @@ public class MobMasherSystem extends EntityTickingSystem<ChunkStore> {
     public MobMasherSystem(ComponentType<ChunkStore, MobMasherComponent> mobMasherComponentType) {
         this.mobMasherComponentType = mobMasherComponentType;
         mftConfig = MobFarmingToolsPlugin.get().getMobFarmingToolsConfig();
-        debugger.setEnabled(false);
+        debugger.setEnabled(true);
     }
 
     @Override
@@ -197,6 +197,10 @@ public class MobMasherSystem extends EntityTickingSystem<ChunkStore> {
         candidates.clear();
         spatial.getSpatialStructure().collectBox(min, max, candidates);
 
+        if (!candidates.isEmpty()) {
+            debugger.atInfo(candidates);
+        }
+
         // 3) Overlap test
         List<Ref<EntityStore>> colliding = new ArrayList<>();
         for (Ref<EntityStore> ref : candidates) {
@@ -248,13 +252,16 @@ public class MobMasherSystem extends EntityTickingSystem<ChunkStore> {
     }
 
     private void damageEntity(Ref<EntityStore> ref, float amount) {
-        int causeIndex = DamageCause.getAssetMap().getIndex("Fire");
-        if (causeIndex == Integer.MIN_VALUE) {
-            debugger.atWarning("CANNOT DAMAGE ENTITY; MIN VALUE MET");
+        DamageCause cause = DamageCause.getAssetMap().getAsset("Out_Of_World"); // use your actual asset id
+        if (cause == null) {
+            cause = DamageCause.getAssetMap().getAsset("Physical"); // fallback
+        }
+        if (cause == null) {
+            debugger.atWarning("Cant execute damage; cause is null");
             return;
         }
 
-        Damage dmg = new Damage(new Damage.EnvironmentSource("Masher"), causeIndex, amount);
+        Damage dmg = new Damage(new Damage.EnvironmentSource("Masher"), cause, amount);
         DamageSystems.executeDamage(ref, ref.getStore(), dmg);
     }
 }
