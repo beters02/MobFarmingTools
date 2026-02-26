@@ -175,10 +175,6 @@ public class VacuumHopperSystem extends EntityTickingSystem<ChunkStore> {
         world.execute(() -> entityStore.addEntity(holder, AddReason.SPAWN));
     }
 
-    public Box getItemsBox(VacuumHopperComponent hopper, Vector3d pos, int rotationIndex) {
-        return MFTMathUtil.GetBoxFromPosition(pos, hopper.getLength(), hopper.getWidth(), hopper.getHeight(), new Vector3d(0, 0, -1), rotationIndex);
-    }
-
     public @NonNull List<Ref<EntityStore>> getDroppedItemEntitiesInRadius(VacuumHopperComponent hopper, Vector3d pos, int rotationIndex, Store<EntityStore> entityStore) {
         SpatialResource<Ref<EntityStore>, EntityStore> itemSpatial =
                 entityStore.getResource(EntityModule.get().getItemSpatialResourceType());
