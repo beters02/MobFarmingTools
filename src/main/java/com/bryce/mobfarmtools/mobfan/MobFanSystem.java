@@ -22,6 +22,7 @@ import com.hypixel.hytale.server.core.asset.type.blocktype.config.RotationTuple;
 import com.hypixel.hytale.server.core.io.NetworkSerializable;
 import com.hypixel.hytale.server.core.modules.block.BlockModule;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
+import com.hypixel.hytale.server.core.modules.physics.component.PhysicsValues;
 import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
 import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -31,6 +32,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.TargetUtil;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
+import com.hypixel.hytale.server.npc.movement.controllers.MotionController;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -106,20 +108,23 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
                 return;
             }
 
-            Velocity velocityComponent = store.getComponent(ref, Velocity.getComponentType());
-            if (velocityComponent == null) {
-                debugger.atWarning("Velocity component is null.");
+            TransformComponent transformComponent = store.getComponent(ref, TransformComponent.getComponentType());
+            if (transformComponent == null) {
+                debugger.atWarning("Transform component is null during push.");
                 return;
             }
 
+            Velocity velocityComponent = store.getComponent(ref, Velocity.getComponentType());
             Vector3d forwardDir = MFTMathUtil.GetForwardDirection(fan.getBaseForward(), rotationIndex);
-            Vector3d push = MFTVectorUtil.multiply(forwardDir.clone(), MobFanConstants.FAN_SPEED * dt);
 
-            // fix aquatic creatures on land not being pushed
-            if (isNpcAquatic(npc)) {
-                pushAquatic(forwardDir, ref);
+            boolean isAquatic = isNpcAquatic(npc);
+            boolean isPushPosition = isAquatic || velocityComponent == null;
+
+            // fix aquatic mobs not being pushed
+            if (isPushPosition) {
+                pushPosition(transformComponent, forwardDir);
             } else {
-                velocityComponent.addInstruction(push, new VelocityConfig(), ChangeVelocityType.Add);
+                pushVelocity(dt, forwardDir, ref, npc, velocityComponent);
             }
         });
     }
@@ -135,14 +140,57 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
         return diveOnLand;
     }
 
-    public void pushAquatic(Vector3d forwardDir, Ref<EntityStore> aqRef) {
-        TransformComponent t = aqRef.getStore().getComponent(aqRef, TransformComponent.getComponentType());
-        if (t != null) {
-            Vector3d dir = forwardDir.clone();
-            dir.y = 0.0;
-            dir.normalize();
-            double step = 0.2; // tune
-            t.getPosition().add(dir.x * step, 0.0, dir.z * step);
+    public void pushVelocity(float dt, Vector3d forwardDir, Ref<EntityStore> ref, NPCEntity npc, Velocity velocityComponent) {
+        if (npc != null && npc.getRole() != null) {
+            pushNpcIgnoringDamping(ref.getStore(), ref, npc, forwardDir, dt);
+        } else {
+            velocityComponent.addInstruction(
+                    MFTVectorUtil.multiply(forwardDir.clone(), MobFanConstants.FAN_SPEED_VEL * dt),
+                    new VelocityConfig(),
+                    ChangeVelocityType.Add
+            );
         }
     }
+
+    public void pushPosition(TransformComponent transformComponent, Vector3d forwardDir) {
+        Vector3d dir = forwardDir.clone();
+        dir.y = 0.0;
+        dir.normalize();
+        double step = MobFanConstants.FAN_SPEED_POS; // tune
+        transformComponent.getPosition().add(dir.x * step, 0.0, dir.z * step);
+    }
+
+    private double getEntityMass(Store<EntityStore> store, Ref<EntityStore> ref) {
+        PhysicsValues pv = store.getComponent(ref, PhysicsValues.getComponentType());
+        return pv != null ? pv.getMass() : 1.0; // fallback
+    }
+
+    private void pushNpcIgnoringDamping(
+            Store<EntityStore> store,
+            Ref<EntityStore> ref,
+            NPCEntity npc,
+            Vector3d forwardDir,
+            float dt
+    ) {
+        Velocity vel = store.getComponent(ref, Velocity.getComponentType());
+        if (vel == null || npc == null || npc.getRole() == null || npc.getRole().getActiveMotionController() == null) return;
+
+        double mass = getEntityMass(store, ref);
+
+        // tune this curve; sqrt keeps heavy mobs pushable without exploding light mobs
+        double massScale = 1.0 / Math.sqrt(Math.max(0.1, mass));
+
+        Vector3d push = forwardDir.clone().scale(MobFanConstants.FAN_SPEED_VEL * dt * massScale);
+
+        // forceVelocity replaces controller force, so combine with current velocity for additive feel
+        Vector3d target = vel.getVelocity().clone().add(push);
+
+        npc.getRole().getActiveMotionController().forceVelocity(
+                target,
+                new VelocityConfig(),
+                true
+        );
+    }
+
+
 }
