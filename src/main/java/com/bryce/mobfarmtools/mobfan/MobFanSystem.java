@@ -126,11 +126,7 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
         }
     }
 
-    private Vector3d getNpcPushScaledWithMass(
-            Ref<EntityStore> ref,
-            Vector3d forwardDir,
-            float dt
-    ) {
+    private Vector3d getNpcPushScaledWithMass(Ref<EntityStore> ref, Vector3d forwardDir, float dt) {
         double massScale = 1.0 / Math.sqrt(Math.max(0.1, MFTEntityUtil.GetEntityMass(ref.getStore(), ref)));
         return forwardDir.clone().scale(MobFanConstants.FAN_SPEED_VEL * dt * massScale);
     }
