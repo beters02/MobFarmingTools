@@ -1,5 +1,6 @@
 package com.bryce.mobfarmtools.util;
 
+import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.shape.Box;
@@ -80,6 +81,12 @@ public class MFTEntityUtil {
         CollisionResult result = new CollisionResult();
         int code = CollisionModule.get().validatePosition(world, bb.getBoundingBox(), candidatePos, result);
         return code != CollisionModule.VALIDATE_INVALID; // -1
+    }
+
+    public static NPCEntity GetNPCComponent(Ref<EntityStore> ref) {
+        ComponentType<EntityStore, NPCEntity> npcEntityComponentType = NPCEntity.getComponentType();
+        if (npcEntityComponentType == null) return null;
+        return ref.getStore().getComponent(ref, npcEntityComponentType);
     }
 
 }

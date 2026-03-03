@@ -33,6 +33,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.TargetUtil;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import com.hypixel.hytale.server.npc.movement.controllers.MotionController;
+import com.hypixel.hytale.server.npc.role.Role;
 import org.bouncycastle.crypto.engines.EthereumIESEngine;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -60,31 +61,18 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
     @Override
     public void tick(float dt, int index, @NonNull ArchetypeChunk<ChunkStore> archetypeChunk, @NonNull Store<ChunkStore> store, @NonNull CommandBuffer<ChunkStore> commandBuffer) {
         MobFanComponent fan = archetypeChunk.getComponent(index, this.mobFanComponentType);
-        if (fan == null) {
-            debugger.atWarning("MOB FAN COMPONENT NOT FOUND!");
-            return;
-        }
+        if (fan == null) return;
 
         BlockModule.BlockStateInfo info = MFTBlockUtil.GetBlockStateInfoFromArchetype(archetypeChunk, index);
-        if (info == null) {
-            debugger.atWarning("BLOCK STATE INFO NOT FOUND!");
-            return;
-        }
+        if (info == null) return;
 
         Vector3d worldPos = MFTBlockUtil.GetWorldPosFromBlockStateInfo(info);
-        if (worldPos == null) {
-            debugger.atWarning("WORLD POS NOT FOUND!");
-            return;
-        }
+        if (worldPos == null) return;
 
+        World world = info.getChunkRef().getStore().getExternalData().getWorld();
         Vector3i worldPosI = worldPos.toVector3i();
-        if (MFTChunkUtil.IsChunkLoaded(info.getChunkRef().getStore().getExternalData().getWorld(), worldPosI.x, worldPosI.z) == null) {
-            debugger.atWarning("Chunk is not loaded");
-            return;
-        }
+        if (MFTChunkUtil.IsChunkLoaded(world, worldPosI.x, worldPosI.z) == null) return;
 
-        Store<ChunkStore> chunkStore = info.getChunkRef().getStore();
-        World world = chunkStore.getExternalData().getWorld();
         int rotationIndex = world.getBlockRotationIndex(worldPosI.x, worldPosI.y, worldPosI.z);
         tryFanPushing(dt, worldPosI, rotationIndex, world, fan);
     }
@@ -97,24 +85,11 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
         List<Ref<EntityStore>> hits = TargetUtil.getAllEntitiesInBox(box.min, box.max, store);
 
         hits.forEach(ref -> {
+            if (ref == null || !ref.isValid()) return;
 
-            NPCEntity npc = null;
-            ComponentType<EntityStore, NPCEntity> npcEntityComponentType = NPCEntity.getComponentType();
-            if (npcEntityComponentType != null) {
-                npc = store.getComponent(ref, NPCEntity.getComponentType());
-                if (npc != null) debugger.atInfo("Fan detected npc " + npc.getNPCTypeId());
-            }
-
-            if (ref == null || !ref.isValid()) {
-                debugger.atWarning("Attempted to tick action but Ref<EntityStore> is null or invalid.");
-                return;
-            }
-
+            NPCEntity npc = MFTEntityUtil.GetNPCComponent(ref);
             TransformComponent transformComponent = store.getComponent(ref, TransformComponent.getComponentType());
-            if (transformComponent == null) {
-                debugger.atWarning("Transform component is null during push.");
-                return;
-            }
+            if (transformComponent == null) return;
 
             Velocity velocityComponent = store.getComponent(ref, Velocity.getComponentType());
             Vector3d forwardDir = MFTMathUtil.GetForwardDirection(fan.getBaseForward(), rotationIndex);
@@ -141,57 +116,56 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
             Ref<EntityStore> ref,
             NPCEntity npc,
             Velocity velocityComponent,
-            TransformComponent transform) {
+            TransformComponent transform
+    ){
         if (npc != null && npc.getRole() != null) {
-            pushNpcIgnoringDamping(ref.getStore(), ref, npc, transform, forwardDir, dt);
+            pushNpcIgnoringDamping(ref, npc, npc.getRole(), transform, velocityComponent, forwardDir, dt);
         } else {
             Vector3d push = MFTVectorUtil.multiply(forwardDir.clone(), MobFanConstants.FAN_SPEED_VEL * dt);
             velocityComponent.addInstruction(push, new VelocityConfig(), ChangeVelocityType.Add);
         }
     }
 
-    private Vector3d getNpcPushScaledWithMass(Ref<EntityStore> ref, NPCEntity npc, Vector3d forwardDir, float dt) {
-        Velocity vel = ref.getStore().getComponent(ref, Velocity.getComponentType());
-        if (vel == null || npc == null || npc.getRole() == null || npc.getRole().getActiveMotionController() == null) {
-            return forwardDir.clone().scale(MobFanConstants.FAN_SPEED_VEL * dt);
-        }
-
-        double mass = MFTEntityUtil.GetEntityMass(ref.getStore(), ref);
-
-        // tune this curve; sqrt keeps heavy mobs pushable without exploding light mobs
-        double massScale = 1.0 / Math.sqrt(Math.max(0.1, mass));
-
+    private Vector3d getNpcPushScaledWithMass(
+            Ref<EntityStore> ref,
+            Vector3d forwardDir,
+            float dt
+    ) {
+        double massScale = 1.0 / Math.sqrt(Math.max(0.1, MFTEntityUtil.GetEntityMass(ref.getStore(), ref)));
         return forwardDir.clone().scale(MobFanConstants.FAN_SPEED_VEL * dt * massScale);
     }
 
     private void pushNpcIgnoringDamping(
-            Store<EntityStore> store,
             Ref<EntityStore> ref,
             NPCEntity npc,
+            @NonNull Role role,
             TransformComponent transform,
+            Velocity vel,
             Vector3d forwardDir,
             float dt
     ) {
-        Velocity vel = store.getComponent(ref, Velocity.getComponentType());
-        if (vel == null || npc == null || npc.getRole() == null || npc.getRole().getActiveMotionController() == null)
-            return;
-
-        Vector3d push = getNpcPushScaledWithMass(ref, npc, forwardDir, dt);
-        MotionController controller = npc.getRole().getActiveMotionController();
+        Vector3d push = getNpcPushScaledWithMass(ref, forwardDir, dt);
+        MotionController controller = role.getActiveMotionController();
 
         if (MFTEntityUtil.IsNpcAquatic(npc)) {
             fixDiveNpcTransformAndPush(ref, controller, transform, forwardDir, push);
         }
 
         Vector3d target = vel.getVelocity().clone().add(push);
-        npc.getRole().getActiveMotionController().forceVelocity(
+        controller.forceVelocity(
                 target,
                 new VelocityConfig(),
                 true
         );
     }
 
-    public void fixDiveNpcTransformAndPush(Ref<EntityStore> ref, MotionController controller, TransformComponent transform, Vector3d forwardDir, Vector3d push) {
+    public void fixDiveNpcTransformAndPush(
+            Ref<EntityStore> ref,
+            MotionController controller,
+            TransformComponent transform,
+            Vector3d forwardDir,
+            Vector3d push
+    ){
         Vector3d dir = forwardDir.clone();
         boolean mostlyVertical = Math.abs(dir.y) > 0.6;
 
