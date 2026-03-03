@@ -5,7 +5,10 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.shape.Box;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3i;
+import com.hypixel.hytale.server.core.modules.collision.CollisionModule;
+import com.hypixel.hytale.server.core.modules.collision.CollisionResult;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
+import com.hypixel.hytale.server.core.modules.physics.component.PhysicsValues;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -47,6 +50,36 @@ public class MFTEntityUtil {
 
     public static boolean IsEntityIdBoss(String entityId) {
         return entityId.contains("Golem") || entityId.equals("Dungeon_Scarak_Broodmother") || entityId.equals("Rex_Cave");
+    }
+
+    public static boolean IsNpcAquatic(NPCEntity npc) {
+        boolean diveOnLand = false;
+
+        if (npc != null && npc.getRole() != null && npc.getRole().getActiveMotionController() != null) {
+            var controller = npc.getRole().getActiveMotionController();
+            diveOnLand = "Dive".equals(controller.getType());
+        }
+
+        return diveOnLand;
+    }
+
+    public static double GetEntityMass(Store<EntityStore> store, Ref<EntityStore> ref) {
+        PhysicsValues pv = store.getComponent(ref, PhysicsValues.getComponentType());
+        return pv != null ? pv.getMass() : 1.0; // fallback
+    }
+
+    public static boolean CanEntityMoveTo(
+            World world,
+            Store<EntityStore> store,
+            Ref<EntityStore> ref,
+            Vector3d candidatePos
+    ) {
+        BoundingBox bb = store.getComponent(ref, BoundingBox.getComponentType());
+        if (bb == null) return true; // no bbox -> can't validate, allow
+
+        CollisionResult result = new CollisionResult();
+        int code = CollisionModule.get().validatePosition(world, bb.getBoundingBox(), candidatePos, result);
+        return code != CollisionModule.VALIDATE_INVALID; // -1
     }
 
 }

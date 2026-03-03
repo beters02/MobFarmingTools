@@ -33,10 +33,12 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.TargetUtil;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
 import com.hypixel.hytale.server.npc.movement.controllers.MotionController;
+import org.bouncycastle.crypto.engines.EthereumIESEngine;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
@@ -117,39 +119,12 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
             Velocity velocityComponent = store.getComponent(ref, Velocity.getComponentType());
             Vector3d forwardDir = MFTMathUtil.GetForwardDirection(fan.getBaseForward(), rotationIndex);
 
-            boolean isAquatic = isNpcAquatic(npc);
-            boolean isPushPosition = isAquatic || velocityComponent == null;
-
-            // fix aquatic mobs not being pushed
-            if (isPushPosition) {
+            if (velocityComponent == null) {
                 pushPosition(transformComponent, forwardDir);
             } else {
-                pushVelocity(dt, forwardDir, ref, npc, velocityComponent);
+                pushVelocity(dt, forwardDir, ref, npc, velocityComponent, transformComponent);
             }
         });
-    }
-
-    public boolean isNpcAquatic(NPCEntity npc) {
-        boolean diveOnLand = false;
-
-        if (npc != null && npc.getRole() != null && npc.getRole().getActiveMotionController() != null) {
-            var controller = npc.getRole().getActiveMotionController();
-            diveOnLand = "Dive".equals(controller.getType());
-        }
-
-        return diveOnLand;
-    }
-
-    public void pushVelocity(float dt, Vector3d forwardDir, Ref<EntityStore> ref, NPCEntity npc, Velocity velocityComponent) {
-        if (npc != null && npc.getRole() != null) {
-            pushNpcIgnoringDamping(ref.getStore(), ref, npc, forwardDir, dt);
-        } else {
-            velocityComponent.addInstruction(
-                    MFTVectorUtil.multiply(forwardDir.clone(), MobFanConstants.FAN_SPEED_VEL * dt),
-                    new VelocityConfig(),
-                    ChangeVelocityType.Add
-            );
-        }
     }
 
     public void pushPosition(TransformComponent transformComponent, Vector3d forwardDir) {
@@ -160,31 +135,55 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
         transformComponent.getPosition().add(dir.x * step, 0.0, dir.z * step);
     }
 
-    private double getEntityMass(Store<EntityStore> store, Ref<EntityStore> ref) {
-        PhysicsValues pv = store.getComponent(ref, PhysicsValues.getComponentType());
-        return pv != null ? pv.getMass() : 1.0; // fallback
+    public void pushVelocity(
+            float dt,
+            Vector3d forwardDir,
+            Ref<EntityStore> ref,
+            NPCEntity npc,
+            Velocity velocityComponent,
+            TransformComponent transform) {
+        if (npc != null && npc.getRole() != null) {
+            pushNpcIgnoringDamping(ref.getStore(), ref, npc, transform, forwardDir, dt);
+        } else {
+            Vector3d push = MFTVectorUtil.multiply(forwardDir.clone(), MobFanConstants.FAN_SPEED_VEL * dt);
+            velocityComponent.addInstruction(push, new VelocityConfig(), ChangeVelocityType.Add);
+        }
+    }
+
+    private Vector3d getNpcPushScaledWithMass(Ref<EntityStore> ref, NPCEntity npc, Vector3d forwardDir, float dt) {
+        Velocity vel = ref.getStore().getComponent(ref, Velocity.getComponentType());
+        if (vel == null || npc == null || npc.getRole() == null || npc.getRole().getActiveMotionController() == null) {
+            return forwardDir.clone().scale(MobFanConstants.FAN_SPEED_VEL * dt);
+        }
+
+        double mass = MFTEntityUtil.GetEntityMass(ref.getStore(), ref);
+
+        // tune this curve; sqrt keeps heavy mobs pushable without exploding light mobs
+        double massScale = 1.0 / Math.sqrt(Math.max(0.1, mass));
+
+        return forwardDir.clone().scale(MobFanConstants.FAN_SPEED_VEL * dt * massScale);
     }
 
     private void pushNpcIgnoringDamping(
             Store<EntityStore> store,
             Ref<EntityStore> ref,
             NPCEntity npc,
+            TransformComponent transform,
             Vector3d forwardDir,
             float dt
     ) {
         Velocity vel = store.getComponent(ref, Velocity.getComponentType());
-        if (vel == null || npc == null || npc.getRole() == null || npc.getRole().getActiveMotionController() == null) return;
+        if (vel == null || npc == null || npc.getRole() == null || npc.getRole().getActiveMotionController() == null)
+            return;
 
-        double mass = getEntityMass(store, ref);
+        Vector3d push = getNpcPushScaledWithMass(ref, npc, forwardDir, dt);
+        MotionController controller = npc.getRole().getActiveMotionController();
 
-        // tune this curve; sqrt keeps heavy mobs pushable without exploding light mobs
-        double massScale = 1.0 / Math.sqrt(Math.max(0.1, mass));
+        if (MFTEntityUtil.IsNpcAquatic(npc)) {
+            fixDiveNpcTransformAndPush(ref, controller, transform, forwardDir, push);
+        }
 
-        Vector3d push = forwardDir.clone().scale(MobFanConstants.FAN_SPEED_VEL * dt * massScale);
-
-        // forceVelocity replaces controller force, so combine with current velocity for additive feel
         Vector3d target = vel.getVelocity().clone().add(push);
-
         npc.getRole().getActiveMotionController().forceVelocity(
                 target,
                 new VelocityConfig(),
@@ -192,5 +191,29 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
         );
     }
 
+    public void fixDiveNpcTransformAndPush(Ref<EntityStore> ref, MotionController controller, TransformComponent transform, Vector3d forwardDir, Vector3d push) {
+        Vector3d dir = forwardDir.clone();
+        boolean mostlyVertical = Math.abs(dir.y) > 0.6;
 
+        // Only flatten Y for horizontal-ish fans.
+        if (!mostlyVertical) dir.y = 0.0;
+        if (!dir.equals(Vector3d.ZERO)) dir.normalize();
+
+        // Unstick npc
+        // add more y to position if fan is pointing upwards
+        double addY = (mostlyVertical || controller.onGround()) ? 0.2 : 0;
+        Vector3d delta = new Vector3d(dir.x * 0.03, addY, dir.z * 0.03);
+        Vector3d candidate = transform.getPosition().clone().add(delta);
+
+        // only add unstick if it's not colliding
+        World world = ref.getStore().getExternalData().getWorld();
+        if (MFTEntityUtil.CanEntityMoveTo(world, ref.getStore(), ref, candidate)) {
+            transform.getPosition().add(dir.x * 0.03, addY, dir.z * 0.03);
+        }
+
+        // Keep upward fans continuously lifting, not only on first contact.
+        if (mostlyVertical && dir.y > 0.0) {
+            push.y += 0.1;
+        }
+    }
 }
