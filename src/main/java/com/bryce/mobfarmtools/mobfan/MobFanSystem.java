@@ -94,7 +94,7 @@ public class MobFanSystem extends EntityTickingSystem<ChunkStore> {
             Velocity velocityComponent = store.getComponent(ref, Velocity.getComponentType());
             Vector3d forwardDir = MFTMathUtil.GetForwardDirection(fan.getBaseForward(), rotationIndex);
 
-            if (velocityComponent == null) {
+            if (velocityComponent == null || MFTEntityUtil.IsNpcAquatic(npc)) {
                 pushPosition(transformComponent, forwardDir);
             } else {
                 pushVelocity(dt, forwardDir, ref, npc, velocityComponent, transformComponent);
